@@ -1,2 +1,3 @@
 # redigo
-redis client abstraction for simple use
+
+Redis client abstraction for simple use.
