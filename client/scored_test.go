@@ -56,7 +56,7 @@ func Test_Client_Scored_Delete_Error(t *testing.T) {
 }
 
 // Test_Client_Scored_CutOff_Success_CutOff tests a case where the scored set
-// tried zo be truncated is big enough to be shortened. This is because the
+// tried to be truncated is big enough to be shortened. This is because the
 // maximum length given to CutOff is 10 while the ZCARD command here returns 12,
 // meaning 2 elements have to be removed from the sorted set.
 func Test_Client_Scored_CutOff_Success_CutOff(t *testing.T) {
