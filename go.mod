@@ -1,6 +1,6 @@
 module github.com/xh3b4sd/redigo
 
-go 1.14
+go 1.15
 
 require (
 	github.com/gomodule/redigo v1.8.2
