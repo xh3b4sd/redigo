@@ -11,11 +11,11 @@ type Scored struct {
 	prefix string
 }
 
-func (s *Scored) Create(key string, element string, score float64) error {
+func (s *Scored) Create(key string, ele string, sco float64) error {
 	conn := s.pool.Get()
 	defer conn.Close()
 
-	_, err := redis.Int(conn.Do("ZADD", withPrefix(s.prefix, key), score, element))
+	_, err := redis.Int(conn.Do("ZADD", withPrefix(s.prefix, key), sco, ele))
 	if err != nil {
 		return tracer.Mask(err)
 	}
@@ -45,11 +45,11 @@ func (s *Scored) CutOff(key string, num int) error {
 	return nil
 }
 
-func (s *Scored) Delete(key string, element string) error {
+func (s *Scored) Delete(key string, ele string) error {
 	conn := s.pool.Get()
 	defer conn.Close()
 
-	_, err := redis.Int(conn.Do("ZREM", withPrefix(s.prefix, key), element))
+	_, err := redis.Int(conn.Do("ZREM", withPrefix(s.prefix, key), ele))
 	if err != nil {
 		return tracer.Mask(err)
 	}
@@ -57,27 +57,37 @@ func (s *Scored) Delete(key string, element string) error {
 	return nil
 }
 
-// Search returns the list of scored elements stored under key. Note that num
-// may be -1 in order to list all elements.
-func (s *Scored) Search(key string, num int) ([]string, error) {
+func (s *Scored) Search(key string, lef int, rig int) ([]string, error) {
 	conn := s.pool.Get()
 	defer conn.Close()
 
-	if num == 0 {
-		return nil, tracer.Maskf(executionFailedError, "num must not be 0")
+	if lef < 0 {
+		return nil, tracer.Maskf(executionFailedError, "lef must at least be 0")
 	}
-	if num < -1 {
-		return nil, tracer.Maskf(executionFailedError, "num must at least be -1")
+
+	if rig == 0 {
+		return nil, tracer.Maskf(executionFailedError, "rig must not be 0")
+	}
+	if rig < -1 {
+		return nil, tracer.Maskf(executionFailedError, "rig must at least be -1")
+	}
+
+	if lef >= rig {
+		return nil, tracer.Maskf(executionFailedError, "lef must be smaller than rig")
 	}
 
 	// Redis interprets the boundaries as inclusive numbers. We want to have
-	// absolut numbers, because the second argument provided is about the maximum
-	// number of elements. In case you want to have 1 element, providing zero in
-	// this context would not make sense. Therefore we decrement all numbers that
-	// are greater than zero.
-	num--
+	// absolut numbers, because the second argument provided is about the
+	// maximum number of elements. In case you want to have 1 element, providing
+	// zero in this context would not make sense. Therefore we decrement all
+	// numbers that are greater than zero. The exception is -1 which redis uses
+	// to return all known elements. We want to keep this detail for our own
+	// interface. So in case the user provides -1, we simply use it as is.
+	if rig != -1 {
+		rig--
+	}
 
-	result, err := redis.Strings(conn.Do("ZREVRANGE", withPrefix(s.prefix, key), 0, num, "WITHSCORES"))
+	result, err := redis.Strings(conn.Do("ZREVRANGE", withPrefix(s.prefix, key), lef, rig))
 	if err != nil {
 		return nil, tracer.Mask(err)
 	}

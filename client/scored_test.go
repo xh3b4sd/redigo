@@ -2,54 +2,55 @@ package client
 
 import (
 	"errors"
+	"strconv"
 	"testing"
 
 	"github.com/rafaeljusto/redigomock"
 )
 
 func Test_Client_Scored_Create_Success(t *testing.T) {
-	conn := redigomock.NewConn()
-	conn.Command("ZADD", "prefix:key", 0.8, "element").Expect(int64(1))
+	con := redigomock.NewConn()
+	con.Command("ZADD", "prefix:key", 0.8, "element").Expect(int64(1))
 
-	c := mustNewClientWithConn(conn)
+	cli := mustNewClientWithConn(con)
 
-	err := c.Scored().Create("key", "element", 0.8)
+	err := cli.Scored().Create("key", "element", 0.8)
 	if err != nil {
 		t.Fatal("expected", nil, "got", err)
 	}
 }
 
 func Test_Client_Scored_Create_Error(t *testing.T) {
-	conn := redigomock.NewConn()
-	conn.Command("ZADD", "prefix:key", 0.8, "element").ExpectError(executionFailedError)
+	con := redigomock.NewConn()
+	con.Command("ZADD", "prefix:key", 0.8, "element").ExpectError(executionFailedError)
 
-	c := mustNewClientWithConn(conn)
+	cli := mustNewClientWithConn(con)
 
-	err := c.Scored().Create("key", "element", 0.8)
+	err := cli.Scored().Create("key", "element", 0.8)
 	if !errors.Is(err, executionFailedError) {
 		t.Fatal("expected", true, "got", false)
 	}
 }
 
 func Test_Client_Scored_Delete_Success(t *testing.T) {
-	conn := redigomock.NewConn()
-	conn.Command("ZREM", "prefix:test-key", "test-element").Expect(int64(1))
+	con := redigomock.NewConn()
+	con.Command("ZREM", "prefix:test-key", "test-element").Expect(int64(1))
 
-	c := mustNewClientWithConn(conn)
+	cli := mustNewClientWithConn(con)
 
-	err := c.Scored().Delete("test-key", "test-element")
+	err := cli.Scored().Delete("test-key", "test-element")
 	if err != nil {
 		t.Fatal("expected", nil, "got", err)
 	}
 }
 
 func Test_Client_Scored_Delete_Error(t *testing.T) {
-	conn := redigomock.NewConn()
-	conn.Command("ZREM", "prefix:test-key", "test-element").ExpectError(executionFailedError)
+	con := redigomock.NewConn()
+	con.Command("ZREM", "prefix:test-key", "test-element").ExpectError(executionFailedError)
 
-	c := mustNewClientWithConn(conn)
+	cli := mustNewClientWithConn(con)
 
-	err := c.Scored().Delete("test-key", "test-element")
+	err := cli.Scored().Delete("test-key", "test-element")
 	if !errors.Is(err, executionFailedError) {
 		t.Fatal("expected", true, "got", false)
 	}
@@ -60,15 +61,15 @@ func Test_Client_Scored_Delete_Error(t *testing.T) {
 // maximum length given to CutOff is 10 while the ZCARD command here returns 12,
 // meaning 2 elements have to be removed from the sorted set.
 func Test_Client_Scored_CutOff_Success_CutOff(t *testing.T) {
-	conn := redigomock.NewConn()
-	conn.Command("ZCARD", "prefix:foo").Expect(int64(12))
-	conn.Command("ZPOPMIN", "prefix:foo", 2).Expect([]interface{}{
+	con := redigomock.NewConn()
+	con.Command("ZCARD", "prefix:foo").Expect(int64(12))
+	con.Command("ZPOPMIN", "prefix:foo", 2).Expect([]interface{}{
 		[]uint8("25"), []uint8("one"), []uint8("35"), []uint8("two"),
 	})
 
-	c := mustNewClientWithConn(conn)
+	cli := mustNewClientWithConn(con)
 
-	err := c.Scored().CutOff("foo", 10)
+	err := cli.Scored().CutOff("foo", 10)
 	if err != nil {
 		t.Fatal("expected", nil, "got", err)
 	}
@@ -79,54 +80,154 @@ func Test_Client_Scored_CutOff_Success_CutOff(t *testing.T) {
 // maximum length given to CutOff is 10 while the ZCARD command here only
 // returns 3, meaning nothing has to be done.
 func Test_Client_Scored_CutOff_Success_NoCutOff(t *testing.T) {
-	conn := redigomock.NewConn()
-	conn.Command("ZCARD", "prefix:foo").Expect(int64(3))
+	con := redigomock.NewConn()
+	con.Command("ZCARD", "prefix:foo").Expect(int64(3))
 
-	c := mustNewClientWithConn(conn)
+	cli := mustNewClientWithConn(con)
 
-	err := c.Scored().CutOff("foo", 10)
+	err := cli.Scored().CutOff("foo", 10)
 	if err != nil {
 		t.Fatal("expected", nil, "got", err)
 	}
 }
 
-func Test_Client_Scored_Search_Success(t *testing.T) {
-	conn := redigomock.NewConn()
-	conn.Command("ZREVRANGE", "prefix:foo", 0, 1, "WITHSCORES").Expect([]interface{}{
-		[]uint8("one"), []uint8("0.8"), []uint8("two"), []uint8("0.5"),
+func Test_Client_Scored_Search_Data(t *testing.T) {
+	con := redigomock.NewConn()
+	con.Command("ZREVRANGE", "prefix:foo", 0, 1).Expect([]interface{}{
+		[]uint8("one"), []uint8("two"),
 	})
 
-	c := mustNewClientWithConn(conn)
+	cli := mustNewClientWithConn(con)
 
-	values, err := c.Scored().Search("foo", 2)
+	values, err := cli.Scored().Search("foo", 0, 2)
 	if err != nil {
 		t.Fatal("expected", nil, "got", err)
 	}
-	if len(values) != 4 {
-		t.Fatal("expected", 1, "got", len(values))
+	if len(values) != 2 {
+		t.Fatal("expected", 2, "got", len(values))
 	}
 	if values[0] != "one" {
 		t.Fatal("expected", "one", "got", values[0])
 	}
-	if values[1] != "0.8" {
-		t.Fatal("expected", "0.8", "got", values[1])
-	}
-	if values[2] != "two" {
-		t.Fatal("expected", "two", "got", values[2])
-	}
-	if values[3] != "0.5" {
-		t.Fatal("expected", "0.5", "got", values[3])
+	if values[1] != "two" {
+		t.Fatal("expected", "two", "got", values[1])
 	}
 }
 
 func Test_Client_Scored_Search_Error(t *testing.T) {
-	conn := redigomock.NewConn()
-	conn.Command("ZREVRANGE", "prefix:foo", 0, 1, "WITHSCORES").ExpectError(executionFailedError)
+	con := redigomock.NewConn()
+	con.Command("ZREVRANGE", "prefix:foo", 0, 1).ExpectError(executionFailedError)
 
-	c := mustNewClientWithConn(conn)
+	cli := mustNewClientWithConn(con)
 
-	_, err := c.Scored().Search("foo", 2)
+	_, err := cli.Scored().Search("foo", 0, 2)
 	if !errors.Is(err, executionFailedError) {
 		t.Fatal("expected", true, "got", false)
+	}
+}
+
+func Test_Client_Scored_Search_InValid(t *testing.T) {
+	testCases := []struct {
+		lef int
+		rig int
+	}{
+		// Case 0 ensures that lef cannot be negative.
+		{
+			lef: -1,
+			rig: 1,
+		},
+		// Case 1 ensures that lef cannot be negative.
+		{
+			lef: -6,
+			rig: 1,
+		},
+		// Case 2 ensures that rig cannot be smaller than -1.
+		{
+			lef: 0,
+			rig: -2,
+		},
+		// Case 3 ensures that rig cannot be smaller than -1.
+		{
+			lef: 0,
+			rig: -4,
+		},
+		// Case 4 ensures that lef cannot be greater than rig.
+		{
+			lef: 3,
+			rig: 2,
+		},
+		// Case 5 ensures that lef cannot be greater than rig.
+		{
+			lef: 10,
+			rig: 5,
+		},
+	}
+
+	for i, tc := range testCases {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			var cli *Client
+			{
+				con := redigomock.NewConn()
+				con.Command("ZREVRANGE", "prefix:foo", redigomock.NewAnyInt(), redigomock.NewAnyInt()).Expect([]interface{}{
+					[]uint8("one"), []uint8("two"),
+				})
+
+				cli = mustNewClientWithConn(con)
+			}
+
+			_, err := cli.Scored().Search("foo", tc.lef, tc.rig)
+			if !errors.Is(err, executionFailedError) {
+				t.Fatal("expected", nil, "got", err)
+			}
+		})
+	}
+}
+
+func Test_Client_Scored_Search_Valid(t *testing.T) {
+	testCases := []struct {
+		lef int
+		rig int
+	}{
+		// Case 0 ensures that a single element can be searched.
+		{
+			lef: 0,
+			rig: 1,
+		},
+		// Case 1 ensures that multiple elements can be searched.
+		{
+			lef: 0,
+			rig: 3,
+		},
+		// Case 2 ensures that a single element can be searched within the
+		// dataset.
+		{
+			lef: 4,
+			rig: 5,
+		},
+		// Case 3 ensures that multiple elements can be searched within the
+		// dataset.
+		{
+			lef: 10,
+			rig: 20,
+		},
+	}
+
+	for i, tc := range testCases {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			var cli *Client
+			{
+				con := redigomock.NewConn()
+				con.Command("ZREVRANGE", "prefix:foo", redigomock.NewAnyInt(), redigomock.NewAnyInt()).Expect([]interface{}{
+					[]uint8("one"), []uint8("two"),
+				})
+
+				cli = mustNewClientWithConn(con)
+			}
+
+			_, err := cli.Scored().Search("foo", tc.lef, tc.rig)
+			if err != nil {
+				t.Fatal("expected", nil, "got", err)
+			}
+		})
 	}
 }
