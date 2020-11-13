@@ -72,7 +72,7 @@ func (s *Scored) Search(key string, lef int, rig int) ([]string, error) {
 		return nil, tracer.Maskf(executionFailedError, "rig must at least be -1")
 	}
 
-	if lef >= rig {
+	if rig != -1 && lef >= rig {
 		return nil, tracer.Maskf(executionFailedError, "lef must be smaller than rig")
 	}
 

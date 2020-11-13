@@ -193,18 +193,23 @@ func Test_Client_Scored_Search_Valid(t *testing.T) {
 			lef: 0,
 			rig: 1,
 		},
-		// Case 1 ensures that multiple elements can be searched.
+		// Case 1 ensures that all elements can be searched.
+		{
+			lef: 0,
+			rig: -1,
+		},
+		// Case 2 ensures that multiple elements can be searched.
 		{
 			lef: 0,
 			rig: 3,
 		},
-		// Case 2 ensures that a single element can be searched within the
+		// Case 3 ensures that a single element can be searched within the
 		// dataset.
 		{
 			lef: 4,
 			rig: 5,
 		},
-		// Case 3 ensures that multiple elements can be searched within the
+		// Case 4 ensures that multiple elements can be searched within the
 		// dataset.
 		{
 			lef: 10,
