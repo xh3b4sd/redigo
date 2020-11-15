@@ -23,28 +23,6 @@ func (s *Scored) Create(key string, ele string, sco float64) error {
 	return nil
 }
 
-func (s *Scored) CutOff(key string, num int) error {
-	conn := s.pool.Get()
-	defer conn.Close()
-
-	length, err := redis.Int(conn.Do("ZCARD", withPrefix(s.prefix, key)))
-	if err != nil {
-		return tracer.Mask(err)
-	}
-
-	count := length - num
-	if count < 1 {
-		return nil
-	}
-
-	_, err = redis.Strings(conn.Do("ZPOPMIN", withPrefix(s.prefix, key), count))
-	if err != nil {
-		return tracer.Mask(err)
-	}
-
-	return nil
-}
-
 func (s *Scored) Delete(key string, ele string) error {
 	conn := s.pool.Get()
 	defer conn.Close()
@@ -93,4 +71,52 @@ func (s *Scored) Search(key string, lef int, rig int) ([]string, error) {
 	}
 
 	return result, nil
+}
+
+// Update executes a script of three key operations in order to reliably modify
+// the element of a sorted set. Consider the element bef being created using the
+// score 23 like shown below.
+//
+//     redis> ZADD k:foo 25 "old"
+//     (integer) 1
+//
+// The first step being executed is to lookup the old element associated with
+// score. This is necessary because removing an element from a sorted set in our
+// case does work best knowing the element itself. That way we can add the new
+// element first assuming that in worst case we have two elements instead of
+// zero.
+//
+// The second step being executed is to add the new element associated with
+// score. At this point we have two elements. The old and the new one.
+//
+// The third step being executed is to remove the old element associated with
+// score. Now the value retrieved in the first step is being leveraged. Removing
+// the old element marks the end of the executed transaction, leaving a clean
+// state of an updated element behind.
+//
+//     redis> ZREVRANGE k:foo 25 25
+//     1) "old"
+//
+//     redis> ZADD k:foo 25 "new"
+//     (integer) 1
+//
+//     redis> ZREM k:foo "old"
+//     (integer) 1
+//
+func (s *Scored) Update(key string, new string, sco float64) error {
+	conn := s.pool.Get()
+	defer conn.Close()
+
+	scr := `
+        local old = redis.call("ZREVRANGE", KEYS[1], ARGV[2], ARGV[2])
+        redis.call("ZADD", KEYS[1], ARGV[2], ARGV[1])
+        redis.call("ZREM", KEYS[1], old)
+	`
+
+	_, err := conn.Do("EVAL", scr, 1, withPrefix(s.prefix, key), new, sco)
+	if err != nil {
+		return tracer.Mask(err)
+	}
+
+	return nil
 }

@@ -56,41 +56,6 @@ func Test_Client_Scored_Delete_Error(t *testing.T) {
 	}
 }
 
-// Test_Client_Scored_CutOff_Success_CutOff tests a case where the scored set
-// tried to be truncated is big enough to be shortened. This is because the
-// maximum length given to CutOff is 10 while the ZCARD command here returns 12,
-// meaning 2 elements have to be removed from the sorted set.
-func Test_Client_Scored_CutOff_Success_CutOff(t *testing.T) {
-	con := redigomock.NewConn()
-	con.Command("ZCARD", "prefix:foo").Expect(int64(12))
-	con.Command("ZPOPMIN", "prefix:foo", 2).Expect([]interface{}{
-		[]uint8("25"), []uint8("one"), []uint8("35"), []uint8("two"),
-	})
-
-	cli := mustNewClientWithConn(con)
-
-	err := cli.Scored().CutOff("foo", 10)
-	if err != nil {
-		t.Fatal("expected", nil, "got", err)
-	}
-}
-
-// Test_Client_Scored_CutOff_Success_NoCutOff tests a case where the scored set
-// tried to be truncated is not big enough to be shortened. This is because the
-// maximum length given to CutOff is 10 while the ZCARD command here only
-// returns 3, meaning nothing has to be done.
-func Test_Client_Scored_CutOff_Success_NoCutOff(t *testing.T) {
-	con := redigomock.NewConn()
-	con.Command("ZCARD", "prefix:foo").Expect(int64(3))
-
-	cli := mustNewClientWithConn(con)
-
-	err := cli.Scored().CutOff("foo", 10)
-	if err != nil {
-		t.Fatal("expected", nil, "got", err)
-	}
-}
-
 func Test_Client_Scored_Search_Data(t *testing.T) {
 	con := redigomock.NewConn()
 	con.Command("ZREVRANGE", "prefix:foo", 0, 1).Expect([]interface{}{
