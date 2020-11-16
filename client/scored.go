@@ -8,14 +8,18 @@ import (
 type Scored struct {
 	pool *redis.Pool
 
+	// updateScript is internally used to keep track of a script caching
+	// mechanism when updating elements of sorted sets.
+	updateScript *redis.Script
+
 	prefix string
 }
 
 func (s *Scored) Create(key string, ele string, sco float64) error {
-	conn := s.pool.Get()
-	defer conn.Close()
+	con := s.pool.Get()
+	defer con.Close()
 
-	_, err := redis.Int(conn.Do("ZADD", withPrefix(s.prefix, key), sco, ele))
+	_, err := redis.Int(con.Do("ZADD", withPrefix(s.prefix, key), sco, ele))
 	if err != nil {
 		return tracer.Mask(err)
 	}
@@ -24,10 +28,10 @@ func (s *Scored) Create(key string, ele string, sco float64) error {
 }
 
 func (s *Scored) Delete(key string, ele string) error {
-	conn := s.pool.Get()
-	defer conn.Close()
+	con := s.pool.Get()
+	defer con.Close()
 
-	_, err := redis.Int(conn.Do("ZREM", withPrefix(s.prefix, key), ele))
+	_, err := redis.Int(con.Do("ZREM", withPrefix(s.prefix, key), ele))
 	if err != nil {
 		return tracer.Mask(err)
 	}
@@ -36,10 +40,10 @@ func (s *Scored) Delete(key string, ele string) error {
 }
 
 func (s *Scored) Exists(key string) (bool, error) {
-	conn := s.pool.Get()
-	defer conn.Close()
+	con := s.pool.Get()
+	defer con.Close()
 
-	result, err := redis.Bool(conn.Do("EXISTS", withPrefix(s.prefix, key)))
+	result, err := redis.Bool(con.Do("EXISTS", withPrefix(s.prefix, key)))
 	if err != nil {
 		return false, tracer.Mask(err)
 	}
@@ -48,8 +52,8 @@ func (s *Scored) Exists(key string) (bool, error) {
 }
 
 func (s *Scored) Search(key string, lef int, rig int) ([]string, error) {
-	conn := s.pool.Get()
-	defer conn.Close()
+	con := s.pool.Get()
+	defer con.Close()
 
 	if lef < 0 {
 		return nil, tracer.Maskf(executionFailedError, "lef must at least be 0")
@@ -77,7 +81,7 @@ func (s *Scored) Search(key string, lef int, rig int) ([]string, error) {
 		rig--
 	}
 
-	result, err := redis.Strings(conn.Do("ZREVRANGE", withPrefix(s.prefix, key), lef, rig))
+	result, err := redis.Strings(con.Do("ZREVRANGE", withPrefix(s.prefix, key), lef, rig))
 	if err != nil {
 		return nil, tracer.Mask(err)
 	}
@@ -115,20 +119,56 @@ func (s *Scored) Search(key string, lef int, rig int) ([]string, error) {
 //     redis> ZREM k:foo "old"
 //     (integer) 1
 //
-func (s *Scored) Update(key string, new string, sco float64) error {
-	conn := s.pool.Get()
-	defer conn.Close()
+func (s *Scored) Update(key string, new string, sco float64) (bool, error) {
+	con := s.pool.Get()
+	defer con.Close()
 
-	scr := `
-        local old = redis.call("ZREVRANGE", KEYS[1], ARGV[2], ARGV[2])
-        redis.call("ZADD", KEYS[1], ARGV[2], ARGV[1])
-        redis.call("ZREM", KEYS[1], old)
-	`
+	if s.updateScript == nil {
+		scr := `
+            local exi = redis.call("EXISTS", KEYS[1])
+            if (exi == 0) then
+                return 0
+            end
 
-	_, err := conn.Do("EVAL", scr, 1, withPrefix(s.prefix, key), new, sco)
-	if err != nil {
-		return tracer.Mask(err)
+            local old = ""
+            local res = redis.call("ZREVRANGE", KEYS[1], ARGV[2], ARGV[2])
+            for k, v in pairs(res) do
+                old = v
+                break
+            end
+
+            if (old == "") then
+                return 1
+            end
+
+            if (old == ARGV[1]) then
+                return 2
+            end
+
+            redis.call("ZADD", KEYS[1], ARGV[2], ARGV[1])
+            redis.call("ZREM", KEYS[1], old)
+
+            return 3
+        `
+
+		s.updateScript = redis.NewScript(1, scr)
 	}
 
-	return nil
+	res, err := redis.Int(s.updateScript.Do(con, withPrefix(s.prefix, key), new, sco))
+	if err != nil {
+		return false, tracer.Mask(err)
+	}
+
+	switch res {
+	case 0:
+		return false, tracer.Maskf(notFoundError, "sorted set does not exist under key")
+	case 1:
+		return false, tracer.Maskf(notFoundError, "element does not exist in sorted set")
+	case 2:
+		return false, nil
+	case 3:
+		return true, nil
+	}
+
+	return false, tracer.Mask(executionFailedError)
 }

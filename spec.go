@@ -18,7 +18,7 @@ type Scored interface {
 	// include scores, but only the names of the elements stored.
 	Search(key string, lef int, rig int) ([]string, error)
 	// Update modifies the element identified by sco and sets its value to new.
-	Update(key string, new string, sco float64) error
+	Update(key string, new string, sco float64) (bool, error)
 }
 
 type Simple interface {
