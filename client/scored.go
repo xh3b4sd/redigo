@@ -35,6 +35,18 @@ func (s *Scored) Delete(key string, ele string) error {
 	return nil
 }
 
+func (s *Scored) Exists(key string) (bool, error) {
+	conn := s.pool.Get()
+	defer conn.Close()
+
+	result, err := redis.Bool(conn.Do("EXISTS", withPrefix(s.prefix, key)))
+	if err != nil {
+		return false, tracer.Mask(err)
+	}
+
+	return result, nil
+}
+
 func (s *Scored) Search(key string, lef int, rig int) ([]string, error) {
 	conn := s.pool.Get()
 	defer conn.Close()

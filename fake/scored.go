@@ -3,6 +3,7 @@ package fake
 type Scored struct {
 	CreateFake func() error
 	DeleteFake func() error
+	ExistsFake func() (bool, error)
 	SearchFake func() ([]string, error)
 	UpdateFake func() error
 }
@@ -21,6 +22,14 @@ func (s *Scored) Delete(key string, ele string) error {
 	}
 
 	return nil
+}
+
+func (s *Scored) Exists(key string) (bool, error) {
+	if s.ExistsFake != nil {
+		return s.ExistsFake()
+	}
+
+	return false, nil
 }
 
 func (s *Scored) Search(key string, lef int, rig int) ([]string, error) {
