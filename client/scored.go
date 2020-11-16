@@ -125,31 +125,31 @@ func (s *Scored) Update(key string, new string, sco float64) (bool, error) {
 
 	if s.updateScript == nil {
 		scr := `
-            local exi = redis.call("EXISTS", KEYS[1])
-            if (exi == 0) then
-                return 0
-            end
+			local exi = redis.call("EXISTS", KEYS[1])
+			if (exi == 0) then
+				return 0
+			end
 
-            local old = ""
-            local res = redis.call("ZRANGEBYSCORE", KEYS[1], ARGV[2], ARGV[2])
-            for k, v in pairs(res) do
-                old = v
-                break
-            end
+			local old = ""
+			local res = redis.call("ZRANGEBYSCORE", KEYS[1], ARGV[2], ARGV[2])
+			for k, v in pairs(res) do
+				old = v
+				break
+			end
 
-            if (old == "") then
-                return 1
-            end
+			if (old == "") then
+				return 1
+			end
 
-            if (old == ARGV[1]) then
-                return 2
-            end
+			if (old == ARGV[1]) then
+				return 2
+			end
 
-            redis.call("ZADD", KEYS[1], ARGV[2], ARGV[1])
-            redis.call("ZREM", KEYS[1], old)
+			redis.call("ZADD", KEYS[1], ARGV[2], ARGV[1])
+			redis.call("ZREM", KEYS[1], old)
 
-            return 3
-        `
+			return 3
+		`
 
 		s.updateScript = redis.NewScript(1, scr)
 	}
