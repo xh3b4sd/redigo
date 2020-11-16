@@ -44,6 +44,8 @@ func New(config Config) (*Client, error) {
 		newScored = &Scored{
 			pool: config.Pool,
 
+			updateScript: nil,
+
 			prefix: config.Prefix,
 		}
 	}

@@ -2,22 +2,15 @@ package fake
 
 type Scored struct {
 	CreateFake func() error
-	CutOffFake func() error
 	DeleteFake func() error
+	ExistsFake func() (bool, error)
 	SearchFake func() ([]string, error)
+	UpdateFake func() (bool, error)
 }
 
 func (s *Scored) Create(key string, ele string, sco float64) error {
 	if s.CreateFake != nil {
 		return s.CreateFake()
-	}
-
-	return nil
-}
-
-func (s *Scored) CutOff(key string, num int) error {
-	if s.CutOffFake != nil {
-		return s.CutOffFake()
 	}
 
 	return nil
@@ -31,10 +24,26 @@ func (s *Scored) Delete(key string, ele string) error {
 	return nil
 }
 
+func (s *Scored) Exists(key string) (bool, error) {
+	if s.ExistsFake != nil {
+		return s.ExistsFake()
+	}
+
+	return false, nil
+}
+
 func (s *Scored) Search(key string, lef int, rig int) ([]string, error) {
 	if s.SearchFake != nil {
 		return s.SearchFake()
 	}
 
 	return nil, nil
+}
+
+func (s *Scored) Update(key string, new string, sco float64) (bool, error) {
+	if s.UpdateFake != nil {
+		return s.UpdateFake()
+	}
+
+	return false, nil
 }
