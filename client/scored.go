@@ -131,7 +131,7 @@ func (s *Scored) Update(key string, new string, sco float64) (bool, error) {
             end
 
             local old = ""
-            local res = redis.call("ZREVRANGE", KEYS[1], ARGV[2], ARGV[2])
+            local res = redis.call("ZRANGEBYSCORE", KEYS[1], ARGV[2], ARGV[2])
             for k, v in pairs(res) do
                 old = v
                 break
