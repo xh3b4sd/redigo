@@ -11,85 +11,19 @@ import (
 )
 
 func Test_Client_Scored_Create_Success(t *testing.T) {
-	testCases := []struct {
-		k string
-	}{
-		// Case 0 ensures that unique elements can be created.
-		{
-			k: "foo",
-		},
-		// Case 1 ensures that unique elements can be created.
-		{
-			k: "bar",
-		},
-	}
-
-	for i, tc := range testCases {
-		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			var cli *Client
-			{
-				con := redigomock.NewConn()
-				con.Command("EXISTS", fmt.Sprintf("prefix:%s", tc.k)).Expect(int64(0))
-				con.Command("ZADD", fmt.Sprintf("prefix:%s", tc.k), 0.8, "element").Expect(int64(1))
-
-				cli = mustNewClientWithConn(con)
-			}
-
-			err := cli.Scored().Create(tc.k, "element", 0.8)
-			if err != nil {
-				t.Fatal(err)
-			}
-		})
-	}
-}
-
-func Test_Client_Scored_Create_Duplicate(t *testing.T) {
-	testCases := []struct {
-		k string
-	}{
-		// Case 0 ensures that duplicated elements cannot be created.
-		{
-			k: "foo",
-		},
-		// Case 1 ensures that duplicated elements cannot be created.
-		{
-			k: "bar",
-		},
-	}
-
-	for i, tc := range testCases {
-		t.Run(strconv.Itoa(i), func(t *testing.T) {
-			var cli *Client
-			{
-				con := redigomock.NewConn()
-				con.Command("EXISTS", fmt.Sprintf("prefix:%s", tc.k)).Expect(int64(1))
-
-				cli = mustNewClientWithConn(con)
-			}
-
-			err := cli.Scored().Create(tc.k, "element", 0.8)
-			if !errors.Is(err, alreadyExistsError) {
-				t.Fatal("expected", nil, "got", err)
-			}
-		})
-	}
-}
-
-func Test_Client_Scored_Create_Exists_Error(t *testing.T) {
 	con := redigomock.NewConn()
-	con.Command("EXISTS", "prefix:key").ExpectError(executionFailedError)
+	con.Command("ZADD", "prefix:key", 0.8, "element").Expect(int64(1))
 
 	cli := mustNewClientWithConn(con)
 
 	err := cli.Scored().Create("key", "element", 0.8)
-	if !errors.Is(err, executionFailedError) {
-		t.Fatal("expected", true, "got", false)
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 
-func Test_Client_Scored_Create_ZADD_Error(t *testing.T) {
+func Test_Client_Scored_Create_Error(t *testing.T) {
 	con := redigomock.NewConn()
-	con.Command("EXISTS", "prefix:key").Expect(int64(0))
 	con.Command("ZADD", "prefix:key", 0.8, "element").ExpectError(executionFailedError)
 
 	cli := mustNewClientWithConn(con)

@@ -19,21 +19,9 @@ func (s *Scored) Create(key string, ele string, sco float64) error {
 	con := s.pool.Get()
 	defer con.Close()
 
-	{
-		ok, err := redis.Bool(con.Do("EXISTS", withPrefix(s.prefix, key)))
-		if err != nil {
-			return tracer.Mask(err)
-		}
-		if ok {
-			return tracer.Maskf(alreadyExistsError, key)
-		}
-	}
-
-	{
-		_, err := redis.Int(con.Do("ZADD", withPrefix(s.prefix, key), sco, ele))
-		if err != nil {
-			return tracer.Mask(err)
-		}
+	_, err := redis.Int(con.Do("ZADD", withPrefix(s.prefix, key), sco, ele))
+	if err != nil {
+		return tracer.Mask(err)
 	}
 
 	return nil
