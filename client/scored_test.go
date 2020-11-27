@@ -10,6 +10,30 @@ import (
 	"github.com/xh3b4sd/tracer"
 )
 
+func Test_Client_Scored_Create_Error(t *testing.T) {
+	con := redigomock.NewConn()
+	con.Command("EVALSHA", redigomock.NewAnyData(), 1, "prefix:key", "ele", 0.8).Expect(int64(0))
+
+	cli := mustNewClientWithConn(con)
+
+	err := cli.Scored().Create("key", "ele", 0.8)
+	if !errors.Is(err, alreadyExistsError) {
+		t.Fatal("expected", true, "got", false)
+	}
+}
+
+func Test_Client_Scored_Create_Success(t *testing.T) {
+	con := redigomock.NewConn()
+	con.Command("EVALSHA", redigomock.NewAnyData(), 1, "prefix:key", "ele", 0.8).Expect(int64(1))
+
+	cli := mustNewClientWithConn(con)
+
+	err := cli.Scored().Create("key", "ele", 0.8)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func Test_Client_Scored_Delete_Success(t *testing.T) {
 	con := redigomock.NewConn()
 	con.Command("ZREM", "prefix:test-key", "test-element").Expect(int64(1))
@@ -291,5 +315,20 @@ func Test_Client_Scored_Search_Redis_Valid(t *testing.T) {
 	}
 	if values[1] != "two" {
 		t.Fatal("expected", "two", "got", values[1])
+	}
+}
+
+func Test_Client_Scored_Update_Call(t *testing.T) {
+	con := redigomock.NewConn()
+	con.Command("EVALSHA", redigomock.NewAnyData(), 1, "prefix:key", "ele", 0.8).Expect(int64(3))
+
+	cli := mustNewClientWithConn(con)
+
+	upd, err := cli.Scored().Update("key", "ele", 0.8)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !upd {
+		t.Fatal(err)
 	}
 }

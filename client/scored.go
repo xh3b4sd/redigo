@@ -43,7 +43,7 @@ func (s *Scored) Create(key string, ele string, sco float64) error {
 		s.createScript = redis.NewScript(1, scr)
 	}
 
-	res, err := redis.Int(s.updateScript.Do(con, withPrefix(s.prefix, key), ele, sco))
+	res, err := redis.Int(s.createScript.Do(con, withPrefix(s.prefix, key), ele, sco))
 	if err != nil {
 		return tracer.Mask(err)
 	}
