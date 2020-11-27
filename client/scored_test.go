@@ -10,30 +10,6 @@ import (
 	"github.com/xh3b4sd/tracer"
 )
 
-func Test_Client_Scored_Create_Success(t *testing.T) {
-	con := redigomock.NewConn()
-	con.Command("ZADD", "prefix:key", 0.8, "element").Expect(int64(1))
-
-	cli := mustNewClientWithConn(con)
-
-	err := cli.Scored().Create("key", "element", 0.8)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-func Test_Client_Scored_Create_Error(t *testing.T) {
-	con := redigomock.NewConn()
-	con.Command("ZADD", "prefix:key", 0.8, "element").ExpectError(executionFailedError)
-
-	cli := mustNewClientWithConn(con)
-
-	err := cli.Scored().Create("key", "element", 0.8)
-	if !errors.Is(err, executionFailedError) {
-		t.Fatal("expected", true, "got", false)
-	}
-}
-
 func Test_Client_Scored_Delete_Success(t *testing.T) {
 	con := redigomock.NewConn()
 	con.Command("ZREM", "prefix:test-key", "test-element").Expect(int64(1))
