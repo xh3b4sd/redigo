@@ -5,7 +5,7 @@ import (
 )
 
 type Client struct {
-	ScoredFake func() redigo.Scored
+	SortedFake func() redigo.Sorted
 	SimpleFake func() redigo.Simple
 }
 
@@ -17,12 +17,12 @@ func (c *Client) Ping() error {
 	return nil
 }
 
-func (c *Client) Scored() redigo.Scored {
-	if c.ScoredFake != nil {
-		return c.ScoredFake()
+func (c *Client) Sorted() redigo.Sorted {
+	if c.SortedFake != nil {
+		return c.SortedFake()
 	}
 
-	return &Scored{}
+	return &Sorted{}
 }
 
 func (c *Client) Shutdown() {

@@ -1,6 +1,6 @@
 package fake
 
-type Scored struct {
+type Sorted struct {
 	CreateFake func() error
 	DeleteFake func() error
 	ExistsFake func() (bool, error)
@@ -8,7 +8,7 @@ type Scored struct {
 	UpdateFake func() (bool, error)
 }
 
-func (s *Scored) Create(key string, ele string, sco float64) error {
+func (s *Sorted) Create(key string, ele string, sco float64) error {
 	if s.CreateFake != nil {
 		return s.CreateFake()
 	}
@@ -16,7 +16,7 @@ func (s *Scored) Create(key string, ele string, sco float64) error {
 	return nil
 }
 
-func (s *Scored) Delete(key string, ele string) error {
+func (s *Sorted) Delete(key string, ele string) error {
 	if s.DeleteFake != nil {
 		return s.DeleteFake()
 	}
@@ -24,7 +24,7 @@ func (s *Scored) Delete(key string, ele string) error {
 	return nil
 }
 
-func (s *Scored) Exists(key string, sco float64) (bool, error) {
+func (s *Sorted) Exists(key string, sco float64) (bool, error) {
 	if s.ExistsFake != nil {
 		return s.ExistsFake()
 	}
@@ -32,7 +32,7 @@ func (s *Scored) Exists(key string, sco float64) (bool, error) {
 	return false, nil
 }
 
-func (s *Scored) Search(key string, lef int, rig int) ([]string, error) {
+func (s *Sorted) Search(key string, lef int, rig int) ([]string, error) {
 	if s.SearchFake != nil {
 		return s.SearchFake()
 	}
@@ -40,7 +40,7 @@ func (s *Scored) Search(key string, lef int, rig int) ([]string, error) {
 	return nil, nil
 }
 
-func (s *Scored) Update(key string, new string, sco float64) (bool, error) {
+func (s *Sorted) Update(key string, new string, sco float64) (bool, error) {
 	if s.UpdateFake != nil {
 		return s.UpdateFake()
 	}
