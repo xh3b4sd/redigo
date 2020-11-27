@@ -172,7 +172,7 @@ func (s *Scored) Update(key string, new string, sco float64) (bool, error) {
 				return 1
 			end
 
-			if (old == ARGV[1]) then
+			if (old ~= ARGV[1]) then
 				return 2
 			end
 
