@@ -8,8 +8,11 @@ import (
 type Scored struct {
 	pool *redis.Pool
 
+	// createScript is internally used to keep track of a script caching
+	// mechanism when creating elements in sorted sets.
+	createScript *redis.Script
 	// updateScript is internally used to keep track of a script caching
-	// mechanism when updating elements of sorted sets.
+	// mechanism when updating elements in sorted sets.
 	updateScript *redis.Script
 
 	prefix string
@@ -19,12 +22,40 @@ func (s *Scored) Create(key string, ele string, sco float64) error {
 	con := s.pool.Get()
 	defer con.Close()
 
-	_, err := redis.Int(con.Do("ZADD", withPrefix(s.prefix, key), sco, ele))
+	if s.createScript == nil {
+		scr := `
+			local old = ""
+			local res = redis.call("ZRANGEBYSCORE", KEYS[1], ARGV[2], ARGV[2])
+			for k, v in pairs(res) do
+				old = v
+				break
+			end
+
+			if (old ~= "") then
+				return 0
+			end
+
+			redis.call("ZADD", KEYS[1], ARGV[2], ARGV[1])
+
+			return 1
+		`
+
+		s.createScript = redis.NewScript(1, scr)
+	}
+
+	res, err := redis.Int(s.createScript.Do(con, withPrefix(s.prefix, key), ele, sco))
 	if err != nil {
 		return tracer.Mask(err)
 	}
 
-	return nil
+	switch res {
+	case 0:
+		return tracer.Maskf(alreadyExistsError, "score must be unique")
+	case 1:
+		return nil
+	}
+
+	return tracer.Mask(executionFailedError)
 }
 
 func (s *Scored) Delete(key string, ele string) error {
