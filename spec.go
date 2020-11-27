@@ -10,8 +10,9 @@ type Interface interface {
 type Scored interface {
 	Create(key string, ele string, sco float64) error
 	Delete(key string, ele string) error
-	// Exists verifies if there does any value associated with key exists.
-	Exists(key string) (bool, error)
+	// Exists verifies if an element with the given score exists in a sorted set
+	// associated with the given key.
+	Exists(key string, sco float64) (bool, error)
 	// Search returns the list of scored elements stored under key. Note that
 	// lef must be greater than zero while not being greater than rig. Further
 	// rig may be -1 in order to list all elements. The returned result does not
@@ -24,7 +25,9 @@ type Scored interface {
 type Simple interface {
 	Create(key, ele string) error
 	Delete(key string) error
-	// Exists verifies if there does any value associated with key exists.
+	// Exists verifies if the given key does even exist. If the key exists and
+	// true is returned, it means that there is a value of any datatype
+	// associated with said key.
 	Exists(key string) (bool, error)
 	Search(key string) (string, error)
 }

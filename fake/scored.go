@@ -24,7 +24,7 @@ func (s *Scored) Delete(key string, ele string) error {
 	return nil
 }
 
-func (s *Scored) Exists(key string) (bool, error) {
+func (s *Scored) Exists(key string, sco float64) (bool, error) {
 	if s.ExistsFake != nil {
 		return s.ExistsFake()
 	}

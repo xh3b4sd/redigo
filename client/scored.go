@@ -70,16 +70,19 @@ func (s *Scored) Delete(key string, ele string) error {
 	return nil
 }
 
-func (s *Scored) Exists(key string) (bool, error) {
+func (s *Scored) Exists(key string, sco float64) (bool, error) {
 	con := s.pool.Get()
 	defer con.Close()
 
-	result, err := redis.Bool(con.Do("EXISTS", withPrefix(s.prefix, key)))
+	res, err := redis.Strings(con.Do("ZRANGEBYSCORE", withPrefix(s.prefix, key), sco, sco))
 	if err != nil {
 		return false, tracer.Mask(err)
 	}
+	if len(res) == 0 {
+		return false, nil
+	}
 
-	return result, nil
+	return true, nil
 }
 
 func (s *Scored) Search(key string, lef int, rig int) ([]string, error) {
