@@ -5,6 +5,7 @@ on: "push"
 jobs:
   go-redis:
     runs-on: "ubuntu-latest"
+    container: "golang:1.15-alpine"
 
     services:
       redis:
@@ -26,7 +27,7 @@ jobs:
 
       - name: "Check Go Tests"
         env:
-          REDIS_HOST: "127.0.0.1"
+          REDIS_HOST: "redis"
           REDIS_PORT: "6379"
         run: |
           go test ./... --tags redis
