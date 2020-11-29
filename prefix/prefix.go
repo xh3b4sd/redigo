@@ -1,6 +1,6 @@
-package sorted
+package prefix
 
-func withPrefix(prefix string, keys ...string) string {
+func WithKeys(prefix string, keys ...string) string {
 	newKey := prefix
 
 	for _, k := range keys {

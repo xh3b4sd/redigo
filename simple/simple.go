@@ -1,4 +1,4 @@
-package sorted
+package simple
 
 import (
 	"github.com/gomodule/redigo/redis"
@@ -12,15 +12,14 @@ type Config struct {
 	Prefix string
 }
 
-type Sorted struct {
+type Simple struct {
 	create *Create
 	delete *Delete
 	exists *Exists
 	search *Search
-	update *Update
 }
 
-func New(config Config) (*Sorted, error) {
+func New(config Config) (*Simple, error) {
 	var cre *Create
 	{
 		cre = &Create{
@@ -57,42 +56,28 @@ func New(config Config) (*Sorted, error) {
 		}
 	}
 
-	var upd *Update
-	{
-		upd = &Update{
-			pool: config.Pool,
-
-			prefix: config.Prefix,
-		}
-	}
-
-	s := &Sorted{
+	s := &Simple{
 		create: cre,
 		delete: del,
 		exists: exi,
 		search: sea,
-		update: upd,
 	}
 
 	return s, nil
 }
 
-func (s *Sorted) Create() redigo.SortedCreate {
+func (s *Simple) Create() redigo.SimpleCreate {
 	return s.create
 }
 
-func (s *Sorted) Delete() redigo.SortedDelete {
+func (s *Simple) Delete() redigo.SimpleDelete {
 	return s.delete
 }
 
-func (s *Sorted) Exists() redigo.SortedExists {
+func (s *Simple) Exists() redigo.SimpleExists {
 	return s.exists
 }
 
-func (s *Sorted) Search() redigo.SortedSearch {
+func (s *Simple) Search() redigo.SimpleSearch {
 	return s.search
-}
-
-func (s *Sorted) Update() redigo.SortedUpdate {
-	return s.update
 }

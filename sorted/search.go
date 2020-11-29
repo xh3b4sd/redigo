@@ -3,6 +3,8 @@ package sorted
 import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/xh3b4sd/tracer"
+
+	"github.com/xh3b4sd/redigo/prefix"
 )
 
 type Search struct {
@@ -41,7 +43,19 @@ func (s *Search) Index(key string, lef int, rig int) ([]string, error) {
 		rig--
 	}
 
-	result, err := redis.Strings(con.Do("ZREVRANGE", withPrefix(s.prefix, key), lef, rig))
+	result, err := redis.Strings(con.Do("ZREVRANGE", prefix.WithKeys(s.prefix, key), lef, rig))
+	if err != nil {
+		return nil, tracer.Mask(err)
+	}
+
+	return result, nil
+}
+
+func (s *Search) Score(key string, lef float64, rig float64) ([]string, error) {
+	con := s.pool.Get()
+	defer con.Close()
+
+	result, err := redis.Strings(con.Do("ZREVRANGEBYSCORE", prefix.WithKeys(s.prefix, key), lef, rig))
 	if err != nil {
 		return nil, tracer.Mask(err)
 	}

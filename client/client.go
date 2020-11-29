@@ -7,6 +7,9 @@ import (
 	"github.com/xh3b4sd/tracer"
 
 	"github.com/xh3b4sd/redigo"
+	"github.com/xh3b4sd/redigo/pool"
+	"github.com/xh3b4sd/redigo/simple"
+	"github.com/xh3b4sd/redigo/sorted"
 )
 
 type Config struct {
@@ -17,8 +20,8 @@ type Config struct {
 
 type Client struct {
 	pool         *redis.Pool
+	scored       redigo.Sorted
 	shutdownOnce sync.Once
-	scored       redigo.Scored
 	simple       redigo.Simple
 }
 
@@ -27,34 +30,43 @@ func New(config Config) (*Client, error) {
 		config.Address = "127.0.0.1:6379"
 	}
 	if config.Pool == nil {
-		config.Pool = NewPoolWithAddress(config.Address)
+		config.Pool = pool.NewPoolWithAddress(config.Address)
 	}
+
+	var err error
 
 	var newSimple redigo.Simple
 	{
-		newSimple = &Simple{
-			pool: config.Pool,
+		c := simple.Config{
+			Pool: config.Pool,
 
-			prefix: config.Prefix,
+			Prefix: config.Prefix,
+		}
+
+		newSimple, err = simple.New(c)
+		if err != nil {
+			return nil, tracer.Mask(err)
 		}
 	}
 
-	var newScored redigo.Scored
+	var newScored redigo.Sorted
 	{
-		newScored = &Scored{
-			pool: config.Pool,
+		c := sorted.Config{
+			Pool: config.Pool,
 
-			createScript: nil,
-			updateScript: nil,
+			Prefix: config.Prefix,
+		}
 
-			prefix: config.Prefix,
+		newScored, err = sorted.New(c)
+		if err != nil {
+			return nil, tracer.Mask(err)
 		}
 	}
 
 	c := &Client{
 		pool:         config.Pool,
-		shutdownOnce: sync.Once{},
 		scored:       newScored,
+		shutdownOnce: sync.Once{},
 		simple:       newSimple,
 	}
 
@@ -73,7 +85,7 @@ func (c *Client) Ping() error {
 	return nil
 }
 
-func (c *Client) Scored() redigo.Scored {
+func (c *Client) Sorted() redigo.Sorted {
 	return c.scored
 }
 

@@ -1,4 +1,4 @@
-package client
+package pool
 
 import (
 	"github.com/gomodule/redigo/redis"

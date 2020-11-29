@@ -8,13 +8,10 @@ type Interface interface {
 }
 
 type Simple interface {
-	Create(key, ele string) error
-	Delete(key string) error
-	// Exists verifies if the given key does even exist. If the key exists and
-	// true is returned, it means that there is a value of any datatype
-	// associated with said key.
-	Exists(key string) (bool, error)
-	Search(key string) (string, error)
+	Create() SimpleCreate
+	Delete() SimpleDelete
+	Exists() SimpleExists
+	Search() SimpleSearch
 }
 
 type Sorted interface {
@@ -25,21 +22,40 @@ type Sorted interface {
 	Update() SortedUpdate
 }
 
+type SimpleCreate interface {
+	Element(key, ele string) error
+}
+
+type SimpleDelete interface {
+	Element(key string) error
+}
+
+type SimpleExists interface {
+	// Element verifies if the given key does even exist. If the key exists and
+	// true is returned, it means that there is a value of any datatype
+	// associated with said key.
+	Element(key string) (bool, error)
+}
+
+type SimpleSearch interface {
+	Value(key string) (string, error)
+}
+
 type SortedCreate interface {
 	Element(key string, val string, sco float64, ind ...string) error
 }
 
 type SortedDelete interface {
-	Value(key string, val string) error
+	Element(key string, val string, ind ...string) error
 }
 
 type SortedExists interface {
-	// Value verifies if an element with the given value exists within the
-	// sorted set identified by key.
-	Value(key string, val string) (bool, error)
 	// Score verifies if an element with the given score exists within the
 	// sorted set identified by key.
 	Score(key string, sco float64) (bool, error)
+	// Value verifies if an element with the given value exists within the
+	// sorted set identified by key.
+	Value(key string, val string) (bool, error)
 }
 
 type SortedSearch interface {
@@ -56,5 +72,5 @@ type SortedUpdate interface {
 	// Update modifies the element identified by sco and sets its value to new.
 	// For the sorted set implementations scores are static and must never
 	// change since they get trated like unique IDs.
-	Value(key string, new string, sco float64) (bool, error)
+	Value(key string, new string, sco float64, ind ...string) (bool, error)
 }

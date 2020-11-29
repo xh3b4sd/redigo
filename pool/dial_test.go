@@ -1,11 +1,11 @@
-package client
+package pool
 
 import (
 	"net"
 	"testing"
 )
 
-func Test_Client_NewDial_Error_Addr(t *testing.T) {
+func Test_NewDial_Error_Addr(t *testing.T) {
 	c := DefaultDialConfig()
 	c.Address = "foo"
 
