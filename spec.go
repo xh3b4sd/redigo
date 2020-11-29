@@ -2,8 +2,8 @@ package redigo
 
 type Interface interface {
 	Check() error
-	Purge() error
 	Close() error
+	Purge() error
 	Sorted() Sorted
 	Simple() Simple
 }
