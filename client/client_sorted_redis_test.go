@@ -3,7 +3,6 @@
 package client
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/xh3b4sd/redigo"
@@ -28,12 +27,22 @@ func Test_Client_Sorted_Redis(t *testing.T) {
 	}
 
 	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatalf("element must not exist")
+		}
+	}
+
+	{
 		exi, err := cli.Sorted().Exists().Value("ssk", "foo")
 		if err != nil {
 			t.Fatal(err)
 		}
 		if exi {
-			t.Fatalf("value must not exist")
+			t.Fatalf("element must not exist")
 		}
 	}
 
@@ -41,6 +50,16 @@ func Test_Client_Sorted_Redis(t *testing.T) {
 		err := cli.Sorted().Create().Element("ssk", "foo", 0.8)
 		if err != nil {
 			t.Fatal(err)
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatalf("element must exist")
 		}
 	}
 
@@ -57,8 +76,17 @@ func Test_Client_Sorted_Redis(t *testing.T) {
 	{
 		err := cli.Sorted().Delete().Element("ssk", "foo")
 		if err != nil {
-			fmt.Printf("%#v\n", err)
 			t.Fatal(err)
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatalf("element must not exist")
 		}
 	}
 

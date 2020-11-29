@@ -1,6 +1,6 @@
 name: "go-redis"
 
-on: push
+on: "push"
 
 jobs:
   go-redis:
