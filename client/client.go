@@ -1,12 +1,16 @@
 package client
 
 import (
-	"sync"
+	"net"
+	"os"
 
 	"github.com/gomodule/redigo/redis"
 	"github.com/xh3b4sd/tracer"
 
 	"github.com/xh3b4sd/redigo"
+	"github.com/xh3b4sd/redigo/pool"
+	"github.com/xh3b4sd/redigo/simple"
+	"github.com/xh3b4sd/redigo/sorted"
 )
 
 type Config struct {
@@ -16,52 +20,59 @@ type Config struct {
 }
 
 type Client struct {
-	pool         *redis.Pool
-	shutdownOnce sync.Once
-	scored       redigo.Scored
-	simple       redigo.Simple
+	pool   *redis.Pool
+	scored redigo.Sorted
+	simple redigo.Simple
 }
 
 func New(config Config) (*Client, error) {
 	if config.Address == "" {
-		config.Address = "127.0.0.1:6379"
+		config.Address = defaultAddress()
 	}
 	if config.Pool == nil {
-		config.Pool = NewPoolWithAddress(config.Address)
+		config.Pool = pool.NewPoolWithAddress(config.Address)
 	}
+
+	var err error
 
 	var newSimple redigo.Simple
 	{
-		newSimple = &Simple{
-			pool: config.Pool,
+		c := simple.Config{
+			Pool: config.Pool,
 
-			prefix: config.Prefix,
+			Prefix: config.Prefix,
+		}
+
+		newSimple, err = simple.New(c)
+		if err != nil {
+			return nil, tracer.Mask(err)
 		}
 	}
 
-	var newScored redigo.Scored
+	var newScored redigo.Sorted
 	{
-		newScored = &Scored{
-			pool: config.Pool,
+		c := sorted.Config{
+			Pool: config.Pool,
 
-			createScript: nil,
-			updateScript: nil,
+			Prefix: config.Prefix,
+		}
 
-			prefix: config.Prefix,
+		newScored, err = sorted.New(c)
+		if err != nil {
+			return nil, tracer.Mask(err)
 		}
 	}
 
 	c := &Client{
-		pool:         config.Pool,
-		shutdownOnce: sync.Once{},
-		scored:       newScored,
-		simple:       newSimple,
+		pool:   config.Pool,
+		scored: newScored,
+		simple: newSimple,
 	}
 
 	return c, nil
 }
 
-func (c *Client) Ping() error {
+func (c *Client) Check() error {
 	conn := c.pool.Get()
 	defer conn.Close()
 
@@ -73,30 +84,53 @@ func (c *Client) Ping() error {
 	return nil
 }
 
-func (c *Client) Scored() redigo.Scored {
-	return c.scored
+func (c *Client) Close() error {
+	err := c.pool.Close()
+	if err != nil {
+		return tracer.Mask(err)
+	}
+
+	return nil
 }
 
-func (c *Client) Shutdown() {
-	c.shutdownOnce.Do(func() {
-		c.pool.Close()
-	})
+func (c *Client) Purge() error {
+	conn := c.pool.Get()
+	defer conn.Close()
+
+	_, err := conn.Do("FLUSHALL")
+	if err != nil {
+		return tracer.Mask(err)
+	}
+
+	return nil
+}
+
+func (c *Client) Sorted() redigo.Sorted {
+	return c.scored
 }
 
 func (c *Client) Simple() redigo.Simple {
 	return c.simple
 }
 
-func withPrefix(prefix string, keys ...string) string {
-	newKey := prefix
+func defaultAddress() string {
+	var hos string
+	{
+		hos = os.Getenv("REDIS_HOST")
 
-	for _, k := range keys {
-		newKey += ":" + k
+		if hos == "" {
+			hos = "127.0.0.1"
+		}
 	}
 
-	if prefix == "" {
-		newKey = newKey[1:]
+	var por string
+	{
+		por = os.Getenv("REDIS_PORT")
+
+		if por == "" {
+			por = "6379"
+		}
 	}
 
-	return newKey
+	return net.JoinHostPort(hos, por)
 }

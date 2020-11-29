@@ -1,40 +1,42 @@
 package fake
 
+import "github.com/xh3b4sd/redigo"
+
 type Simple struct {
-	CreateFake func() error
-	DeleteFake func() error
-	ExistsFake func() (bool, error)
-	SearchFake func() (string, error)
+	FakeCreate func() redigo.SimpleCreate
+	FakeDelete func() redigo.SimpleDelete
+	FakeExists func() redigo.SimpleExists
+	FakeSearch func() redigo.SimpleSearch
 }
 
-func (s *Simple) Create(key, element string) error {
-	if s.CreateFake != nil {
-		return s.CreateFake()
+func (s *Simple) Create() redigo.SimpleCreate {
+	if s.FakeCreate != nil {
+		return s.FakeCreate()
 	}
 
-	return nil
+	return &SimpleCreate{}
 }
 
-func (s *Simple) Delete(key string) error {
-	if s.DeleteFake != nil {
-		return s.DeleteFake()
+func (s *Simple) Delete() redigo.SimpleDelete {
+	if s.FakeDelete != nil {
+		return s.FakeDelete()
 	}
 
-	return nil
+	return &SimpleDelete{}
 }
 
-func (s *Simple) Exists(key string) (bool, error) {
-	if s.ExistsFake != nil {
-		return s.ExistsFake()
+func (s *Simple) Exists() redigo.SimpleExists {
+	if s.FakeExists != nil {
+		return s.FakeExists()
 	}
 
-	return false, nil
+	return &SimpleExists{}
 }
 
-func (s *Simple) Search(key string) (string, error) {
-	if s.SearchFake != nil {
-		return s.SearchFake()
+func (s *Simple) Search() redigo.SimpleSearch {
+	if s.FakeSearch != nil {
+		return s.FakeSearch()
 	}
 
-	return "", nil
+	return &SimpleSearch{}
 }

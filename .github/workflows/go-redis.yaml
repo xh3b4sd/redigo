@@ -1,0 +1,29 @@
+name: "go-redis"
+
+on: "push"
+
+jobs:
+  go-redis:
+    runs-on: "ubuntu-latest"
+    container: "golang:1.15-alpine"
+
+    services:
+      redis:
+        image: "redis"
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: "Checkout Git Project"
+        uses: "actions/checkout@v2"
+
+      - name: "Check Go Tests"
+        env:
+          CGO_ENABLED: "0"
+          REDIS_HOST: "redis"
+          REDIS_PORT: "6379"
+        run: |
+          go test ./... --tags redis
