@@ -3,6 +3,8 @@
 package client
 
 import (
+	"net"
+	"os"
 	"testing"
 
 	"github.com/xh3b4sd/redigo"
@@ -14,7 +16,9 @@ func Test_Client_Simple_Redis(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := Config{}
+		c := Config{
+			Address: net.JoinHostPort(os.Getenv("REDIS_HOST", os.Getenv("REDIS_PORT"))),
+		}
 
 		cli, err = New(c)
 		if err != nil {
