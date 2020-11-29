@@ -1,6 +1,9 @@
 package client
 
 import (
+	"net"
+	"os"
+
 	"github.com/gomodule/redigo/redis"
 	"github.com/xh3b4sd/tracer"
 
@@ -24,7 +27,7 @@ type Client struct {
 
 func New(config Config) (*Client, error) {
 	if config.Address == "" {
-		config.Address = "127.0.0.1:6379"
+		config.Address = defaultAddress()
 	}
 	if config.Pool == nil {
 		config.Pool = pool.NewPoolWithAddress(config.Address)
@@ -108,4 +111,26 @@ func (c *Client) Sorted() redigo.Sorted {
 
 func (c *Client) Simple() redigo.Simple {
 	return c.simple
+}
+
+func defaultAddress() string {
+	var hos string
+	{
+		hos = os.Getenv("REDIS_HOST")
+
+		if hos == "" {
+			hos = "127.0.0.1"
+		}
+	}
+
+	var por string
+	{
+		por = os.Getenv("REDIS_PORT")
+
+		if por == "" {
+			por = "6379"
+		}
+	}
+
+	return net.JoinHostPort(hos, por)
 }

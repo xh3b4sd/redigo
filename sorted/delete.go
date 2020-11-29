@@ -11,9 +11,9 @@ import (
 
 const deleteElementScript = `
 	if (ARGV[2] ~= nil) then
-		# Only if we ensured that all indizes are not yet recorded we
-		# can actually add them to our record. Tracking the indices
-		# here aligns with the data persisted in the sorted set below.
+		-- Only if we ensured that all indizes are not yet recorded we can
+		-- actually add them to our record. Tracking the indices here aligns
+		-- with the data persisted in the sorted set below.
 		local j = 2
 		while ARGV[j] do
 			redis.call("ZREM", KEYS[2], ARGV[j])
@@ -23,6 +23,8 @@ const deleteElementScript = `
 	end
 
 	redis.call("ZREM", KEYS[1], ARGV[1])
+
+	return 0
 `
 
 type Delete struct {

@@ -10,22 +10,22 @@ import (
 )
 
 const updateValueScript = `
-	# Verify if the sorted set does even exist. We must not proceed if
-	# we would create a new sorted set and a new element within it.
+	-- Verify if the sorted set does even exist. We must not proceed if we would
+	-- create a new sorted set and a new element within it.
 	local exi = redis.call("EXISTS", KEYS[1])
 	if (exi == 0) then
 		return 0
 	end
 
 	local upd = function(key, new, sco)
-		# We actually verified the existence of the element already. Now we
-		# only fetch the old value in order to perform the update.
+		-- We actually verified the existence of the element already. Now we
+		-- only fetch the old value in order to perform the update.
 		local res = redis.call("ZRANGEBYSCORE", key, sco, sco)
 		local old = res[0]
 
-		# If the value did not change it might mean the indices did not change.
-		# We are ok with that internally. It is only important that the user
-		# facing element is properly reported to be updated or not.
+		-- If the value did not change it might mean the indices did not change.
+		-- We are ok with that internally. It is only important that the user
+		-- facing element is properly reported to be updated or not.
 		if (old == new) then
 			return 2
 		end
@@ -37,17 +37,17 @@ const updateValueScript = `
 	end
 
 	local ver = function(key, val, sco)
-		# Verify if the score does already exist. If there is no element we cannot
-		# update it.
+		-- Verify if the score does already exist. If there is no element we
+		-- cannot update it.
 		local res = redis.call("ZRANGEBYSCORE", key, sco, sco)
 		local old = res[0]
 		if (old == nil) then
 			return 1
 		end
 
-		# Verify if the existing value is already what we want to update
-		# to. If the desired state is already reconciled we do not need to
-		# proceed further.
+		-- Verify if the existing value is already what we want to update to. If
+		-- the desired state is already reconciled we do not need to proceed
+		-- further.
 		if (old == new) then
 			return 2
 		end
@@ -55,8 +55,8 @@ const updateValueScript = `
 		return 3
 	end
 
-	# Verify all scores have associated values. We need to do this upfront for
-	# the given element and the internally managed indices.
+	-- Verify all scores have associated values. We need to do this upfront for
+	-- the given element and the internally managed indices.
 	local i = 3
 	while ARGV[i] do
 		local res = ver(KEYS[2], ARGV[i], ARGV[2])
@@ -71,8 +71,8 @@ const updateValueScript = `
 		return res
 	end
 
-	# Only if all verifications are completed successfully and there is no
-	# reason to fail anymore we can continue to actually process the updates.
+	-- Only if all verifications are completed successfully and there is no
+	-- reason to fail anymore we can continue to actually process the updates.
 	local j = 3
 	while ARGV[j] do
 		upd(KEYS[2], ARGV[j], ARGV[2])

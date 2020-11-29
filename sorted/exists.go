@@ -32,7 +32,7 @@ func (e *Exists) Value(key string, val string) (bool, error) {
 	con := e.pool.Get()
 	defer con.Close()
 
-	_, err := redis.Strings(con.Do("ZSCORE", prefix.WithKeys(e.prefix, key)))
+	_, err := redis.Bytes(con.Do("ZSCORE", prefix.WithKeys(e.prefix, key), val))
 	if IsNotFound(err) {
 		return false, nil
 	} else if err != nil {

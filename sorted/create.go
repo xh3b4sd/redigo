@@ -10,8 +10,8 @@ import (
 )
 
 const createElementScript = `
-	# Verify if the score does already exist. With this implementation
-	# the score is treated as ID and must therefore be unique.
+	-- Verify if the score does already exist. With this implementation the
+	-- score is treated as ID and must therefore be unique.
 	local val = ""
 	local res = redis.call("ZRANGEBYSCORE", KEYS[1], ARGV[2], ARGV[2])
 	for k, v in pairs(res) do
@@ -23,10 +23,10 @@ const createElementScript = `
 	end
 
 	if (ARGV[3] ~= nil) then
-		# We got at least one index to keep track of. The first thing
-		# we need to ensure is to verify any index we received does not
-		# yet exist. As soon as we find a given index is already taken
-		# we stop processing the request.
+		-- We got at least one index to keep track of. The first thing we need
+		-- to ensure is to verify any index we received does not yet exist. As
+		-- soon as we find a given index is already taken we stop processing the
+		-- request.
 		local i = 3
 		while ARGV[i] do
 			local res = redis.call("ZSCORE", KEYS[2], ARGV[i])
@@ -37,9 +37,9 @@ const createElementScript = `
 			i=i+1
 		end
 
-		# Only if we ensured that all indizes are not yet recorded we
-		# can actually add them to our record. Tracking the indices
-		# here aligns with the data persisted in the sorted set below.
+		-- Only if we ensured that all indizes are not yet recorded we can
+		-- actually add them to our record. Tracking the indices here aligns
+		-- with the data persisted in the sorted set below.
 		local j = 3
 		while ARGV[j] do
 			redis.call("ZADD", KEYS[2], ARGV[2], ARGV[j])
