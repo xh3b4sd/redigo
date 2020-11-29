@@ -1,8 +1,9 @@
 package redigo
 
 type Interface interface {
-	Ping() error
-	Shutdown()
+	Check() error
+	Purge() error
+	Close() error
 	Sorted() Sorted
 	Simple() Simple
 }

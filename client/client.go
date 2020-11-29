@@ -1,8 +1,6 @@
 package client
 
 import (
-	"sync"
-
 	"github.com/gomodule/redigo/redis"
 	"github.com/xh3b4sd/tracer"
 
@@ -19,10 +17,9 @@ type Config struct {
 }
 
 type Client struct {
-	pool         *redis.Pool
-	scored       redigo.Sorted
-	shutdownOnce sync.Once
-	simple       redigo.Simple
+	pool   *redis.Pool
+	scored redigo.Sorted
+	simple redigo.Simple
 }
 
 func New(config Config) (*Client, error) {
@@ -64,16 +61,15 @@ func New(config Config) (*Client, error) {
 	}
 
 	c := &Client{
-		pool:         config.Pool,
-		scored:       newScored,
-		shutdownOnce: sync.Once{},
-		simple:       newSimple,
+		pool:   config.Pool,
+		scored: newScored,
+		simple: newSimple,
 	}
 
 	return c, nil
 }
 
-func (c *Client) Ping() error {
+func (c *Client) Check() error {
 	conn := c.pool.Get()
 	defer conn.Close()
 
@@ -85,14 +81,29 @@ func (c *Client) Ping() error {
 	return nil
 }
 
-func (c *Client) Sorted() redigo.Sorted {
-	return c.scored
+func (c *Client) Close() error {
+	err := c.pool.Close()
+	if err != nil {
+		return tracer.Mask(err)
+	}
+
+	return nil
 }
 
-func (c *Client) Shutdown() {
-	c.shutdownOnce.Do(func() {
-		c.pool.Close()
-	})
+func (c *Client) Purge() error {
+	conn := c.pool.Get()
+	defer conn.Close()
+
+	_, err := conn.Do("FLUSHALL")
+	if err != nil {
+		return tracer.Mask(err)
+	}
+
+	return nil
+}
+
+func (c *Client) Sorted() redigo.Sorted {
+	return c.scored
 }
 
 func (c *Client) Simple() redigo.Simple {

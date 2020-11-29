@@ -13,7 +13,15 @@ func New() *Client {
 	return &Client{}
 }
 
-func (c *Client) Ping() error {
+func (c *Client) Check() error {
+	return nil
+}
+
+func (c *Client) Close() error {
+	return nil
+}
+
+func (c *Client) Purge() error {
 	return nil
 }
 
@@ -23,9 +31,6 @@ func (c *Client) Sorted() redigo.Sorted {
 	}
 
 	return &Sorted{}
-}
-
-func (c *Client) Shutdown() {
 }
 
 func (c *Client) Simple() redigo.Simple {
