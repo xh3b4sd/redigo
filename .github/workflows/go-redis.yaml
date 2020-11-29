@@ -26,7 +26,7 @@ jobs:
 
       - name: "Check Go Tests"
         env:
-          REDIS_HOST: "redis"
+          REDIS_HOST: "127.0.0.1"
           REDIS_PORT: "6379"
         run: |
           go test ./... --tags redis
