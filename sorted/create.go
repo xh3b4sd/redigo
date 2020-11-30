@@ -2,6 +2,7 @@ package sorted
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gomodule/redigo/redis"
 	"github.com/xh3b4sd/tracer"
@@ -18,6 +19,7 @@ const createElementScript = `
 		val = v
 		break
 	end
+	redis.log(redis.LOG_WARNING, type(val), ARGV[2])
 	if (val ~= "") then
 		return 0
 	end
@@ -30,7 +32,7 @@ const createElementScript = `
 		local i = 3
 		while ARGV[i] do
 			local res = redis.call("ZSCORE", KEYS[2], ARGV[i])
-			if (res ~= nil) then
+			if (res ~= false) then
 				return 1
 			end
 
@@ -64,6 +66,28 @@ type Create struct {
 func (c *Create) Element(key string, val string, sco float64, ind ...string) error {
 	con := c.pool.Get()
 	defer con.Close()
+
+	if len(ind) != 0 {
+		m := map[string]int{}
+		for _, s := range ind {
+			m[s] = m[s] + 1
+		}
+
+		for _, v := range m {
+			if v > 1 {
+				return tracer.Maskf(executionFailedError, "index must be unique")
+			}
+		}
+
+		for _, s := range ind {
+			if s == "" {
+				return tracer.Maskf(executionFailedError, "index must not be empty")
+			}
+			if strings.Count(s, " ") != 0 {
+				return tracer.Maskf(executionFailedError, "index must not contain whitespace")
+			}
+		}
+	}
 
 	if c.createElementScript == nil {
 		c.createElementScript = redis.NewScript(2, createElementScript)

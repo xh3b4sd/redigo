@@ -1,7 +1,6 @@
 package sorted
 
 import (
-	"errors"
 	"strconv"
 	"testing"
 
@@ -57,8 +56,8 @@ func Test_Search_Index_Input_Error(t *testing.T) {
 			}
 
 			_, err := sea.Index("foo", tc.lef, tc.rig)
-			if !errors.Is(err, executionFailedError) {
-				t.Fatal("expected", nil, "got", err)
+			if !IsExecutionFailedError(err) {
+				t.Fatal("expected", executionFailedError, "got", err)
 			}
 		})
 	}
