@@ -415,6 +415,16 @@ func Test_Client_Sorted_Redis_Update(t *testing.T) {
 	}
 
 	{
+		res, err := cli.Sorted().Update().Value("ssk", "bar", 0.8, "c", "d")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if res {
+			t.Fatal("element must not be updated")
+		}
+	}
+
+	{
 		res, err := cli.Sorted().Search().Score("ssk", 0.8, 0.8)
 		if err != nil {
 			t.Fatal(err)
