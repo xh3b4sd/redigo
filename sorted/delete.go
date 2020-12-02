@@ -39,10 +39,6 @@ func (d *Delete) Element(key string, val string, ind ...string) error {
 	con := d.pool.Get()
 	defer con.Close()
 
-	if d.elementScript == nil {
-		d.elementScript = redis.NewScript(2, deleteElementScript)
-	}
-
 	var arg []interface{}
 	{
 		arg = append(arg, prefix.WithKeys(d.prefix, key))
