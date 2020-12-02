@@ -19,5 +19,6 @@ go test ./... --tags redis
 ### Lua Debugging
 
 ```
-redis.log(redis.LOG_WARNING, type(v))
+redis.log(redis.LOG_NOTICE, type(v))
+redis.log(redis.LOG_NOTICE, cjson.encode(v))
 ```

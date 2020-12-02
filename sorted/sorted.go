@@ -26,6 +26,8 @@ func New(config Config) (*Sorted, error) {
 		cre = &Create{
 			pool: config.Pool,
 
+			createElementScript: redis.NewScript(2, createElementScript),
+
 			prefix: config.Prefix,
 		}
 	}

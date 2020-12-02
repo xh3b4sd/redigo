@@ -17,7 +17,7 @@ const updateValueScript = `
 		return 0
 	end
 
-	local upd = function(key, new, sco)
+	local function upd(key, new, sco)
 		-- We actually verified the existence of the element already. Now we
 		-- only fetch the old value in order to perform the update.
 		local res = redis.call("ZRANGEBYSCORE", key, sco, sco)
@@ -36,7 +36,7 @@ const updateValueScript = `
 		return 3
 	end
 
-	local ver = function(key, val, sco)
+	local function ver(key, val, sco)
 		-- Verify if the score does already exist. If there is no element we
 		-- cannot update it.
 		local res = redis.call("ZRANGEBYSCORE", key, sco, sco)

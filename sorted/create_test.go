@@ -127,6 +127,8 @@ func mustNewCreateWithConn(con redis.Conn) *Create {
 		c = &Create{
 			pool: p,
 
+			createElementScript: redis.NewScript(2, createElementScript),
+
 			prefix: "prefix",
 		}
 	}

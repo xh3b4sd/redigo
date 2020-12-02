@@ -102,6 +102,9 @@ func Test_Client_Sorted_Redis_Exists(t *testing.T) {
 	}
 }
 
+// Test_Client_Sorted_Redis_Index ensures that indices are guaranteed to be
+// unique. Below the indices c and d cannot be duplicated. Indices may be used
+// to ensure unique usernames.
 func Test_Client_Sorted_Redis_Index(t *testing.T) {
 	var err error
 
@@ -128,21 +131,64 @@ func Test_Client_Sorted_Redis_Index(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Element("ssk", "foo", 0.7, "c", "d")
+		err := cli.Sorted().Create().Element("ssk", "bar", 0.7, "c", "d")
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
 
 	{
-		err := cli.Sorted().Create().Element("ssk", "foo", 0.6, "c", "d")
+		err := cli.Sorted().Create().Element("ssk", "baz", 0.6, "c", "d")
+		if !sorted.IsAlreadyExistsError(err) {
+			t.Fatal("expected", alreadyExistsError, "got", err)
+		}
+	}
+}
+
+// Test_Client_Sorted_Redis_Score ensures that scores are guaranteed to be
+// unique. Below the score 0.8 cannot be duplicated. Scores may be used to
+// represent IDs as unix timestamps.
+func Test_Client_Sorted_Redis_Score(t *testing.T) {
+	var err error
+
+	var cli redigo.Interface
+	{
+		c := Config{}
+
+		cli, err = New(c)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = cli.Purge()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Element("ssk", "foo", 0.8, "a", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Element("ssk", "bar", 0.7, "c", "d")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Element("ssk", "zap", 0.8, "e", "f")
 		if !sorted.IsAlreadyExistsError(err) {
 			t.Fatal("expected", alreadyExistsError, "got", err)
 		}
 	}
 
 	{
-		err := cli.Sorted().Create().Element("ssk", "bar", 0.8, "e", "f")
+		err := cli.Sorted().Create().Element("ssk", "foo", 0.8, "g", "h")
 		if !sorted.IsAlreadyExistsError(err) {
 			t.Fatal("expected", alreadyExistsError, "got", err)
 		}

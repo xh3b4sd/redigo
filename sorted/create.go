@@ -11,24 +11,18 @@ import (
 )
 
 const createElementScript = `
-	-- Verify if the score does already exist. With this implementation the
-	-- score is treated as ID and must therefore be unique.
-	local val = ""
+	-- Verify if the score does already exist. The first key here might be "ssk"
+	-- and the second argument might be "0.8". If we get any value in response
+	-- the score is already taken.
 	local res = redis.call("ZRANGEBYSCORE", KEYS[1], ARGV[2], ARGV[2])
-	for k, v in pairs(res) do
-		val = v
-		break
-	end
-	redis.log(redis.LOG_WARNING, type(val), ARGV[2])
-	if (val ~= "") then
+	if (res[1] ~= nil) then
 		return 0
 	end
 
 	if (ARGV[3] ~= nil) then
-		-- We got at least one index to keep track of. The first thing we need
-		-- to ensure is to verify any index we received does not yet exist. As
-		-- soon as we find a given index is already taken we stop processing the
-		-- request.
+		-- Verify if the index does already exist. The second key here might be
+		-- "ssk:ind" and the argument might be "name". If we get any value in
+		-- response the index is already taken.
 		local i = 3
 		while ARGV[i] do
 			local res = redis.call("ZSCORE", KEYS[2], ARGV[i])
@@ -39,9 +33,8 @@ const createElementScript = `
 			i=i+1
 		end
 
-		-- Only if we ensured that all indizes are not yet recorded we can
-		-- actually add them to our record. Tracking the indices here aligns
-		-- with the data persisted in the sorted set below.
+		-- Only if we ensured that the score is unique and that all indizes are
+		-- not yet recorded, we can then add them to our sorted sets.
 		local j = 3
 		while ARGV[j] do
 			redis.call("ZADD", KEYS[2], ARGV[2], ARGV[j])
@@ -87,10 +80,6 @@ func (c *Create) Element(key string, val string, sco float64, ind ...string) err
 				return tracer.Maskf(executionFailedError, "index must not contain whitespace")
 			}
 		}
-	}
-
-	if c.createElementScript == nil {
-		c.createElementScript = redis.NewScript(2, createElementScript)
 	}
 
 	var arg []interface{}
