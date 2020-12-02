@@ -37,6 +37,8 @@ func New(config Config) (*Sorted, error) {
 		del = &Delete{
 			pool: config.Pool,
 
+			elementScript: redis.NewScript(2, deleteElementScript),
+
 			prefix: config.Prefix,
 		}
 	}
@@ -63,6 +65,8 @@ func New(config Config) (*Sorted, error) {
 	{
 		upd = &Update{
 			pool: config.Pool,
+
+			updateValueScript: redis.NewScript(2, updateValueScript),
 
 			prefix: config.Prefix,
 		}

@@ -358,3 +358,89 @@ func Test_Client_Sorted_Redis_Search_Score(t *testing.T) {
 		}
 	}
 }
+
+func Test_Client_Sorted_Redis_Update(t *testing.T) {
+	var err error
+
+	var cli redigo.Interface
+	{
+		c := Config{}
+
+		cli, err = New(c)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = cli.Purge()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Element("ssk", "foo", 0.8, "a", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Score("ssk", 0.8, 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 1 {
+			t.Fatal("expected", 1, "got", len(res))
+		}
+		if res[0] != "foo" {
+			t.Fatal("expected", "foo", "got", res[0])
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Element("ssk", "baz", 0.6, "a", "b")
+		if !sorted.IsAlreadyExistsError(err) {
+			t.Fatal("expected", alreadyExistsError, "got", err)
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Update().Value("ssk", "bar", 0.8, "c", "d")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !res {
+			t.Fatal("element must be updated")
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Update().Value("ssk", "bar", 0.8, "c", "d")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if res {
+			t.Fatal("element must not be updated")
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Score("ssk", 0.8, 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 1 {
+			t.Fatal("expected", 1, "got", len(res))
+		}
+		if res[0] != "bar" {
+			t.Fatal("expected", "bar", "got", res[0])
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Element("ssk", "baz", 0.6, "a", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+}

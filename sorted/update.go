@@ -21,7 +21,7 @@ const updateValueScript = `
 		-- We actually verified the existence of the element already. Now we
 		-- only fetch the old value in order to perform the update.
 		local res = redis.call("ZRANGEBYSCORE", key, sco, sco)
-		local old = res[0]
+		local old = res[1]
 
 		-- If the value did not change it might mean the indices did not change.
 		-- We are ok with that internally. It is only important that the user
@@ -40,7 +40,7 @@ const updateValueScript = `
 		-- Verify if the score does already exist. If there is no element we
 		-- cannot update it.
 		local res = redis.call("ZRANGEBYSCORE", key, sco, sco)
-		local old = res[0]
+		local old = res[1]
 		if (old == nil) then
 			return 1
 		end
@@ -48,7 +48,7 @@ const updateValueScript = `
 		-- Verify if the existing value is already what we want to update to. If
 		-- the desired state is already reconciled we do not need to proceed
 		-- further.
-		if (old == new) then
+		if (old == val) then
 			return 2
 		end
 
@@ -123,10 +123,6 @@ type Update struct {
 func (u *Update) Value(key string, new string, sco float64, ind ...string) (bool, error) {
 	con := u.pool.Get()
 	defer con.Close()
-
-	if u.updateValueScript == nil {
-		u.updateValueScript = redis.NewScript(2, updateValueScript)
-	}
 
 	var arg []interface{}
 	{
