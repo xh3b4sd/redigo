@@ -27,7 +27,6 @@ type Config struct {
 
 type Client struct {
 	pool   *redis.Pool
-	kind   string
 	scored redigo.Sorted
 	simple redigo.Simple
 }

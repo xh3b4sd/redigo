@@ -61,7 +61,13 @@ func NewSentinelPoolWithAddress(address string) *redis.Pool {
 		Addrs:      []string{address},
 		MasterName: "mymaster",
 		Dial: func(addr string) (redis.Conn, error) {
-			c, err := redis.DialTimeout("tcp", addr, timeout, timeout, timeout)
+			c, err := redis.Dial(
+				"tcp",
+				addr,
+				redis.DialConnectTimeout(timeout),
+				redis.DialReadTimeout(timeout),
+				redis.DialWriteTimeout(timeout),
+			)
 			if err != nil {
 				return nil, err
 			}
