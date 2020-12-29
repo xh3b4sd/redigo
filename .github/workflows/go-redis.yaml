@@ -23,6 +23,13 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+      redis-sentinel:
+        image: "bitnami/redis-sentinel:6.0"
+        ports:
+            - "26379:26379"
+        env:
+          REDIS_SENTINEL_QUORUM: "1"
+
     steps:
       - name: "Checkout Git Project"
         uses: "actions/checkout@v2"
@@ -32,5 +39,7 @@ jobs:
           CGO_ENABLED: "0"
           REDIS_HOST: "redis"
           REDIS_PORT: "6379"
+          REDIS_SENTINEL_HOST: "redis-sentinel"
+          REDIS_SENTINEL_PORT: "26379"
         run: |
-          go test ./... --tags redis
+          go test ./... --tags simple,sentinel

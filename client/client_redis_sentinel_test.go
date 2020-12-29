@@ -1,4 +1,4 @@
-// +build simple
+// +build sentinel
 
 package client
 
@@ -9,13 +9,13 @@ import (
 	"github.com/xh3b4sd/redigo/simple"
 )
 
-func Test_Client_Simple_Redis(t *testing.T) {
+func Test_Client_Redis_Sentinel(t *testing.T) {
 	var err error
 
 	var cli redigo.Interface
 	{
 		c := Config{
-			Kind: KindSimple,
+			Kind: KindSentinel,
 		}
 
 		cli, err = New(c)

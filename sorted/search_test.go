@@ -120,10 +120,7 @@ func Test_Search_Index_Input_Valid(t *testing.T) {
 func mustNewSearchWithConn(con redis.Conn) *Search {
 	var p *redis.Pool
 	{
-		c := pool.DefaultPoolConfig()
-		c.Dial = func() (redis.Conn, error) { return con, nil }
-
-		p = pool.NewPool(c)
+		p = pool.NewSimplePoolWithConnection(con)
 	}
 
 	var s *Search

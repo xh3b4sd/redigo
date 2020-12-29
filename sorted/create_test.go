@@ -116,10 +116,7 @@ func Test_Create_Element_Input_Valid(t *testing.T) {
 func mustNewCreateWithConn(con redis.Conn) *Create {
 	var p *redis.Pool
 	{
-		c := pool.DefaultPoolConfig()
-		c.Dial = func() (redis.Conn, error) { return con, nil }
-
-		p = pool.NewPool(c)
+		p = pool.NewSimplePoolWithConnection(con)
 	}
 
 	var c *Create
