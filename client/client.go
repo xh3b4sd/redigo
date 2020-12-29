@@ -13,24 +13,42 @@ import (
 	"github.com/xh3b4sd/redigo/sorted"
 )
 
+const (
+	KindSimple   = "simple"
+	KindSentinel = "sentinel"
+)
+
 type Config struct {
 	Address string
+	Kind    string
 	Pool    *redis.Pool
 	Prefix  string
 }
 
 type Client struct {
 	pool   *redis.Pool
+	kind   string
 	scored redigo.Sorted
 	simple redigo.Simple
 }
 
 func New(config Config) (*Client, error) {
-	if config.Address == "" {
-		config.Address = defaultAddress()
+	if config.Kind != KindSimple && config.Kind != KindSentinel {
+		return nil, tracer.Maskf(invalidConfigError, "%T.Kind must be %s or %s", config, KindSimple, KindSentinel)
 	}
-	if config.Pool == nil {
-		config.Pool = pool.NewPoolWithAddress(config.Address)
+
+	if config.Address == "" && config.Kind == KindSimple {
+		config.Address = defaultSimpleAddress()
+	}
+	if config.Address == "" && config.Kind == KindSentinel {
+		config.Address = defaultSentinelAddress()
+	}
+
+	if config.Pool == nil && config.Kind == KindSimple {
+		config.Pool = pool.NewSimplePoolWithAddress(config.Address)
+	}
+	if config.Pool == nil && config.Kind == KindSentinel {
+		config.Pool = pool.NewSentinelPoolWithAddress(config.Address)
 	}
 
 	var err error
@@ -113,11 +131,10 @@ func (c *Client) Simple() redigo.Simple {
 	return c.simple
 }
 
-func defaultAddress() string {
+func defaultSimpleAddress() string {
 	var hos string
 	{
 		hos = os.Getenv("REDIS_HOST")
-
 		if hos == "" {
 			hos = "127.0.0.1"
 		}
@@ -126,9 +143,28 @@ func defaultAddress() string {
 	var por string
 	{
 		por = os.Getenv("REDIS_PORT")
-
 		if por == "" {
 			por = "6379"
+		}
+	}
+
+	return net.JoinHostPort(hos, por)
+}
+
+func defaultSentinelAddress() string {
+	var hos string
+	{
+		hos = os.Getenv("REDIS_SENTINEL_HOST")
+		if hos == "" {
+			hos = "127.0.0.1"
+		}
+	}
+
+	var por string
+	{
+		por = os.Getenv("REDIS_SENTINEL_PORT")
+		if por == "" {
+			por = "26379"
 		}
 	}
 

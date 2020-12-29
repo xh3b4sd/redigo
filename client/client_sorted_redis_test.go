@@ -1,4 +1,4 @@
-// +build redis
+// +build simple
 
 package client
 
@@ -14,7 +14,9 @@ func Test_Client_Sorted_Redis_Exists(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := Config{}
+		c := Config{
+			Kind: KindSimple,
+		}
 
 		cli, err = New(c)
 		if err != nil {
@@ -110,7 +112,9 @@ func Test_Client_Sorted_Redis_Create_Index(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := Config{}
+		c := Config{
+			Kind: KindSimple,
+		}
 
 		cli, err = New(c)
 		if err != nil {
@@ -167,7 +171,9 @@ func Test_Client_Sorted_Redis_Create_Score(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := Config{}
+		c := Config{
+			Kind: KindSimple,
+		}
 
 		cli, err = New(c)
 		if err != nil {
@@ -214,7 +220,9 @@ func Test_Client_Sorted_Redis_Search_Index(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := Config{}
+		c := Config{
+			Kind: KindSimple,
+		}
 
 		cli, err = New(c)
 		if err != nil {
@@ -289,7 +297,9 @@ func Test_Client_Sorted_Redis_Search_Score(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := Config{}
+		c := Config{
+			Kind: KindSimple,
+		}
 
 		cli, err = New(c)
 		if err != nil {
@@ -364,7 +374,9 @@ func Test_Client_Sorted_Redis_Update(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := Config{}
+		c := Config{
+			Kind: KindSimple,
+		}
 
 		cli, err = New(c)
 		if err != nil {

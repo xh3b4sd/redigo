@@ -11,7 +11,11 @@ docker run --rm -p 127.0.0.1:6379:6379 redis
 ```
 
 ```
-go test ./... --tags redis
+docker run --rm -e REDIS_MASTER_HOST=127.0.0.1 -p 127.0.0.1:26379:26379 bitnami/redis-sentinel
+```
+
+```
+go test ./... --tags simple,sentinel
 ```
 
 
