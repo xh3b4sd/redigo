@@ -42,4 +42,4 @@ jobs:
           REDIS_SENTINEL_HOST: "redis-sentinel"
           REDIS_SENTINEL_PORT: "26379"
         run: |
-          go test ./... --tags simple,sentinel
+          go test ./... --tags single,sentinel
