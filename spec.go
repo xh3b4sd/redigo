@@ -47,11 +47,16 @@ type SortedCreate interface {
 }
 
 type SortedDelete interface {
-	// Element deletes the value and score within the specified sorted set. Note
-	// that indices must be provided as with done during creating and updating
-	// the element. At this point, if indices are not provided with the
+	// Score deletes the element identified by score within the specified sorted
+	// set. Note that indices must be provided as with done during creating and
+	// updating the element. At this point, if indices are not provided with the
 	// deletion, garbage indices will be left behind.
-	Element(key string, val string, ind ...string) error
+	Score(key string, sco float64, ind ...string) error
+	// Value deletes the element identified by value within the specified sorted
+	// set. Note that indices must be provided as with done during creating and
+	// updating the element. At this point, if indices are not provided with the
+	// deletion, garbage indices will be left behind.
+	Value(key string, val string, ind ...string) error
 }
 
 type SortedExists interface {

@@ -77,7 +77,7 @@ func Test_Client_Sorted_Redis_Exists(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Delete().Element("ssk", "foo")
+		err := cli.Sorted().Delete().Value("ssk", "foo")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -149,7 +149,7 @@ func Test_Client_Sorted_Redis_Create_Index(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Delete().Element("ssk", "bar", "c", "d")
+		err := cli.Sorted().Delete().Value("ssk", "bar", "c", "d")
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -1,12 +1,21 @@
 package fake
 
 type SortedDelete struct {
-	FakeElement func() error
+	FakeScore func() error
+	FakeValue func() error
 }
 
-func (d *SortedDelete) Element(key string, val string, ind ...string) error {
-	if d.FakeElement != nil {
-		return d.FakeElement()
+func (d *SortedDelete) Score(key string, sco float64, ind ...string) error {
+	if d.FakeScore != nil {
+		return d.FakeScore()
+	}
+
+	return nil
+}
+
+func (d *SortedDelete) Value(key string, val string, ind ...string) error {
+	if d.FakeValue != nil {
+		return d.FakeValue()
 	}
 
 	return nil
