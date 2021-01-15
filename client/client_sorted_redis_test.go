@@ -9,6 +9,112 @@ import (
 	"github.com/xh3b4sd/redigo/sorted"
 )
 
+func Test_Client_Sorted_Redis_Delete_Score(t *testing.T) {
+	var err error
+
+	var cli redigo.Interface
+	{
+		c := Config{
+			Kind: KindSimple,
+		}
+
+		cli, err = New(c)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = cli.Purge()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Element("ssk", "foo", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	{
+		err := cli.Sorted().Delete().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Element("ssk", "foo", 0.8, "a", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	{
+		err := cli.Sorted().Delete().Score("ssk", 0.8, "a", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	// It should be possible to create the exact same element again including
+	// its indizes after it has been deleted before. This verifies that deleting
+	// elements including its indizes works as expected.
+	{
+		err := cli.Sorted().Create().Element("ssk", "foo", 0.8, "a", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Delete().Score("ssk", 0.8, "a", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
 func Test_Client_Sorted_Redis_Exists(t *testing.T) {
 	var err error
 
