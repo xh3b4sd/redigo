@@ -1,4 +1,4 @@
-// +build simple
+// +build single
 
 package client
 
