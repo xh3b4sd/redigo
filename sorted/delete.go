@@ -10,11 +10,9 @@ import (
 )
 
 const deleteScoreScript = `
-	if (ARGV[2] ~= nil) then
-		-- Ensure that all the indizes we have recorded get deleted. Deleting by
-		-- score is easy because we can delete all indizes by score at once.
-		redis.call("ZREMRANGEBYSCORE", KEYS[2], ARGV[1], ARGV[1])
-	end
+	-- Ensure that all the indizes we have recorded get deleted. Deleting by
+	-- score is easy because we can delete all indizes by score at once.
+	redis.call("ZREMRANGEBYSCORE", KEYS[2], ARGV[1], ARGV[1])
 
 	redis.call("ZREMRANGEBYSCORE", KEYS[1], ARGV[1], ARGV[1])
 
@@ -47,7 +45,7 @@ type Delete struct {
 	prefix string
 }
 
-func (d *Delete) Score(key string, sco float64, ind ...string) error {
+func (d *Delete) Score(key string, sco float64) error {
 	con := d.pool.Get()
 	defer con.Close()
 
@@ -56,9 +54,6 @@ func (d *Delete) Score(key string, sco float64, ind ...string) error {
 		arg = append(arg, prefix.WithKeys(d.prefix, key))
 		arg = append(arg, prefix.WithKeys(d.prefix, fmt.Sprintf("%s:ind", key)))
 		arg = append(arg, sco)
-		for _, s := range ind {
-			arg = append(arg, s)
-		}
 	}
 
 	_, err := redis.Int(d.scoreScript.Do(con, arg...))

@@ -90,8 +90,12 @@ func Test_Client_Sorted_Redis_Delete_Score(t *testing.T) {
 		}
 	}
 
+	// We just created an element that defined the indices a and b. Now we
+	// delete this very element only using its score. With this test we ensure
+	// that elements as well as their associated indices get automatically
+	// purged when deleting elements only using their score.
 	{
-		err := cli.Sorted().Delete().Score("ssk", 0.8, "a", "b")
+		err := cli.Sorted().Delete().Score("ssk", 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -108,7 +112,41 @@ func Test_Client_Sorted_Redis_Delete_Score(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Delete().Score("ssk", 0.8, "a", "b")
+		err := cli.Sorted().Delete().Value("ssk", "foo", "a", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Element("ssk", "foo", 0.8, "a", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	{
+		err := cli.Sorted().Delete().Score("ssk", 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}

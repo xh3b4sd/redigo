@@ -5,7 +5,7 @@ type SortedDelete struct {
 	FakeValue func() error
 }
 
-func (d *SortedDelete) Score(key string, sco float64, ind ...string) error {
+func (d *SortedDelete) Score(key string, sco float64) error {
 	if d.FakeScore != nil {
 		return d.FakeScore()
 	}
