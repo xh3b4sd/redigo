@@ -48,14 +48,14 @@ type SortedCreate interface {
 
 type SortedDelete interface {
 	// Score deletes the element identified by score within the specified sorted
-	// set. Note that indices must be provided as with done during creating and
-	// updating the element. At this point, if indices are not provided with the
-	// deletion, garbage indices will be left behind.
-	Score(key string, sco float64, ind ...string) error
+	// set. Note that indices associated with the underlying element are purged
+	// automatically as well.
+	Score(key string, sco float64) error
 	// Value deletes the element identified by value within the specified sorted
 	// set. Note that indices must be provided as with done during creating and
 	// updating the element. At this point, if indices are not provided with the
-	// deletion, garbage indices will be left behind.
+	// deletion, garbage indices will be left behind. For this reason, using
+	// Score should be preferred over using Value.
 	Value(key string, val string, ind ...string) error
 }
 
