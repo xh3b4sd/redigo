@@ -90,6 +90,10 @@ func Test_Client_Sorted_Redis_Delete_Score(t *testing.T) {
 		}
 	}
 
+	// We just created an element that defined the indices a and b. Now we
+	// delete this very element only using its score. With this test we ensure
+	// that elements as well as their associated indices get automatically
+	// purged when deleting elements only using their score.
 	{
 		err := cli.Sorted().Delete().Score("ssk", 0.8)
 		if err != nil {
