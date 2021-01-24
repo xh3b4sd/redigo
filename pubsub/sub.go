@@ -1,6 +1,7 @@
 package pubsub
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/gomodule/redigo/redis"
@@ -51,14 +52,21 @@ func (p *PubSub) Sub(key string) (<-chan string, error) {
 					erc <- err
 					return
 				}
-			case <-erc:
+			case err := <-erc:
+				if err != nil {
+					fmt.Sprintln(err)
+				}
+
 				con.Close()
 				tic.Stop()
 
 				close(erc)
 				close(mes)
 
-				psc.Unsubscribe()
+				err = psc.Unsubscribe()
+				if err != nil {
+					fmt.Sprintln(err)
+				}
 
 				return
 			}
