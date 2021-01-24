@@ -9,6 +9,7 @@ import (
 
 	"github.com/xh3b4sd/redigo"
 	"github.com/xh3b4sd/redigo/pool"
+	"github.com/xh3b4sd/redigo/pubsub"
 	"github.com/xh3b4sd/redigo/simple"
 	"github.com/xh3b4sd/redigo/sorted"
 )
@@ -27,6 +28,7 @@ type Config struct {
 
 type Client struct {
 	pool   *redis.Pool
+	pubSub redigo.PubSub
 	scored redigo.Sorted
 	simple redigo.Simple
 }
@@ -51,6 +53,20 @@ func New(config Config) (*Client, error) {
 	}
 
 	var err error
+
+	var newPubSub redigo.PubSub
+	{
+		c := pubsub.Config{
+			Pool: config.Pool,
+
+			Prefix: config.Prefix,
+		}
+
+		newPubSub, err = pubsub.New(c)
+		if err != nil {
+			return nil, tracer.Mask(err)
+		}
+	}
 
 	var newSimple redigo.Simple
 	{
@@ -82,6 +98,7 @@ func New(config Config) (*Client, error) {
 
 	c := &Client{
 		pool:   config.Pool,
+		pubSub: newPubSub,
 		scored: newScored,
 		simple: newSimple,
 	}
@@ -120,6 +137,10 @@ func (c *Client) Purge() error {
 	}
 
 	return nil
+}
+
+func (c *Client) PubSub() redigo.PubSub {
+	return c.pubSub
 }
 
 func (c *Client) Sorted() redigo.Sorted {

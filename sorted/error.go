@@ -23,14 +23,6 @@ func IsExecutionFailedError(err error) bool {
 	return errors.Is(err, executionFailedError)
 }
 
-var invalidConfigError = &tracer.Error{
-	Kind: "invalidConfigError",
-}
-
-func IsInvalidConfig(err error) bool {
-	return errors.Is(err, invalidConfigError)
-}
-
 var notFoundError = &tracer.Error{
 	Kind: "notFoundError",
 }
