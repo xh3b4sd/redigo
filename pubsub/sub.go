@@ -50,7 +50,6 @@ func (p *PubSub) Sub(key string) (<-chan string, error) {
 				err := psc.Ping("")
 				if err != nil {
 					erc <- err
-					return
 				}
 			case err := <-erc:
 				if err != nil {
