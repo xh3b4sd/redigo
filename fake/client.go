@@ -5,6 +5,7 @@ import (
 )
 
 type Client struct {
+	PubSubFake func() redigo.PubSub
 	SortedFake func() redigo.Sorted
 	SimpleFake func() redigo.Simple
 }
@@ -23,6 +24,14 @@ func (c *Client) Close() error {
 
 func (c *Client) Purge() error {
 	return nil
+}
+
+func (c *Client) PubSub() redigo.PubSub {
+	if c.PubSubFake != nil {
+		return c.PubSubFake()
+	}
+
+	return &PubSub{}
 }
 
 func (c *Client) Sorted() redigo.Sorted {
