@@ -18,7 +18,8 @@ type PubSub struct {
 
 func New(config Config) (*PubSub, error) {
 	p := &PubSub{
-		pool:   config.Pool,
+		pool: config.Pool,
+
 		prefix: config.Prefix,
 	}
 
