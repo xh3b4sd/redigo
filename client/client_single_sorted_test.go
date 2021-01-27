@@ -9,13 +9,13 @@ import (
 	"github.com/xh3b4sd/redigo/sorted"
 )
 
-func Test_Client_Sorted_Redis_Delete_Score(t *testing.T) {
+func Test_Client_Single_Sorted_Delete_Score(t *testing.T) {
 	var err error
 
 	var cli redigo.Interface
 	{
 		c := Config{
-			Kind: KindSimple,
+			Kind: KindSingle,
 		}
 
 		cli, err = New(c)
@@ -153,13 +153,13 @@ func Test_Client_Sorted_Redis_Delete_Score(t *testing.T) {
 	}
 }
 
-func Test_Client_Sorted_Redis_Exists(t *testing.T) {
+func Test_Client_Single_Sorted_Exists(t *testing.T) {
 	var err error
 
 	var cli redigo.Interface
 	{
 		c := Config{
-			Kind: KindSimple,
+			Kind: KindSingle,
 		}
 
 		cli, err = New(c)
@@ -248,16 +248,16 @@ func Test_Client_Sorted_Redis_Exists(t *testing.T) {
 	}
 }
 
-// Test_Client_Sorted_Redis_Create_Index ensures that indices are guaranteed to
+// Test_Client_Single_Sorted_Create_Index ensures that indices are guaranteed to
 // be unique. Below the indices c and d cannot be duplicated. Indices may be
 // used to ensure unique usernames.
-func Test_Client_Sorted_Redis_Create_Index(t *testing.T) {
+func Test_Client_Single_Sorted_Create_Index(t *testing.T) {
 	var err error
 
 	var cli redigo.Interface
 	{
 		c := Config{
-			Kind: KindSimple,
+			Kind: KindSingle,
 		}
 
 		cli, err = New(c)
@@ -307,16 +307,16 @@ func Test_Client_Sorted_Redis_Create_Index(t *testing.T) {
 	}
 }
 
-// Test_Client_Sorted_Redis_Create_Score ensures that scores are guaranteed to
+// Test_Client_Single_Sorted_Create_Score ensures that scores are guaranteed to
 // be unique. Below the score 0.8 cannot be duplicated. Scores may be used to
 // represent IDs as unix timestamps.
-func Test_Client_Sorted_Redis_Create_Score(t *testing.T) {
+func Test_Client_Single_Sorted_Create_Score(t *testing.T) {
 	var err error
 
 	var cli redigo.Interface
 	{
 		c := Config{
-			Kind: KindSimple,
+			Kind: KindSingle,
 		}
 
 		cli, err = New(c)
@@ -359,13 +359,13 @@ func Test_Client_Sorted_Redis_Create_Score(t *testing.T) {
 	}
 }
 
-func Test_Client_Sorted_Redis_Search_Index(t *testing.T) {
+func Test_Client_Single_Sorted_Search_Index(t *testing.T) {
 	var err error
 
 	var cli redigo.Interface
 	{
 		c := Config{
-			Kind: KindSimple,
+			Kind: KindSingle,
 		}
 
 		cli, err = New(c)
@@ -436,13 +436,13 @@ func Test_Client_Sorted_Redis_Search_Index(t *testing.T) {
 	}
 }
 
-func Test_Client_Sorted_Redis_Search_Score(t *testing.T) {
+func Test_Client_Single_Sorted_Search_Score(t *testing.T) {
 	var err error
 
 	var cli redigo.Interface
 	{
 		c := Config{
-			Kind: KindSimple,
+			Kind: KindSingle,
 		}
 
 		cli, err = New(c)
@@ -513,13 +513,13 @@ func Test_Client_Sorted_Redis_Search_Score(t *testing.T) {
 	}
 }
 
-func Test_Client_Sorted_Redis_Update(t *testing.T) {
+func Test_Client_Single_Sorted_Update(t *testing.T) {
 	var err error
 
 	var cli redigo.Interface
 	{
 		c := Config{
-			Kind: KindSimple,
+			Kind: KindSingle,
 		}
 
 		cli, err = New(c)

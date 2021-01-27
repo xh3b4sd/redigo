@@ -116,7 +116,7 @@ func Test_Create_Element_Input_Valid(t *testing.T) {
 func mustNewCreateWithConn(con redis.Conn) *Create {
 	var p *redis.Pool
 	{
-		p = pool.NewSimplePoolWithConnection(con)
+		p = pool.NewSinglePoolWithConnection(con)
 	}
 
 	var c *Create

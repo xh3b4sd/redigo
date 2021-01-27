@@ -10,13 +10,13 @@ import (
 	"github.com/xh3b4sd/redigo"
 )
 
-func Test_Client_PubSub_Redis(t *testing.T) {
+func Test_Client_Single_PubSub_Lifecycle(t *testing.T) {
 	var err error
 
 	var cli redigo.Interface
 	{
 		c := Config{
-			Kind: KindSimple,
+			Kind: KindSingle,
 		}
 
 		cli, err = New(c)

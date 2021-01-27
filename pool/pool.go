@@ -8,7 +8,7 @@ import (
 	"github.com/gomodule/redigo/redis"
 )
 
-func NewSimplePoolWithAddress(address string) *redis.Pool {
+func NewSinglePoolWithAddress(address string) *redis.Pool {
 	var p *redis.Pool
 	{
 		p = &redis.Pool{
@@ -41,7 +41,7 @@ func NewSimplePoolWithAddress(address string) *redis.Pool {
 	return p
 }
 
-func NewSimplePoolWithConnection(connection redis.Conn) *redis.Pool {
+func NewSinglePoolWithConnection(connection redis.Conn) *redis.Pool {
 	var p *redis.Pool
 	{
 		p = &redis.Pool{

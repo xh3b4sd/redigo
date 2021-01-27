@@ -5,9 +5,15 @@ type Interface interface {
 	Close() error
 	Purge() error
 
+	Locker() Locker
 	PubSub() PubSub
 	Sorted() Sorted
 	Simple() Simple
+}
+
+type Locker interface {
+	Acquire() error
+	Release() error
 }
 
 type PubSub interface {

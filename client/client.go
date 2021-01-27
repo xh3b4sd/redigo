@@ -8,6 +8,7 @@ import (
 	"github.com/xh3b4sd/tracer"
 
 	"github.com/xh3b4sd/redigo"
+	"github.com/xh3b4sd/redigo/locker"
 	"github.com/xh3b4sd/redigo/pool"
 	"github.com/xh3b4sd/redigo/pubsub"
 	"github.com/xh3b4sd/redigo/simple"
@@ -15,7 +16,7 @@ import (
 )
 
 const (
-	KindSimple   = "simple"
+	KindSingle   = "single"
 	KindSentinel = "sentinel"
 )
 
@@ -27,32 +28,48 @@ type Config struct {
 }
 
 type Client struct {
-	pool   *redis.Pool
+	pool *redis.Pool
+
+	locker redigo.Locker
 	pubSub redigo.PubSub
 	scored redigo.Sorted
 	simple redigo.Simple
 }
 
 func New(config Config) (*Client, error) {
-	if config.Kind != KindSimple && config.Kind != KindSentinel {
-		return nil, tracer.Maskf(invalidConfigError, "%T.Kind must be %s or %s", config, KindSimple, KindSentinel)
+	if config.Kind != KindSingle && config.Kind != KindSentinel {
+		return nil, tracer.Maskf(invalidConfigError, "%T.Kind must be %s or %s", config, KindSingle, KindSentinel)
 	}
 
-	if config.Address == "" && config.Kind == KindSimple {
-		config.Address = defaultSimpleAddress()
+	if config.Address == "" && config.Kind == KindSingle {
+		config.Address = defaultSingleAddress()
 	}
 	if config.Address == "" && config.Kind == KindSentinel {
 		config.Address = defaultSentinelAddress()
 	}
 
-	if config.Pool == nil && config.Kind == KindSimple {
-		config.Pool = pool.NewSimplePoolWithAddress(config.Address)
+	if config.Pool == nil && config.Kind == KindSingle {
+		config.Pool = pool.NewSinglePoolWithAddress(config.Address)
 	}
 	if config.Pool == nil && config.Kind == KindSentinel {
 		config.Pool = pool.NewSentinelPoolWithAddress(config.Address)
 	}
 
 	var err error
+
+	var newLocker redigo.Locker
+	{
+		c := locker.Config{
+			Pool: config.Pool,
+
+			Prefix: config.Prefix,
+		}
+
+		newLocker, err = locker.New(c)
+		if err != nil {
+			return nil, tracer.Mask(err)
+		}
+	}
 
 	var newPubSub redigo.PubSub
 	{
@@ -97,7 +114,9 @@ func New(config Config) (*Client, error) {
 	}
 
 	c := &Client{
-		pool:   config.Pool,
+		pool: config.Pool,
+
+		locker: newLocker,
 		pubSub: newPubSub,
 		scored: newScored,
 		simple: newSimple,
@@ -139,6 +158,10 @@ func (c *Client) Purge() error {
 	return nil
 }
 
+func (c *Client) Locker() redigo.Locker {
+	return c.locker
+}
+
 func (c *Client) PubSub() redigo.PubSub {
 	return c.pubSub
 }
@@ -151,7 +174,7 @@ func (c *Client) Simple() redigo.Simple {
 	return c.simple
 }
 
-func defaultSimpleAddress() string {
+func defaultSingleAddress() string {
 	var hos string
 	{
 		hos = os.Getenv("REDIS_HOST")

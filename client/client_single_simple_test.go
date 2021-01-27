@@ -9,13 +9,13 @@ import (
 	"github.com/xh3b4sd/redigo/simple"
 )
 
-func Test_Client_Simple_Redis(t *testing.T) {
+func Test_Client_Single_Simple_Lifecycle(t *testing.T) {
 	var err error
 
 	var cli redigo.Interface
 	{
 		c := Config{
-			Kind: KindSimple,
+			Kind: KindSingle,
 		}
 
 		cli, err = New(c)
