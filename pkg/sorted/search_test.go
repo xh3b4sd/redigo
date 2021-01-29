@@ -7,7 +7,7 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/rafaeljusto/redigomock"
 
-	"github.com/xh3b4sd/redigo/pool"
+	"github.com/xh3b4sd/redigo/pkg/pool"
 )
 
 func Test_Search_Index_Input_Error(t *testing.T) {

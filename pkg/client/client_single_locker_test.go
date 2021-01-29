@@ -8,8 +8,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/xh3b4sd/redigo"
 	"github.com/xh3b4sd/tracer"
+
+	"github.com/xh3b4sd/redigo"
 )
 
 func Test_Client_Single_Locker_Lifecycle(t *testing.T) {

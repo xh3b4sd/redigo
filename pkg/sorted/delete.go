@@ -6,7 +6,7 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/xh3b4sd/tracer"
 
-	"github.com/xh3b4sd/redigo/prefix"
+	"github.com/xh3b4sd/redigo/pkg/prefix"
 )
 
 const deleteScoreScript = `
