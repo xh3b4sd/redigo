@@ -8,11 +8,11 @@ import (
 	"github.com/xh3b4sd/tracer"
 
 	"github.com/xh3b4sd/redigo"
-	"github.com/xh3b4sd/redigo/locker"
-	"github.com/xh3b4sd/redigo/pool"
-	"github.com/xh3b4sd/redigo/pubsub"
-	"github.com/xh3b4sd/redigo/simple"
-	"github.com/xh3b4sd/redigo/sorted"
+	"github.com/xh3b4sd/redigo/pkg/locker"
+	"github.com/xh3b4sd/redigo/pkg/pool"
+	"github.com/xh3b4sd/redigo/pkg/pubsub"
+	"github.com/xh3b4sd/redigo/pkg/simple"
+	"github.com/xh3b4sd/redigo/pkg/sorted"
 )
 
 const (

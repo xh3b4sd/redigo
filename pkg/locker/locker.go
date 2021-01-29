@@ -4,7 +4,8 @@ import (
 	redsync "github.com/go-redsync/redsync/v4"
 	redsyncredigo "github.com/go-redsync/redsync/v4/redis/redigo"
 	"github.com/gomodule/redigo/redis"
-	"github.com/xh3b4sd/redigo/prefix"
+
+	"github.com/xh3b4sd/redigo/pkg/prefix"
 )
 
 type Config struct {

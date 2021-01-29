@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/xh3b4sd/redigo"
-	"github.com/xh3b4sd/redigo/sorted"
+	"github.com/xh3b4sd/redigo/pkg/sorted"
 )
 
 func Test_Client_Single_Sorted_Delete_Score(t *testing.T) {

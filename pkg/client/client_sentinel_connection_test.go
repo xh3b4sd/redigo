@@ -1,4 +1,4 @@
-// +build single
+// +build sentinel
 
 package client
 
@@ -6,16 +6,16 @@ import (
 	"testing"
 
 	"github.com/xh3b4sd/redigo"
-	"github.com/xh3b4sd/redigo/simple"
+	"github.com/xh3b4sd/redigo/pkg/simple"
 )
 
-func Test_Client_Single_Simple_Lifecycle(t *testing.T) {
+func Test_Client_Sentinel_Connection(t *testing.T) {
 	var err error
 
 	var cli redigo.Interface
 	{
 		c := Config{
-			Kind: KindSingle,
+			Kind: KindSentinel,
 		}
 
 		cli, err = New(c)
