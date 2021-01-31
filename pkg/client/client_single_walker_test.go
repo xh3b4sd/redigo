@@ -12,7 +12,9 @@ import (
 	"github.com/xh3b4sd/tracer"
 )
 
-func Test_Client_Single_Walker_Simple_Lifecycle(t *testing.T) {
+// Test_Client_Single_Walker_Simple_001 ensures the lifecycle of scanning keys
+// works as expected.
+func Test_Client_Single_Walker_Simple_001(t *testing.T) {
 	var err error
 
 	var cli redigo.Interface
@@ -134,7 +136,9 @@ func Test_Client_Single_Walker_Simple_Lifecycle(t *testing.T) {
 	}
 }
 
-func Test_Client_Single_Walker_Simple_Pattern(t *testing.T) {
+// Test_Client_Single_Walker_Simple_002 ensures that pattern matching when
+// scanning keys works as expected.
+func Test_Client_Single_Walker_Simple_002(t *testing.T) {
 	var err error
 
 	var cli redigo.Interface
@@ -253,7 +257,9 @@ func Test_Client_Single_Walker_Simple_Pattern(t *testing.T) {
 	}
 }
 
-func Test_Client_Single_Walker_Simple_Cancel(t *testing.T) {
+// Test_Client_Single_Walker_Simple_003 ensures that cancelling scanning keys
+// early works as expected.
+func Test_Client_Single_Walker_Simple_003(t *testing.T) {
 	var err error
 
 	var cli redigo.Interface
@@ -356,6 +362,12 @@ func Test_Client_Single_Walker_Simple_Cancel(t *testing.T) {
 
 		for _, s := range str {
 			if s == "key" {
+				continue
+			}
+			if s == "foo" {
+				continue
+			}
+			if s == "ssk" {
 				continue
 			}
 
