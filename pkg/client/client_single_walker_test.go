@@ -183,9 +183,11 @@ func Test_Client_Single_Walker_Simple_Cancel(t *testing.T) {
 			}()
 
 			go func() {
+				defer close(don)
+
 				for s := range res {
 					str = append(str, s)
-					close(don)
+					break
 				}
 			}()
 
