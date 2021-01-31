@@ -4,6 +4,7 @@ package client
 
 import (
 	"fmt"
+	"sync"
 	"testing"
 	"time"
 
@@ -60,13 +61,20 @@ func Test_Client_Single_Walker_Simple_Lifecycle(t *testing.T) {
 	res := make(chan string, 1)
 
 	var str []string
+	var wai sync.WaitGroup
 	{
 		go func() {
+			wai.Add(1)
+			defer wai.Done()
+
 			defer close(don)
 			defer close(erc)
 			defer close(res)
 
 			go func() {
+				wai.Add(1)
+				defer wai.Done()
+
 				for {
 					select {
 					case <-time.After(time.Second):
@@ -80,6 +88,9 @@ func Test_Client_Single_Walker_Simple_Lifecycle(t *testing.T) {
 			}()
 
 			go func() {
+				wai.Add(1)
+				defer wai.Done()
+
 				for s := range res {
 					str = append(str, s)
 				}
@@ -99,6 +110,8 @@ func Test_Client_Single_Walker_Simple_Lifecycle(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+
+	wai.Wait()
 
 	{
 		if len(str) != 3 {
@@ -170,13 +183,20 @@ func Test_Client_Single_Walker_Simple_Pattern(t *testing.T) {
 	res := make(chan string, 1)
 
 	var str []string
+	var wai sync.WaitGroup
 	{
 		go func() {
+			wai.Add(1)
+			defer wai.Done()
+
 			defer close(don)
 			defer close(erc)
 			defer close(res)
 
 			go func() {
+				wai.Add(1)
+				defer wai.Done()
+
 				for {
 					select {
 					case <-time.After(time.Second):
@@ -190,6 +210,9 @@ func Test_Client_Single_Walker_Simple_Pattern(t *testing.T) {
 			}()
 
 			go func() {
+				wai.Add(1)
+				defer wai.Done()
+
 				for s := range res {
 					str = append(str, s)
 				}
@@ -209,6 +232,8 @@ func Test_Client_Single_Walker_Simple_Pattern(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+
+	wai.Wait()
 
 	{
 		if len(str) != 2 {
@@ -271,12 +296,19 @@ func Test_Client_Single_Walker_Simple_Cancel(t *testing.T) {
 	res := make(chan string, 1)
 
 	var str []string
+	var wai sync.WaitGroup
 	{
 		go func() {
+			wai.Add(1)
+			defer wai.Done()
+
 			defer close(erc)
 			defer close(res)
 
 			go func() {
+				wai.Add(1)
+				defer wai.Done()
+
 				for {
 					select {
 					case <-time.After(time.Second):
@@ -290,10 +322,12 @@ func Test_Client_Single_Walker_Simple_Cancel(t *testing.T) {
 			}()
 
 			go func() {
-				defer close(don)
+				wai.Add(1)
+				defer wai.Done()
 
 				for s := range res {
 					str = append(str, s)
+					close(don)
 					break
 				}
 			}()
@@ -312,6 +346,8 @@ func Test_Client_Single_Walker_Simple_Cancel(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+
+	wai.Wait()
 
 	{
 		if len(str) != 1 {
