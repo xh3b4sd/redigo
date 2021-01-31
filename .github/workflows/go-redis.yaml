@@ -36,7 +36,7 @@ jobs:
 
       - name: "Check Go Tests"
         env:
-          CGO_ENABLED: "0"
+          CGO_ENABLED: "1"
           REDIS_HOST: "redis"
           REDIS_PORT: "6379"
           REDIS_SENTINEL_HOST: "redis-sentinel"
