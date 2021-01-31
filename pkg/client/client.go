@@ -13,6 +13,7 @@ import (
 	"github.com/xh3b4sd/redigo/pkg/pubsub"
 	"github.com/xh3b4sd/redigo/pkg/simple"
 	"github.com/xh3b4sd/redigo/pkg/sorted"
+	"github.com/xh3b4sd/redigo/pkg/walker"
 )
 
 const (
@@ -22,6 +23,7 @@ const (
 
 type Config struct {
 	Address string
+	Count   int
 	Kind    string
 	Pool    *redis.Pool
 	Prefix  string
@@ -32,8 +34,9 @@ type Client struct {
 
 	locker redigo.Locker
 	pubSub redigo.PubSub
-	scored redigo.Sorted
 	simple redigo.Simple
+	sorted redigo.Sorted
+	walker redigo.Walker
 }
 
 func New(config Config) (*Client, error) {
@@ -99,7 +102,7 @@ func New(config Config) (*Client, error) {
 		}
 	}
 
-	var newScored redigo.Sorted
+	var newSorted redigo.Sorted
 	{
 		c := sorted.Config{
 			Pool: config.Pool,
@@ -107,7 +110,22 @@ func New(config Config) (*Client, error) {
 			Prefix: config.Prefix,
 		}
 
-		newScored, err = sorted.New(c)
+		newSorted, err = sorted.New(c)
+		if err != nil {
+			return nil, tracer.Mask(err)
+		}
+	}
+
+	var newWalker redigo.Walker
+	{
+		c := walker.Config{
+			Pool: config.Pool,
+
+			Count:  config.Count,
+			Prefix: config.Prefix,
+		}
+
+		newWalker, err = walker.New(c)
 		if err != nil {
 			return nil, tracer.Mask(err)
 		}
@@ -118,8 +136,9 @@ func New(config Config) (*Client, error) {
 
 		locker: newLocker,
 		pubSub: newPubSub,
-		scored: newScored,
 		simple: newSimple,
+		sorted: newSorted,
+		walker: newWalker,
 	}
 
 	return c, nil
@@ -166,12 +185,16 @@ func (c *Client) PubSub() redigo.PubSub {
 	return c.pubSub
 }
 
-func (c *Client) Sorted() redigo.Sorted {
-	return c.scored
-}
-
 func (c *Client) Simple() redigo.Simple {
 	return c.simple
+}
+
+func (c *Client) Sorted() redigo.Sorted {
+	return c.sorted
+}
+
+func (c *Client) Walker() redigo.Walker {
+	return c.walker
 }
 
 func defaultSingleAddress() string {

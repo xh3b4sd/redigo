@@ -34,12 +34,17 @@ jobs:
       - name: "Checkout Git Project"
         uses: "actions/checkout@v2"
 
+      - name: "Install Race Dependency"
+        run: |
+          apk add gcc
+          apk add musl-dev
+
       - name: "Check Go Tests"
         env:
-          CGO_ENABLED: "0"
+          CGO_ENABLED: "1"
           REDIS_HOST: "redis"
           REDIS_PORT: "6379"
           REDIS_SENTINEL_HOST: "redis-sentinel"
           REDIS_SENTINEL_PORT: "26379"
         run: |
-          go test ./... --tags single,sentinel
+          go test ./... -race -tags single,sentinel

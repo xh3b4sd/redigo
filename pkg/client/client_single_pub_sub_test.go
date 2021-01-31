@@ -66,16 +66,14 @@ func Test_Client_Single_PubSub_Lifecycle(t *testing.T) {
 	}
 
 	{
-		go func() {
-			err = cli.PubSub().Pub("cha", "one")
-			if err != nil {
-				erc <- err
-			}
-			err = cli.PubSub().Pub("cha", "two")
-			if err != nil {
-				erc <- err
-			}
-		}()
+		err = cli.PubSub().Pub("cha", "one")
+		if err != nil {
+			erc <- err
+		}
+		err = cli.PubSub().Pub("cha", "two")
+		if err != nil {
+			erc <- err
+		}
 	}
 
 	{
