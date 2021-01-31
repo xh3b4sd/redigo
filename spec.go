@@ -9,6 +9,7 @@ type Interface interface {
 	PubSub() PubSub
 	Sorted() Sorted
 	Simple() Simple
+	Walker() Walker
 }
 
 type Locker interface {
@@ -96,4 +97,8 @@ type SortedUpdate interface {
 	// For the sorted set implementations scores are static and must never
 	// change since they get treated like unique IDs.
 	Value(key string, new string, sco float64, ind ...string) (bool, error)
+}
+
+type Walker interface {
+	Simple(pat string, don <-chan struct{}, res chan<- string) error
 }

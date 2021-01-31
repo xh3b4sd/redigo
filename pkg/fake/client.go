@@ -7,8 +7,9 @@ import (
 type Client struct {
 	FakeLocker func() redigo.Locker
 	FakePubSub func() redigo.PubSub
-	FakeSorted func() redigo.Sorted
 	FakeSimple func() redigo.Simple
+	FakeSorted func() redigo.Sorted
+	FakeWalker func() redigo.Walker
 }
 
 func New() *Client {
@@ -43,6 +44,14 @@ func (c *Client) PubSub() redigo.PubSub {
 	return &PubSub{}
 }
 
+func (c *Client) Simple() redigo.Simple {
+	if c.FakeSimple != nil {
+		return c.FakeSimple()
+	}
+
+	return &Simple{}
+}
+
 func (c *Client) Sorted() redigo.Sorted {
 	if c.FakeSorted != nil {
 		return c.FakeSorted()
@@ -51,10 +60,10 @@ func (c *Client) Sorted() redigo.Sorted {
 	return &Sorted{}
 }
 
-func (c *Client) Simple() redigo.Simple {
-	if c.FakeSimple != nil {
-		return c.FakeSimple()
+func (c *Client) Walker() redigo.Walker {
+	if c.FakeWalker != nil {
+		return c.FakeWalker()
 	}
 
-	return &Simple{}
+	return &Walker{}
 }
