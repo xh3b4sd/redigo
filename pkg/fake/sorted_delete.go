@@ -13,7 +13,7 @@ func (d *SortedDelete) Score(key string, sco float64) error {
 	return nil
 }
 
-func (d *SortedDelete) Value(key string, val string, ind ...string) error {
+func (d *SortedDelete) Value(key string, val string) error {
 	if d.FakeValue != nil {
 		return d.FakeValue()
 	}

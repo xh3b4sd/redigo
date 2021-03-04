@@ -9,6 +9,55 @@ import (
 	"github.com/xh3b4sd/redigo/pkg/sorted"
 )
 
+func Test_Client_Single_Sorted_Delete_Empty(t *testing.T) {
+	var err error
+
+	var cli redigo.Interface
+	{
+		c := Config{
+			Kind: KindSingle,
+		}
+
+		cli, err = New(c)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = cli.Purge()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Delete().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Delete().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Delete().Value("ssk", "foo")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Delete().Value("ssk", "foo")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
 func Test_Client_Single_Sorted_Delete_Score(t *testing.T) {
 	var err error
 
@@ -112,7 +161,7 @@ func Test_Client_Single_Sorted_Delete_Score(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Delete().Value("ssk", "foo", "a", "b")
+		err := cli.Sorted().Delete().Value("ssk", "foo")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -261,7 +310,7 @@ func Test_Client_Single_Sorted_Exists(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Delete().Value("ssk", "foo", "a", "b")
+		err := cli.Sorted().Delete().Value("ssk", "foo")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -353,7 +402,7 @@ func Test_Client_Single_Sorted_Create_Order(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Delete().Value("ssk", "bar", "c", "d")
+		err := cli.Sorted().Delete().Value("ssk", "bar")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -440,6 +489,16 @@ func Test_Client_Single_Sorted_Search_Index(t *testing.T) {
 	}
 
 	{
+		res, err := cli.Sorted().Search().Index("ssk", "a")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if res != "" {
+			t.Fatal("expected", "empty string", "got", res)
+		}
+	}
+
+	{
 		err := cli.Sorted().Create().Element("ssk", "foo", 0.8, "a", "b")
 		if err != nil {
 			t.Fatal(err)
@@ -484,6 +543,16 @@ func Test_Client_Single_Sorted_Search_Order(t *testing.T) {
 		err = cli.Purge()
 		if err != nil {
 			t.Fatal(err)
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Order("ssk", 0, 1)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 0 {
+			t.Fatal("expected", 0, "got", len(res))
 		}
 	}
 
@@ -561,6 +630,16 @@ func Test_Client_Single_Sorted_Search_Score(t *testing.T) {
 		err = cli.Purge()
 		if err != nil {
 			t.Fatal(err)
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Score("ssk", 0.8, 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 0 {
+			t.Fatal("expected", 0, "got", len(res))
 		}
 	}
 

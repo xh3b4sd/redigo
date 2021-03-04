@@ -10,17 +10,21 @@ import (
 	"github.com/xh3b4sd/redigo/pkg/prefix"
 )
 
-const indexElementScript = `
+const searchIndexScript = `
 	local sco = redis.call("ZSCORE", KEYS[2], ARGV[1])
-	local res = redis.call("ZRANGEBYSCORE", KEYS[1], sco, sco)
 
-	return res[1]
+	if (sco ~= false) then
+		local res = redis.call("ZRANGEBYSCORE", KEYS[1], sco, sco)
+		return res[1]
+	end
+
+	return ""
 `
 
 type Search struct {
 	pool *redis.Pool
 
-	indexElementScript *redis.Script
+	searchIndexScript *redis.Script
 
 	prefix string
 }
@@ -45,7 +49,7 @@ func (s *Search) Index(key string, ind string) (string, error) {
 		arg = append(arg, ind)
 	}
 
-	res, err := redis.String(s.indexElementScript.Do(con, arg...))
+	res, err := redis.String(s.searchIndexScript.Do(con, arg...))
 	if err != nil {
 		return "", tracer.Mask(err)
 	}

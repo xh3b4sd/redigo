@@ -37,8 +37,8 @@ func New(config Config) (*Sorted, error) {
 		del = &Delete{
 			pool: config.Pool,
 
-			scoreScript: redis.NewScript(2, deleteScoreScript),
-			valueScript: redis.NewScript(2, deleteValueScript),
+			deleteScoreScript: redis.NewScript(2, deleteScoreScript),
+			deleteValueScript: redis.NewScript(2, deleteValueScript),
 
 			prefix: config.Prefix,
 		}
@@ -58,7 +58,7 @@ func New(config Config) (*Sorted, error) {
 		sea = &Search{
 			pool: config.Pool,
 
-			indexElementScript: redis.NewScript(2, indexElementScript),
+			searchIndexScript: redis.NewScript(2, searchIndexScript),
 
 			prefix: config.Prefix,
 		}
