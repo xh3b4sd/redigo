@@ -60,7 +60,7 @@ func Test_Client_Single_Locker_Lifecycle(t *testing.T) {
 				return
 			}
 
-			str, err := cli.Sorted().Search().Index("key", 0, 1)
+			str, err := cli.Sorted().Search().Order("key", 0, 1)
 			if err != nil {
 				erc <- tracer.Mask(err)
 				return
@@ -92,7 +92,7 @@ func Test_Client_Single_Locker_Lifecycle(t *testing.T) {
 				return
 			}
 
-			str, err := cli.Sorted().Search().Index("key", 0, 1)
+			str, err := cli.Sorted().Search().Order("key", 0, 1)
 			if err != nil {
 				erc <- tracer.Mask(err)
 				return
@@ -118,7 +118,7 @@ func Test_Client_Single_Locker_Lifecycle(t *testing.T) {
 		w.Wait()
 
 		{
-			str, err := cli.Sorted().Search().Index("key", 0, 1)
+			str, err := cli.Sorted().Search().Order("key", 0, 1)
 			if err != nil {
 				erc <- tracer.Mask(err)
 				return

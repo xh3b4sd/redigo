@@ -38,7 +38,7 @@ type Sorted interface {
 }
 
 type SimpleCreate interface {
-	Element(key, ele string) error
+	Element(key, val string) error
 }
 
 type SimpleDelete interface {
@@ -57,6 +57,10 @@ type SimpleSearch interface {
 }
 
 type SortedCreate interface {
+	// Element creates an element within the sorted set under key. The element
+	// is tracked using the unique score given by sco. The element's value
+	// provided by val can be ensured to have unique associations, like indices
+	// using ind.
 	Element(key string, val string, sco float64, ind ...string) error
 }
 
@@ -74,6 +78,9 @@ type SortedDelete interface {
 }
 
 type SortedExists interface {
+	// Index verifies if an element with the given index exists within the
+	// sorted set identified by key.
+	Index(key string, ind string) (bool, error)
 	// Score verifies if an element with the given score exists within the
 	// sorted set identified by key.
 	Score(key string, sco float64) (bool, error)
@@ -83,12 +90,16 @@ type SortedExists interface {
 }
 
 type SortedSearch interface {
-	// Index returns the list of sorted set elements stored under key. The
-	// provided pointers are indices of the elements within the sorted set. Note
-	// that lef must be greater than zero while not being greater than rig.
-	// Further rig may be -1 in order to list all elements. The returned result
-	// does not include scores, but only the values of the elements.
-	Index(key string, lef int, rig int) ([]string, error)
+	// Index returns values of stored elements as associated with their indices
+	// during element creation. This enables multi key elements. Values can be
+	// retreived using different keys referencing the requested element's value.
+	Index(key string, ind string) (string, error)
+	// Order returns the list of sorted set elements stored under key. The
+	// provided pointers are ranks of the elements' scores within the sorted
+	// set. Note that lef must be greater than zero while not being greater than
+	// rig. Further rig may be -1 in order to list all elements. The returned
+	// result does not include scores, but only the values of the elements.
+	Order(key string, lef int, rig int) ([]string, error)
 	Score(key string, lef float64, rig float64) ([]string, error)
 }
 

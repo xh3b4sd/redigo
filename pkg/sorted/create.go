@@ -1,12 +1,12 @@
 package sorted
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/gomodule/redigo/redis"
 	"github.com/xh3b4sd/tracer"
 
+	"github.com/xh3b4sd/redigo/pkg/index"
 	"github.com/xh3b4sd/redigo/pkg/prefix"
 )
 
@@ -85,7 +85,7 @@ func (c *Create) Element(key string, val string, sco float64, ind ...string) err
 	var arg []interface{}
 	{
 		arg = append(arg, prefix.WithKeys(c.prefix, key))
-		arg = append(arg, prefix.WithKeys(c.prefix, fmt.Sprintf("%s:ind", key)))
+		arg = append(arg, prefix.WithKeys(c.prefix, index.New(key)))
 		arg = append(arg, val)
 		arg = append(arg, sco)
 		for _, s := range ind {

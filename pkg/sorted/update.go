@@ -1,11 +1,10 @@
 package sorted
 
 import (
-	"fmt"
-
 	"github.com/gomodule/redigo/redis"
 	"github.com/xh3b4sd/tracer"
 
+	"github.com/xh3b4sd/redigo/pkg/index"
 	"github.com/xh3b4sd/redigo/pkg/prefix"
 )
 
@@ -127,7 +126,7 @@ func (u *Update) Value(key string, new string, sco float64, ind ...string) (bool
 	var arg []interface{}
 	{
 		arg = append(arg, prefix.WithKeys(u.prefix, key))
-		arg = append(arg, prefix.WithKeys(u.prefix, fmt.Sprintf("%s:ind", key)))
+		arg = append(arg, prefix.WithKeys(u.prefix, index.New(key)))
 		arg = append(arg, new)
 		arg = append(arg, sco)
 		for _, s := range ind {
