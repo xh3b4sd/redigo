@@ -4,6 +4,7 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/xh3b4sd/tracer"
 
+	"github.com/xh3b4sd/redigo/pkg/index"
 	"github.com/xh3b4sd/redigo/pkg/prefix"
 )
 
@@ -11,6 +12,20 @@ type Exists struct {
 	pool *redis.Pool
 
 	prefix string
+}
+
+func (e *Exists) Index(key string, ind string) (bool, error) {
+	con := e.pool.Get()
+	defer con.Close()
+
+	_, err := redis.Bytes(con.Do("ZSCORE", prefix.WithKeys(e.prefix, index.New(key)), ind))
+	if IsNotFound(err) {
+		return false, nil
+	} else if err != nil {
+		return false, tracer.Mask(err)
+	}
+
+	return true, nil
 }
 
 func (e *Exists) Score(key string, sco float64) (bool, error) {

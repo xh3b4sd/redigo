@@ -174,6 +174,26 @@ func Test_Client_Single_Sorted_Exists(t *testing.T) {
 	}
 
 	{
+		exi, err := cli.Sorted().Exists().Index("ssk", "a")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Index("ssk", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
 		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
 		if err != nil {
 			t.Fatal(err)
@@ -194,9 +214,29 @@ func Test_Client_Single_Sorted_Exists(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Element("ssk", "foo", 0.8)
+		err := cli.Sorted().Create().Element("ssk", "foo", 0.8, "a", "b")
 		if err != nil {
 			t.Fatal(err)
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Index("ssk", "a")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Index("ssk", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
 		}
 	}
 
@@ -221,9 +261,29 @@ func Test_Client_Single_Sorted_Exists(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Delete().Value("ssk", "foo")
+		err := cli.Sorted().Delete().Value("ssk", "foo", "a", "b")
 		if err != nil {
 			t.Fatal(err)
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Index("ssk", "a")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Index("ssk", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
 		}
 	}
 
@@ -248,10 +308,10 @@ func Test_Client_Single_Sorted_Exists(t *testing.T) {
 	}
 }
 
-// Test_Client_Single_Sorted_Create_Index ensures that indices are guaranteed to
+// Test_Client_Single_Sorted_Create_Order ensures that indices are guaranteed to
 // be unique. Below the indices c and d cannot be duplicated. Indices may be
 // used to ensure unique usernames.
-func Test_Client_Single_Sorted_Create_Index(t *testing.T) {
+func Test_Client_Single_Sorted_Create_Order(t *testing.T) {
 	var err error
 
 	var cli redigo.Interface
@@ -387,7 +447,55 @@ func Test_Client_Single_Sorted_Search_Index(t *testing.T) {
 	}
 
 	{
-		res, err := cli.Sorted().Search().Index("ssk", 0, 1)
+		res, err := cli.Sorted().Search().Index("ssk", "a")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if res != "foo" {
+			t.Fatal("expected", "foo", "got", res)
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Index("ssk", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if res != "foo" {
+			t.Fatal("expected", "foo", "got", res)
+		}
+	}
+}
+
+func Test_Client_Single_Sorted_Search_Order(t *testing.T) {
+	var err error
+
+	var cli redigo.Interface
+	{
+		c := Config{
+			Kind: KindSingle,
+		}
+
+		cli, err = New(c)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = cli.Purge()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Element("ssk", "foo", 0.8, "a", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Order("ssk", 0, 1)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -407,7 +515,7 @@ func Test_Client_Single_Sorted_Search_Index(t *testing.T) {
 	}
 
 	{
-		res, err := cli.Sorted().Search().Index("ssk", 1, 2)
+		res, err := cli.Sorted().Search().Order("ssk", 1, 2)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -420,7 +528,7 @@ func Test_Client_Single_Sorted_Search_Index(t *testing.T) {
 	}
 
 	{
-		res, err := cli.Sorted().Search().Index("ssk", 0, -1)
+		res, err := cli.Sorted().Search().Order("ssk", 0, -1)
 		if err != nil {
 			t.Fatal(err)
 		}

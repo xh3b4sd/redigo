@@ -1,11 +1,10 @@
 package sorted
 
 import (
-	"fmt"
-
 	"github.com/gomodule/redigo/redis"
 	"github.com/xh3b4sd/tracer"
 
+	"github.com/xh3b4sd/redigo/pkg/index"
 	"github.com/xh3b4sd/redigo/pkg/prefix"
 )
 
@@ -52,7 +51,7 @@ func (d *Delete) Score(key string, sco float64) error {
 	var arg []interface{}
 	{
 		arg = append(arg, prefix.WithKeys(d.prefix, key))
-		arg = append(arg, prefix.WithKeys(d.prefix, fmt.Sprintf("%s:ind", key)))
+		arg = append(arg, prefix.WithKeys(d.prefix, index.New(key)))
 		arg = append(arg, sco)
 	}
 
@@ -71,7 +70,7 @@ func (d *Delete) Value(key string, val string, ind ...string) error {
 	var arg []interface{}
 	{
 		arg = append(arg, prefix.WithKeys(d.prefix, key))
-		arg = append(arg, prefix.WithKeys(d.prefix, fmt.Sprintf("%s:ind", key)))
+		arg = append(arg, prefix.WithKeys(d.prefix, index.New(key)))
 		arg = append(arg, val)
 		for _, s := range ind {
 			arg = append(arg, s)

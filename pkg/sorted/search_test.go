@@ -10,7 +10,7 @@ import (
 	"github.com/xh3b4sd/redigo/pkg/pool"
 )
 
-func Test_Search_Index_Input_Error(t *testing.T) {
+func Test_Search_Order_Input_Error(t *testing.T) {
 	testCases := []struct {
 		lef int
 		rig int
@@ -55,7 +55,7 @@ func Test_Search_Index_Input_Error(t *testing.T) {
 				sea = mustNewSearchWithConn(con)
 			}
 
-			_, err := sea.Index("foo", tc.lef, tc.rig)
+			_, err := sea.Order("foo", tc.lef, tc.rig)
 			if !IsExecutionFailedError(err) {
 				t.Fatal("expected", executionFailedError, "got", err)
 			}
@@ -63,7 +63,7 @@ func Test_Search_Index_Input_Error(t *testing.T) {
 	}
 }
 
-func Test_Search_Index_Input_Valid(t *testing.T) {
+func Test_Search_Order_Input_Valid(t *testing.T) {
 	testCases := []struct {
 		lef int
 		rig int
@@ -109,7 +109,7 @@ func Test_Search_Index_Input_Valid(t *testing.T) {
 				sea = mustNewSearchWithConn(con)
 			}
 
-			_, err := sea.Index("foo", tc.lef, tc.rig)
+			_, err := sea.Order("foo", tc.lef, tc.rig)
 			if err != nil {
 				t.Fatal(err)
 			}

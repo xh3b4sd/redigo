@@ -17,12 +17,12 @@ func (s *Search) Value(key string) (string, error) {
 	con := s.pool.Get()
 	defer con.Close()
 
-	result, err := redis.String(con.Do("GET", prefix.WithKeys(s.prefix, key)))
+	res, err := redis.String(con.Do("GET", prefix.WithKeys(s.prefix, key)))
 	if IsNotFound(err) {
 		return "", tracer.Maskf(notFoundError, key)
 	} else if err != nil {
 		return "", tracer.Mask(err)
 	}
 
-	return result, nil
+	return res, nil
 }

@@ -58,6 +58,8 @@ func New(config Config) (*Sorted, error) {
 		sea = &Search{
 			pool: config.Pool,
 
+			indexElementScript: redis.NewScript(2, indexElementScript),
+
 			prefix: config.Prefix,
 		}
 	}

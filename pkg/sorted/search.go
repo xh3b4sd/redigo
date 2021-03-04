@@ -1,19 +1,59 @@
 package sorted
 
 import (
+	"strings"
+
 	"github.com/gomodule/redigo/redis"
 	"github.com/xh3b4sd/tracer"
 
+	"github.com/xh3b4sd/redigo/pkg/index"
 	"github.com/xh3b4sd/redigo/pkg/prefix"
 )
+
+const indexElementScript = `
+	local sco = redis.call("ZSCORE", KEYS[2], ARGV[1])
+	local res = redis.call("ZRANGEBYSCORE", KEYS[1], sco, sco)
+
+	return res[1]
+`
 
 type Search struct {
 	pool *redis.Pool
 
+	indexElementScript *redis.Script
+
 	prefix string
 }
 
-func (s *Search) Index(key string, lef int, rig int) ([]string, error) {
+func (s *Search) Index(key string, ind string) (string, error) {
+	con := s.pool.Get()
+	defer con.Close()
+
+	{
+		if ind == "" {
+			return "", tracer.Maskf(executionFailedError, "index must not be empty")
+		}
+		if strings.Count(ind, " ") != 0 {
+			return "", tracer.Maskf(executionFailedError, "index must not contain whitespace")
+		}
+	}
+
+	var arg []interface{}
+	{
+		arg = append(arg, prefix.WithKeys(s.prefix, key))
+		arg = append(arg, prefix.WithKeys(s.prefix, index.New(key)))
+		arg = append(arg, ind)
+	}
+
+	res, err := redis.String(s.indexElementScript.Do(con, arg...))
+	if err != nil {
+		return "", tracer.Mask(err)
+	}
+
+	return res, nil
+}
+
+func (s *Search) Order(key string, lef int, rig int) ([]string, error) {
 	con := s.pool.Get()
 	defer con.Close()
 
@@ -43,22 +83,22 @@ func (s *Search) Index(key string, lef int, rig int) ([]string, error) {
 		rig--
 	}
 
-	result, err := redis.Strings(con.Do("ZREVRANGE", prefix.WithKeys(s.prefix, key), lef, rig))
+	res, err := redis.Strings(con.Do("ZREVRANGE", prefix.WithKeys(s.prefix, key), lef, rig))
 	if err != nil {
 		return nil, tracer.Mask(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (s *Search) Score(key string, lef float64, rig float64) ([]string, error) {
 	con := s.pool.Get()
 	defer con.Close()
 
-	result, err := redis.Strings(con.Do("ZREVRANGEBYSCORE", prefix.WithKeys(s.prefix, key), lef, rig))
+	res, err := redis.Strings(con.Do("ZREVRANGEBYSCORE", prefix.WithKeys(s.prefix, key), lef, rig))
 	if err != nil {
 		return nil, tracer.Mask(err)
 	}
 
-	return result, nil
+	return res, nil
 }

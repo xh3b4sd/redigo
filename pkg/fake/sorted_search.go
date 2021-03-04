@@ -1,13 +1,22 @@
 package fake
 
 type SortedSearch struct {
-	FakeIndex func() ([]string, error)
+	FakeIndex func() (string, error)
+	FakeOrder func() ([]string, error)
 	FakeScore func() ([]string, error)
 }
 
-func (s *SortedSearch) Index(key string, lef int, rig int) ([]string, error) {
-	if s.FakeIndex != nil {
+func (s *SortedSearch) Index(key string, ind string) (string, error) {
+	if s.FakeOrder != nil {
 		return s.FakeIndex()
+	}
+
+	return "", nil
+}
+
+func (s *SortedSearch) Order(key string, lef int, rig int) ([]string, error) {
+	if s.FakeOrder != nil {
+		return s.FakeOrder()
 	}
 
 	return nil, nil
