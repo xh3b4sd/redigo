@@ -9,28 +9,21 @@ import (
 )
 
 const deleteScoreScript = `
-	-- Ensure that all the indizes we have recorded get deleted. Deleting by
-	-- score is easy because we can delete all indizes by score at once.
 	redis.call("ZREMRANGEBYSCORE", KEYS[2], ARGV[1], ARGV[1])
-
 	redis.call("ZREMRANGEBYSCORE", KEYS[1], ARGV[1], ARGV[1])
 
 	return 0
 `
 
 const deleteValueScript = `
-	if (ARGV[2] ~= nil) then
-		-- Ensure that all the indizes we have recorded get deleted. Deleting by
-		-- value is complex because we have to delete all indizes by value each.
-		local j = 2
-		while ARGV[j] do
-			redis.call("ZREM", KEYS[2], ARGV[j])
+	local sco = redis.call("ZSCORE", KEYS[1], ARGV[1])
 
-			j=j+1
-		end
+	if (sco ~= false) then
+		redis.call("ZREMRANGEBYSCORE", KEYS[2], sco, sco)
+		redis.call("ZREMRANGEBYSCORE", KEYS[1], sco, sco)
+	else
+		redis.call("ZREM", KEYS[1], ARGV[1])
 	end
-
-	redis.call("ZREM", KEYS[1], ARGV[1])
 
 	return 0
 `
@@ -38,8 +31,8 @@ const deleteValueScript = `
 type Delete struct {
 	pool *redis.Pool
 
-	scoreScript *redis.Script
-	valueScript *redis.Script
+	deleteScoreScript *redis.Script
+	deleteValueScript *redis.Script
 
 	prefix string
 }
@@ -55,7 +48,7 @@ func (d *Delete) Score(key string, sco float64) error {
 		arg = append(arg, sco)
 	}
 
-	_, err := redis.Int(d.scoreScript.Do(con, arg...))
+	_, err := redis.Int(d.deleteScoreScript.Do(con, arg...))
 	if err != nil {
 		return tracer.Mask(err)
 	}
@@ -63,7 +56,7 @@ func (d *Delete) Score(key string, sco float64) error {
 	return nil
 }
 
-func (d *Delete) Value(key string, val string, ind ...string) error {
+func (d *Delete) Value(key string, val string) error {
 	con := d.pool.Get()
 	defer con.Close()
 
@@ -72,12 +65,9 @@ func (d *Delete) Value(key string, val string, ind ...string) error {
 		arg = append(arg, prefix.WithKeys(d.prefix, key))
 		arg = append(arg, prefix.WithKeys(d.prefix, index.New(key)))
 		arg = append(arg, val)
-		for _, s := range ind {
-			arg = append(arg, s)
-		}
 	}
 
-	_, err := redis.Int(d.valueScript.Do(con, arg...))
+	_, err := redis.Int(d.deleteValueScript.Do(con, arg...))
 	if err != nil {
 		return tracer.Mask(err)
 	}
