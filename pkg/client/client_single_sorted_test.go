@@ -56,6 +56,52 @@ func Test_Client_Single_Sorted_Delete_Empty(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+
+	{
+		err := cli.Sorted().Create().Element("ssk", "foo", 0.8, "a", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	{
+		emp, err := cli.Empty()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if emp {
+			t.Fatal("storage must not be empty")
+		}
+	}
+
+	{
+		err := cli.Sorted().Delete().Clean("ssk")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		emp, err := cli.Empty()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if !emp {
+			t.Fatal("storage must be empty")
+		}
+	}
 }
 
 func Test_Client_Single_Sorted_Delete_Score(t *testing.T) {

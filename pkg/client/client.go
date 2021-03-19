@@ -145,10 +145,10 @@ func New(config Config) (*Client, error) {
 }
 
 func (c *Client) Check() error {
-	conn := c.pool.Get()
-	defer conn.Close()
+	con := c.pool.Get()
+	defer con.Close()
 
-	_, err := conn.Do("PING")
+	_, err := con.Do("PING")
 	if err != nil {
 		return tracer.Mask(err)
 	}
@@ -165,11 +165,27 @@ func (c *Client) Close() error {
 	return nil
 }
 
-func (c *Client) Purge() error {
-	conn := c.pool.Get()
-	defer conn.Close()
+func (c *Client) Empty() (bool, error) {
+	con := c.pool.Get()
+	defer con.Close()
 
-	_, err := conn.Do("FLUSHALL")
+	res, err := redis.Strings(con.Do("KEYS", "*"))
+	if err != nil {
+		return false, tracer.Mask(err)
+	}
+
+	if len(res) == 0 {
+		return true, nil
+	}
+
+	return false, nil
+}
+
+func (c *Client) Purge() error {
+	con := c.pool.Get()
+	defer con.Close()
+
+	_, err := con.Do("FLUSHALL")
 	if err != nil {
 		return tracer.Mask(err)
 	}
