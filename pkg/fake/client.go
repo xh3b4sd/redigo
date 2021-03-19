@@ -24,6 +24,10 @@ func (c *Client) Close() error {
 	return nil
 }
 
+func (c *Client) Empty() (bool, error) {
+	return false, nil
+}
+
 func (c *Client) Purge() error {
 	return nil
 }

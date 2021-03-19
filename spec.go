@@ -3,6 +3,7 @@ package redigo
 type Interface interface {
 	Check() error
 	Close() error
+	Empty() (bool, error)
 	Purge() error
 
 	Locker() Locker
@@ -65,6 +66,8 @@ type SortedCreate interface {
 }
 
 type SortedDelete interface {
+	// Clean removes the sorted set under key including the derived indeizes.
+	Clean(key string) error
 	// Score deletes the element identified by score within the specified sorted
 	// set. Note that indices associated with the underlying element are purged
 	// automatically as well.
