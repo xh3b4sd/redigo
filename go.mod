@@ -1,6 +1,6 @@
 module github.com/xh3b4sd/redigo
 
-go 1.15
+go 1.16
 
 require (
 	github.com/FZambia/sentinel v1.1.0

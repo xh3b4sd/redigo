@@ -12,7 +12,7 @@ on: "push"
 jobs:
   go-redis:
     runs-on: "ubuntu-latest"
-    container: "golang:1.15-alpine"
+    container: "golang:1.16-alpine"
 
     services:
       redis:
@@ -31,7 +31,7 @@ jobs:
           REDIS_SENTINEL_QUORUM: "1"
 
     steps:
-      - name: "Checkout Git Project"
+      - name: "Setup Git Project"
         uses: "actions/checkout@v2"
 
       - name: "Install Race Dependency"
