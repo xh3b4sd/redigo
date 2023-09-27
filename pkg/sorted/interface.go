@@ -18,10 +18,12 @@ type Create interface {
 	Index(key string, val string, sco float64, ind ...string) error
 
 	// Value creates an element within the sorted set under key transparently
-	// using ZADD. Scores are not enforced to be unique.
+	// using ZADD and the NX option. Scores are not enforced to be unique, values
+	// are.
 	//
 	//     https://redis.io/commands/zadd
 	//
+	// TODO rename to Score due to its score interface
 	Value(key string, val string, sco float64) error
 }
 
@@ -46,9 +48,11 @@ type Delete interface {
 	//
 	Limit(key string, lim int) error
 
-	// Score deletes the element identified by score within the specified sorted
-	// set. Note that indices associated with the underlying element are purged
-	// automatically as well.
+	// Score deletes the element identified by the given score within the
+	// specified sorted set. Non-existing elements are ignored.
+	//
+	//     https://redis.io/commands/zremrangebyscore
+	//
 	Score(key string, sco float64) error
 
 	// Value deletes the elements identified by the given values within the
@@ -130,12 +134,25 @@ type Search interface {
 
 	// Score returns the values associated to the range of scores defined by lef
 	// and rig. Can be used to find a particular value if lef and rig are equal.
+	//
+	//     https://redis.io/commands/zrange
+	//
 	Score(key string, lef float64, rig float64) ([]string, error)
 }
 
 type Update interface {
-	// Index modifies the element identified by sco and sets its value to new. For
-	// the sorted set implementations scores are static and must never change
-	// since they get treated like unique IDs.
+	// Index modifies the element identified by sco and sets its value to new. The
+	// current implementation requires all indices to be provided that have also
+	// been used to create the indexed element in the first place. For the sorted
+	// set implementation here, indices and scores are static and must never
+	// change since they get treated like unique IDs. The returned bool indicates
+	// whether the underlying value was updated. An error is returned if the
+	// underlying element does not exist.
 	Index(key string, new string, sco float64, ind ...string) (bool, error)
+	// Score modifies the element identified by sco and sets its value to new. For
+	// the sorted set implementation here, scores are static and must never change
+	// since they get treated like unique IDs. The returned bool indicates whether
+	// the underlying value was updated. An error is returned if the underlying
+	// element does not exist.
+	Score(key string, new string, sco float64) (bool, error)
 }

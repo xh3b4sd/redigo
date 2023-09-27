@@ -35,7 +35,7 @@ const updateIndexScript = `
 		return 3
 	end
 
-	local function ver(key, val, sco)
+	local function ver(key, new, sco)
 		-- Verify if the score does already exist. If there is no element we
 		-- cannot update it.
 		local res = redis.call("ZRANGE", key, sco, sco, "BYSCORE")
@@ -47,7 +47,7 @@ const updateIndexScript = `
 		-- Verify if the existing value is already what we want to update to. If
 		-- the desired state is already reconciled we do not need to proceed
 		-- further.
-		if (old == val) then
+		if (old == new) then
 			return 2
 		end
 
@@ -78,13 +78,38 @@ const updateIndexScript = `
 
 		j=j+1
 	end
+
 	return upd(KEYS[1], ARGV[1], ARGV[2])
+`
+
+const updateScoreScript = `
+	-- Verify if the score does already exist. If there is no element we
+	-- cannot update it.
+	local res = redis.call("ZRANGE", KEYS[1], ARGV[2], ARGV[2], "BYSCORE")
+
+	local old = res[1]
+	if (old == nil) then
+		return 0
+	end
+
+	-- Verify if the existing value is already what we want to update to. If
+	-- the desired state is already reconciled we do not need to proceed
+	-- further.
+	if (old == ARGV[1]) then
+		return 1
+	end
+
+	redis.call("ZADD", KEYS[1], ARGV[2], ARGV[1])
+	redis.call("ZREM", KEYS[1], old)
+
+	return 2
 `
 
 type update struct {
 	pool *redis.Pool
 
 	updateIndexScript *redis.Script
+	updateScoreScript *redis.Script
 
 	prefix string
 }
@@ -124,10 +149,11 @@ func (u *update) Index(key string, new string, sco float64, ind ...string) (bool
 
 	var arg []interface{}
 	{
-		arg = append(arg, prefix.WithKeys(u.prefix, key))
-		arg = append(arg, prefix.WithKeys(u.prefix, index.New(key)))
-		arg = append(arg, new)
-		arg = append(arg, sco)
+		arg = append(arg, prefix.WithKeys(u.prefix, key))            // KEYS[1]
+		arg = append(arg, prefix.WithKeys(u.prefix, index.New(key))) // KEYS[2]
+		arg = append(arg, new)                                       // ARGV[1]
+		arg = append(arg, sco)                                       // ARGV[2]
+
 		for _, s := range ind {
 			arg = append(arg, s)
 		}
@@ -146,6 +172,34 @@ func (u *update) Index(key string, new string, sco float64, ind ...string) (bool
 	case 2:
 		return false, nil
 	case 3:
+		return true, nil
+	}
+
+	return false, tracer.Mask(executionFailedError)
+}
+
+func (u *update) Score(key string, new string, sco float64) (bool, error) {
+	con := u.pool.Get()
+	defer con.Close()
+
+	var arg []interface{}
+	{
+		arg = append(arg, prefix.WithKeys(u.prefix, key)) // KEYS[1]
+		arg = append(arg, new)                            // ARGV[1]
+		arg = append(arg, sco)                            // ARGV[2]
+	}
+
+	res, err := redis.Int(u.updateScoreScript.Do(con, arg...))
+	if err != nil {
+		return false, tracer.Mask(err)
+	}
+
+	switch res {
+	case 0:
+		return false, tracer.Maskf(notFoundError, "element does not exist in sorted set")
+	case 1:
+		return false, nil
+	case 2:
 		return true, nil
 	}
 

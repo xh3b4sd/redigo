@@ -29,19 +29,11 @@ const deleteIndexScript = `
 	return 0
 `
 
-const deleteScoreScript = `
-	redis.call("ZREMRANGEBYSCORE", KEYS[2], ARGV[1], ARGV[1])
-	redis.call("ZREMRANGEBYSCORE", KEYS[1], ARGV[1], ARGV[1])
-
-	return 0
-`
-
 type delete struct {
 	pool *redis.Pool
 
 	deleteCleanScript *redis.Script
 	deleteIndexScript *redis.Script
-	deleteScoreScript *redis.Script
 
 	prefix string
 }
@@ -56,7 +48,7 @@ func (d *delete) Clean(key string) error {
 		arg = append(arg, prefix.WithKeys(d.prefix, index.New(key))) // KEYS[2]
 	}
 
-	_, err := redis.Int(d.deleteCleanScript.Do(con, arg...))
+	_, err := redis.Int64(d.deleteCleanScript.Do(con, arg...))
 	if err != nil {
 		return tracer.Mask(err)
 	}
@@ -78,7 +70,7 @@ func (d *delete) Index(key string, val ...string) error {
 		}
 	}
 
-	_, err := redis.Int(d.deleteIndexScript.Do(con, arg...))
+	_, err := redis.Int64(d.deleteIndexScript.Do(con, arg...))
 	if err != nil {
 		return tracer.Mask(err)
 	}
@@ -116,14 +108,7 @@ func (d *delete) Score(key string, sco float64) error {
 	con := d.pool.Get()
 	defer con.Close()
 
-	var arg []interface{}
-	{
-		arg = append(arg, prefix.WithKeys(d.prefix, key))            // KEYS[1]
-		arg = append(arg, prefix.WithKeys(d.prefix, index.New(key))) // KEYS[2]
-		arg = append(arg, sco)                                       // ARGV[1]
-	}
-
-	_, err := redis.Int(d.deleteScoreScript.Do(con, arg...))
+	_, err := redis.Int64(con.Do("ZREMRANGEBYSCORE", prefix.WithKeys(d.prefix, key), sco, sco))
 	if err != nil {
 		return tracer.Mask(err)
 	}

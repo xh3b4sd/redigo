@@ -327,6 +327,116 @@ func Test_Client_Single_Sorted_Delete_Empty(t *testing.T) {
 	}
 }
 
+func Test_Client_Single_Sorted_Delete_Index(t *testing.T) {
+	var err error
+
+	var cli redigo.Interface
+	{
+		c := client.Config{
+			Kind: client.KindSingle,
+		}
+
+		cli, err = client.New(c)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = cli.Purge()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	// We just created an element that defined the indices a and b. Now we delete
+	// this very element including its indices. With this test we ensure that
+	// elements as well as their associated indices get automatically purged when
+	// deleting indexed elements.
+	{
+		err := cli.Sorted().Delete().Index("ssk", "foo")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	// It should be possible to create the exact same element again including the
+	// same indizes after it has been deleted. This verifies that deleting
+	// elements including its indizes works as expected.
+	{
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Delete().Index("ssk", "foo")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	{
+		err := cli.Sorted().Delete().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
 func Test_Client_Single_Sorted_Delete_Limit(t *testing.T) {
 	var err error
 
@@ -521,85 +631,6 @@ func Test_Client_Single_Sorted_Delete_Score(t *testing.T) {
 		}
 		if exi {
 			t.Fatal("element must not exist")
-		}
-	}
-
-	{
-		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
-		if err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	{
-		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if !exi {
-			t.Fatal("element must exist")
-		}
-	}
-
-	// We just created an element that defined the indices a and b. Now we
-	// delete this very element only using its score. With this test we ensure
-	// that elements as well as their associated indices get automatically
-	// purged when deleting elements only using their score.
-	{
-		err := cli.Sorted().Delete().Score("ssk", 0.8)
-		if err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	// It should be possible to create the exact same element again including
-	// its indizes after it has been deleted before. This verifies that deleting
-	// elements including its indizes works as expected.
-	{
-		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
-		if err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	{
-		err := cli.Sorted().Delete().Index("ssk", "foo")
-		if err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	{
-		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if exi {
-			t.Fatal("element must not exist")
-		}
-	}
-
-	{
-		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
-		if err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	{
-		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if !exi {
-			t.Fatal("element must exist")
-		}
-	}
-
-	{
-		err := cli.Sorted().Delete().Score("ssk", 0.8)
-		if err != nil {
-			t.Fatal(err)
 		}
 	}
 }
@@ -1663,7 +1694,7 @@ func Test_Client_Single_Sorted_Search_Value(t *testing.T) {
 	}
 }
 
-func Test_Client_Single_Sorted_Update(t *testing.T) {
+func Test_Client_Single_Sorted_Update_Index(t *testing.T) {
 	var err error
 
 	var cli redigo.Interface
@@ -1747,6 +1778,104 @@ func Test_Client_Single_Sorted_Update(t *testing.T) {
 		err := cli.Sorted().Create().Index("ssk", "baz", 0.6, "a", "b")
 		if err != nil {
 			t.Fatal(err)
+		}
+	}
+}
+
+func Test_Client_Single_Sorted_Update_Score(t *testing.T) {
+	var err error
+
+	var cli redigo.Interface
+	{
+		c := client.Config{
+			Kind: client.KindSingle,
+		}
+
+		cli, err = client.New(c)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = cli.Purge()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Value("ssk", "foo", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Score("ssk", 0.8, 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 1 {
+			t.Fatal("expected", 1, "got", len(res))
+		}
+		if res[0] != "foo" {
+			t.Fatal("expected", "foo", "got", res[0])
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Value("ssk", "foo", 0.7)
+		if !sorted.IsAlreadyExistsError(err) {
+			t.Fatal("expected", "alreadyExistsError", "got", err)
+		}
+	}
+
+	{
+		_, err := cli.Sorted().Update().Score("ssk", "bar", 0.7)
+		if !sorted.IsNotFound(err) {
+			t.Fatal("expected", "notFoundError", "got", err)
+		}
+	}
+
+	{
+		upd, err := cli.Sorted().Update().Score("ssk", "bar", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !upd {
+			t.Fatal("element must be updated")
+		}
+	}
+
+	{
+		upd, err := cli.Sorted().Update().Score("ssk", "bar", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if upd {
+			t.Fatal("element must not be updated")
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Score("ssk", 0.8, 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 1 {
+			t.Fatal("expected", 1, "got", len(res))
+		}
+		if res[0] != "bar" {
+			t.Fatal("expected", "bar", "got", res[0])
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Order("ssk", 0, -1)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 1 {
+			t.Fatal("expected", 1, "got", len(res))
 		}
 	}
 }

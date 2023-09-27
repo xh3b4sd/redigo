@@ -39,7 +39,6 @@ func New(config Config) (*Sorted, error) {
 
 			deleteCleanScript: redis.NewScript(2, deleteCleanScript),
 			deleteIndexScript: redis.NewScript(2, deleteIndexScript),
-			deleteScoreScript: redis.NewScript(2, deleteScoreScript),
 
 			prefix: config.Prefix,
 		}
@@ -89,6 +88,7 @@ func New(config Config) (*Sorted, error) {
 			pool: config.Pool,
 
 			updateIndexScript: redis.NewScript(2, updateIndexScript),
+			updateScoreScript: redis.NewScript(1, updateScoreScript),
 
 			prefix: config.Prefix,
 		}
