@@ -178,7 +178,6 @@ func (u *update) Index(key string, new string, sco float64, ind ...string) (bool
 	return false, tracer.Mask(executionFailedError)
 }
 
-// TODO conformance tests
 func (u *update) Score(key string, new string, sco float64) (bool, error) {
 	con := u.pool.Get()
 	defer con.Close()
