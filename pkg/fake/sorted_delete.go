@@ -16,7 +16,7 @@ func (d *SortedDelete) Clean(key string) error {
 	return nil
 }
 
-func (d *SortedDelete) Index(key string, val string) error {
+func (d *SortedDelete) Index(key string, val ...string) error {
 	if d.FakeIndex != nil {
 		return d.FakeIndex()
 	}

@@ -15,7 +15,6 @@ const deleteCleanScript = `
 	return 0
 `
 
-// TODO conformance tests for multiple deletions in one call
 const deleteIndexScript = `
 	for i = 1, #ARGV do
 			local sco = redis.call("ZSCORE", KEYS[1], ARGV[i])
@@ -53,8 +52,8 @@ func (d *delete) Clean(key string) error {
 
 	var arg []interface{}
 	{
-		arg = append(arg, prefix.WithKeys(d.prefix, key))
-		arg = append(arg, prefix.WithKeys(d.prefix, index.New(key)))
+		arg = append(arg, prefix.WithKeys(d.prefix, key))            // KEYS[1]
+		arg = append(arg, prefix.WithKeys(d.prefix, index.New(key))) // KEYS[2]
 	}
 
 	_, err := redis.Int(d.deleteCleanScript.Do(con, arg...))
@@ -65,7 +64,7 @@ func (d *delete) Clean(key string) error {
 	return nil
 }
 
-func (d *delete) Index(key string, val string) error {
+func (d *delete) Index(key string, val ...string) error {
 	con := d.pool.Get()
 	defer con.Close()
 
@@ -73,7 +72,10 @@ func (d *delete) Index(key string, val string) error {
 	{
 		arg = append(arg, prefix.WithKeys(d.prefix, key))            // KEYS[1]
 		arg = append(arg, prefix.WithKeys(d.prefix, index.New(key))) // KEYS[2]
-		arg = append(arg, val)                                       // ARGV[1]
+
+		for _, x := range val {
+			arg = append(arg, x)
+		}
 	}
 
 	_, err := redis.Int(d.deleteIndexScript.Do(con, arg...))
@@ -116,9 +118,9 @@ func (d *delete) Score(key string, sco float64) error {
 
 	var arg []interface{}
 	{
-		arg = append(arg, prefix.WithKeys(d.prefix, key))
-		arg = append(arg, prefix.WithKeys(d.prefix, index.New(key)))
-		arg = append(arg, sco)
+		arg = append(arg, prefix.WithKeys(d.prefix, key))            // KEYS[1]
+		arg = append(arg, prefix.WithKeys(d.prefix, index.New(key))) // KEYS[2]
+		arg = append(arg, sco)                                       // ARGV[1]
 	}
 
 	_, err := redis.Int(d.deleteScoreScript.Do(con, arg...))

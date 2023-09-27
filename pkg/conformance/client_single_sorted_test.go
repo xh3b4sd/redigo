@@ -35,28 +35,42 @@ func Test_Client_Single_Sorted_Create_Order(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
+		err = cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = cli.Sorted().Create().Index("ssk", "bar", 0.7, "c", "d")
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
 
 	{
-		err := cli.Sorted().Create().Index("ssk", "bar", 0.7, "c", "d")
-		if err != nil {
-			t.Fatal(err)
+		err = cli.Sorted().Create().Index("ssk", "baz", 0.6, "a")
+		if !sorted.IsAlreadyExistsError(err) {
+			t.Fatal("expected", "alreadyExistsError", "got", err)
 		}
-	}
-
-	{
-		err := cli.Sorted().Create().Index("ssk", "baz", 0.6, "c", "d")
+		err = cli.Sorted().Create().Index("ssk", "baz", 0.6, "b", "z")
+		if !sorted.IsAlreadyExistsError(err) {
+			t.Fatal("expected", "alreadyExistsError", "got", err)
+		}
+		err = cli.Sorted().Create().Index("ssk", "baz", 0.6, "a", "b")
+		if !sorted.IsAlreadyExistsError(err) {
+			t.Fatal("expected", "alreadyExistsError", "got", err)
+		}
+		err = cli.Sorted().Create().Index("ssk", "baz", 0.6, "c", "d")
+		if !sorted.IsAlreadyExistsError(err) {
+			t.Fatal("expected", "alreadyExistsError", "got", err)
+		}
+		err = cli.Sorted().Create().Index("ssk", "baz", 0.7, "z")
 		if !sorted.IsAlreadyExistsError(err) {
 			t.Fatal("expected", "alreadyExistsError", "got", err)
 		}
 	}
 
+	// Ensure deleting multiple values with index mappings can be deleted at once.
 	{
-		err := cli.Sorted().Delete().Index("ssk", "bar")
+		err := cli.Sorted().Delete().Index("ssk", "foo", "bar")
 		if err != nil {
 			t.Fatal(err)
 		}
