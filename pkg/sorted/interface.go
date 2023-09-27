@@ -18,6 +18,7 @@ type Create interface {
 	//
 	// TODO should be renamed to Index because of the index feature.
 	Score(key string, val string, sco float64, ind ...string) error
+
 	// Value creates an element within the sorted set under key transparently
 	// using ZADD. Scores are not enforced to be unique.
 	//
@@ -29,10 +30,12 @@ type Create interface {
 type Delete interface {
 	// Clean removes the sorted set under key including the derived indeizes.
 	Clean(key string) error
+
 	// Index deletes the element identified by value within the specified sorted
 	// set. Note that indices associated with the underlying element are purged
 	// automatically as well.
 	Index(key string, val string) error
+
 	// Limit cuts off all older elements from the sorted set under key resulting
 	// in a sorted set that contains the latest lim amount of elements. Consider
 	// the following elements.
@@ -44,10 +47,12 @@ type Delete interface {
 	//     e f g
 	//
 	Limit(key string, lim int) error
+
 	// Score deletes the element identified by score within the specified sorted
 	// set. Note that indices associated with the underlying element are purged
 	// automatically as well.
 	Score(key string, sco float64) error
+
 	// Value deletes the elements identified by the given values within the
 	// specified sorted set. Non-existing elements are ignored.
 	//
@@ -60,9 +65,11 @@ type Exists interface {
 	// Index verifies if an element with the given index exists within the
 	// sorted set identified by key.
 	Index(key string, ind string) (bool, error)
+
 	// Score verifies if an element with the given score exists within the
 	// sorted set identified by key.
 	Score(key string, sco float64) (bool, error)
+
 	// Value verifies if an element with the given value exists within the
 	// sorted set identified by key.
 	Value(key string, val string) (bool, error)
@@ -95,6 +102,7 @@ type Search interface {
 	// during element creation. This enables multi key elements. Values can be
 	// retreived using different keys referencing the requested element's value.
 	Index(key string, ind string) (string, error)
+
 	// Inter returns the values that exist in all the given keys. Therefore the
 	// returned values represent the intersection of the given keys. Given k1 and
 	// k2 hold the following values, Inter(k1, k2) were to return v4 and v5.
@@ -103,17 +111,17 @@ type Search interface {
 	//     k2    v2    v4 v5    v7
 	//
 	Inter(key ...string) ([]string, error)
+
 	// Order returns the values of the sorted set elements stored under key. The
 	// provided pointers are ranks of the elements' scores within the sorted set.
-	// Optionally a single bool is allowed to be passed for returning the element
-	// scores instead of their values as described by WITHSCORES.
+	// All values udner key can be returned using lef=0 and rig=-1. Optionally a
+	// single bool is allowed to be passed for returning the element scores
+	// instead of their values as described by WITHSCORES.
 	//
-	//    lef=-1 rig=-1    ->    rightmost/first element
-	//    lef=0  rig=0     ->    leftmost/latest element
-	//
-	//    lef=0  rig=-1    ->    all elements
+	//     https://redis.io/commands/zrange
 	//
 	Order(key string, lef int, rig int, sco ...bool) ([]string, error)
+
 	// Rando returns a random value within the underlying sorted set. Optionally
 	// a single uint is allowed to be passed for requesting cou random values as
 	// described by ZRANDMEMBER.
@@ -121,11 +129,10 @@ type Search interface {
 	//     https://redis.io/commands/zrandmember
 	//
 	Rando(key string, cou ...uint) ([]string, error)
-	// Value returns the values associated to the range of scores defined by lef
+
+	// Score returns the values associated to the range of scores defined by lef
 	// and rig. Can be used to find a particular value if lef and rig are equal.
-	//
-	// TODO should be renamed to Score because of the score parameters.
-	Value(key string, lef float64, rig float64) ([]string, error)
+	Score(key string, lef float64, rig float64) ([]string, error)
 }
 
 type Update interface {
