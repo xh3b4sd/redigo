@@ -327,6 +327,116 @@ func Test_Client_Single_Sorted_Delete_Empty(t *testing.T) {
 	}
 }
 
+func Test_Client_Single_Sorted_Delete_Index(t *testing.T) {
+	var err error
+
+	var cli redigo.Interface
+	{
+		c := client.Config{
+			Kind: client.KindSingle,
+		}
+
+		cli, err = client.New(c)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = cli.Purge()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	// We just created an element that defined the indices a and b. Now we delete
+	// this very element including its indices. With this test we ensure that
+	// elements as well as their associated indices get automatically purged when
+	// deleting indexed elements.
+	{
+		err := cli.Sorted().Delete().Index("ssk", "foo")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	// It should be possible to create the exact same element again including the
+	// same indizes after it has been deleted. This verifies that deleting
+	// elements including its indizes works as expected.
+	{
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Delete().Index("ssk", "foo")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	{
+		err := cli.Sorted().Delete().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
 func Test_Client_Single_Sorted_Delete_Limit(t *testing.T) {
 	var err error
 
@@ -521,85 +631,6 @@ func Test_Client_Single_Sorted_Delete_Score(t *testing.T) {
 		}
 		if exi {
 			t.Fatal("element must not exist")
-		}
-	}
-
-	{
-		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
-		if err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	{
-		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if !exi {
-			t.Fatal("element must exist")
-		}
-	}
-
-	// We just created an element that defined the indices a and b. Now we
-	// delete this very element only using its score. With this test we ensure
-	// that elements as well as their associated indices get automatically
-	// purged when deleting elements only using their score.
-	{
-		err := cli.Sorted().Delete().Index("ssk", "foo")
-		if err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	// It should be possible to create the exact same element again including
-	// its indizes after it has been deleted before. This verifies that deleting
-	// elements including its indizes works as expected.
-	{
-		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
-		if err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	{
-		err := cli.Sorted().Delete().Index("ssk", "foo")
-		if err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	{
-		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if exi {
-			t.Fatal("element must not exist")
-		}
-	}
-
-	{
-		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
-		if err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	{
-		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if !exi {
-			t.Fatal("element must exist")
-		}
-	}
-
-	{
-		err := cli.Sorted().Delete().Score("ssk", 0.8)
-		if err != nil {
-			t.Fatal(err)
 		}
 	}
 }
