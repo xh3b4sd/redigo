@@ -35,21 +35,21 @@ func Test_Client_Single_Sorted_Create_Order(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "foo", 0.8, "a", "b")
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "bar", 0.7, "c", "d")
+		err := cli.Sorted().Create().Index("ssk", "bar", 0.7, "c", "d")
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "baz", 0.6, "c", "d")
+		err := cli.Sorted().Create().Index("ssk", "baz", 0.6, "c", "d")
 		if !sorted.IsAlreadyExistsError(err) {
 			t.Fatal("expected", "alreadyExistsError", "got", err)
 		}
@@ -63,7 +63,7 @@ func Test_Client_Single_Sorted_Create_Order(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "baz", 0.6, "c", "d")
+		err := cli.Sorted().Create().Index("ssk", "baz", 0.6, "c", "d")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -94,28 +94,28 @@ func Test_Client_Single_Sorted_Create_Score(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "foo", 0.8, "a", "b")
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "bar", 0.7, "c", "d")
+		err := cli.Sorted().Create().Index("ssk", "bar", 0.7, "c", "d")
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "zap", 0.8, "e", "f")
+		err := cli.Sorted().Create().Index("ssk", "zap", 0.8, "e", "f")
 		if !sorted.IsAlreadyExistsError(err) {
 			t.Fatal("expected", "alreadyExistsError", "got", err)
 		}
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "foo", 0.8, "g", "h")
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "g", "h")
 		if !sorted.IsAlreadyExistsError(err) {
 			t.Fatal("expected", "alreadyExistsError", "got", err)
 		}
@@ -267,7 +267,7 @@ func Test_Client_Single_Sorted_Delete_Empty(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "foo", 0.8, "a", "b")
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -365,31 +365,31 @@ func Test_Client_Single_Sorted_Delete_Limit(t *testing.T) {
 	}
 
 	{
-		err = cli.Sorted().Create().Score("ssk", "a", 0.1)
+		err = cli.Sorted().Create().Index("ssk", "a", 0.1)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("ssk", "b", 0.2)
+		err = cli.Sorted().Create().Index("ssk", "b", 0.2)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("ssk", "c", 0.3)
+		err = cli.Sorted().Create().Index("ssk", "c", 0.3)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("ssk", "d", 0.4)
+		err = cli.Sorted().Create().Index("ssk", "d", 0.4)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("ssk", "e", 0.5)
+		err = cli.Sorted().Create().Index("ssk", "e", 0.5)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("ssk", "f", 0.6)
+		err = cli.Sorted().Create().Index("ssk", "f", 0.6)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("ssk", "g", 0.7)
+		err = cli.Sorted().Create().Index("ssk", "g", 0.7)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -477,7 +477,7 @@ func Test_Client_Single_Sorted_Delete_Score(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "foo", 0.8)
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -511,7 +511,7 @@ func Test_Client_Single_Sorted_Delete_Score(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "foo", 0.8, "a", "b")
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -542,7 +542,7 @@ func Test_Client_Single_Sorted_Delete_Score(t *testing.T) {
 	// its indizes after it has been deleted before. This verifies that deleting
 	// elements including its indizes works as expected.
 	{
-		err := cli.Sorted().Create().Score("ssk", "foo", 0.8, "a", "b")
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -566,7 +566,7 @@ func Test_Client_Single_Sorted_Delete_Score(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "foo", 0.8, "a", "b")
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -754,7 +754,7 @@ func Test_Client_Single_Sorted_Exists(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "foo", 0.8, "a", "b")
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -979,7 +979,7 @@ func Test_Client_Single_Sorted_Metric(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "a", 0.8)
+		err := cli.Sorted().Create().Index("ssk", "a", 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -996,7 +996,7 @@ func Test_Client_Single_Sorted_Metric(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "b", 0.7)
+		err := cli.Sorted().Create().Index("ssk", "b", 0.7)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1013,7 +1013,7 @@ func Test_Client_Single_Sorted_Metric(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "c", 0.6)
+		err := cli.Sorted().Create().Index("ssk", "c", 0.6)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1061,7 +1061,7 @@ func Test_Client_Single_Sorted_Search_Index(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "foo", 0.8, "a", "b")
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1119,19 +1119,19 @@ func Test_Client_Single_Sorted_Search_Inter(t *testing.T) {
 	}
 
 	{
-		err = cli.Sorted().Create().Score("k1", "v3", 0.3)
+		err = cli.Sorted().Create().Index("k1", "v3", 0.3)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("k1", "v4", 0.4)
+		err = cli.Sorted().Create().Index("k1", "v4", 0.4)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("k1", "v5", 0.5)
+		err = cli.Sorted().Create().Index("k1", "v5", 0.5)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("k1", "v6", 0.6)
+		err = cli.Sorted().Create().Index("k1", "v6", 0.6)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1170,19 +1170,19 @@ func Test_Client_Single_Sorted_Search_Inter(t *testing.T) {
 	}
 
 	{
-		err = cli.Sorted().Create().Score("k2", "v2", 0.2)
+		err = cli.Sorted().Create().Index("k2", "v2", 0.2)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("k2", "v4", 0.4)
+		err = cli.Sorted().Create().Index("k2", "v4", 0.4)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("k2", "v5", 0.5)
+		err = cli.Sorted().Create().Index("k2", "v5", 0.5)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("k2", "v7", 0.7)
+		err = cli.Sorted().Create().Index("k2", "v7", 0.7)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1236,7 +1236,7 @@ func Test_Client_Single_Sorted_Search_Order(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "foo", 6.0, "a", "b")
+		err := cli.Sorted().Create().Index("ssk", "foo", 6.0, "a", "b")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1256,7 +1256,7 @@ func Test_Client_Single_Sorted_Search_Order(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "bar", 7.0, "c", "d")
+		err := cli.Sorted().Create().Index("ssk", "bar", 7.0, "c", "d")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1325,7 +1325,7 @@ func Test_Client_Single_Sorted_Search_Order(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "baz", 8.0, "e", "f")
+		err := cli.Sorted().Create().Index("ssk", "baz", 8.0, "e", "f")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1402,15 +1402,15 @@ func Test_Client_Single_Sorted_Search_Rando(t *testing.T) {
 	}
 
 	{
-		err = cli.Sorted().Create().Score("ssk", "foo", 0.8)
+		err = cli.Sorted().Create().Index("ssk", "foo", 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("ssk", "bar", 0.7)
+		err = cli.Sorted().Create().Index("ssk", "bar", 0.7)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("ssk", "baz", 0.6)
+		err = cli.Sorted().Create().Index("ssk", "baz", 0.6)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1476,39 +1476,39 @@ func Test_Client_Single_Sorted_Search_Rando_Cou(t *testing.T) {
 	}
 
 	{
-		err = cli.Sorted().Create().Score("ssk", "a", 0.9)
+		err = cli.Sorted().Create().Index("ssk", "a", 0.9)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("ssk", "b", 0.8)
+		err = cli.Sorted().Create().Index("ssk", "b", 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("ssk", "c", 0.7)
+		err = cli.Sorted().Create().Index("ssk", "c", 0.7)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("ssk", "d", 0.6)
+		err = cli.Sorted().Create().Index("ssk", "d", 0.6)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("ssk", "e", 0.5)
+		err = cli.Sorted().Create().Index("ssk", "e", 0.5)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("ssk", "f", 0.4)
+		err = cli.Sorted().Create().Index("ssk", "f", 0.4)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("ssk", "g", 0.3)
+		err = cli.Sorted().Create().Index("ssk", "g", 0.3)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("ssk", "h", 0.2)
+		err = cli.Sorted().Create().Index("ssk", "h", 0.2)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("ssk", "i", 0.1)
+		err = cli.Sorted().Create().Index("ssk", "i", 0.1)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1593,7 +1593,7 @@ func Test_Client_Single_Sorted_Search_Value(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "foo", 0.8, "a", "b")
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1613,7 +1613,7 @@ func Test_Client_Single_Sorted_Search_Value(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "bar", 0.7, "c", "d")
+		err := cli.Sorted().Create().Index("ssk", "bar", 0.7, "c", "d")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1670,7 +1670,7 @@ func Test_Client_Single_Sorted_Update(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "foo", 0.8, "a", "b")
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1690,7 +1690,7 @@ func Test_Client_Single_Sorted_Update(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "baz", 0.6, "a", "b")
+		err := cli.Sorted().Create().Index("ssk", "baz", 0.6, "a", "b")
 		if !sorted.IsAlreadyExistsError(err) {
 			t.Fatal("expected", "alreadyExistsError", "got", err)
 		}
@@ -1730,7 +1730,7 @@ func Test_Client_Single_Sorted_Update(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "baz", 0.6, "a", "b")
+		err := cli.Sorted().Create().Index("ssk", "baz", 0.6, "a", "b")
 		if err != nil {
 			t.Fatal(err)
 		}

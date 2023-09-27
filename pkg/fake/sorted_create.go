@@ -1,13 +1,13 @@
 package fake
 
 type SortedCreate struct {
-	FakeScore func() error
+	FakeIndex func() error
 	FakeValue func() error
 }
 
-func (e *SortedCreate) Score(key string, val string, sco float64, ind ...string) error {
-	if e.FakeScore != nil {
-		return e.FakeScore()
+func (e *SortedCreate) Index(key string, val string, sco float64, ind ...string) error {
+	if e.FakeIndex != nil {
+		return e.FakeIndex()
 	}
 
 	return nil
