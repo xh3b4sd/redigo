@@ -10,7 +10,7 @@ import (
 	"github.com/xh3b4sd/redigo/pkg/prefix"
 )
 
-const createScoreScript = `
+const createIndexScript = `
 	-- Verify if the score does already exist. The first key here might be "ssk"
 	-- and the second argument might be "0.8". If we get any value in response
 	-- the score is already taken.
@@ -52,12 +52,12 @@ const createScoreScript = `
 type create struct {
 	pool *redis.Pool
 
-	createScoreScript *redis.Script
+	createIndexScript *redis.Script
 
 	prefix string
 }
 
-func (c *create) Score(key string, val string, sco float64, ind ...string) error {
+func (c *create) Index(key string, val string, sco float64, ind ...string) error {
 	con := c.pool.Get()
 	defer con.Close()
 
@@ -94,7 +94,7 @@ func (c *create) Score(key string, val string, sco float64, ind ...string) error
 		}
 	}
 
-	res, err := redis.Int(c.createScoreScript.Do(con, arg...))
+	res, err := redis.Int(c.createIndexScript.Do(con, arg...))
 	if err != nil {
 		return tracer.Mask(err)
 	}

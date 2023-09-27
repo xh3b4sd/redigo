@@ -51,7 +51,7 @@ func Test_Client_Single_Locker_Lifecycle(t *testing.T) {
 		w.Add(2)
 
 		{
-			err = cli.Sorted().Create().Score("key", "val", 1)
+			err = cli.Sorted().Create().Index("key", "val", 1)
 			if err != nil {
 				erc <- tracer.Mask(err)
 				return

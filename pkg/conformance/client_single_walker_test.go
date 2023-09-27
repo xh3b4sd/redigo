@@ -48,12 +48,12 @@ func Test_Client_Single_Walker_Simple_001(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = cli.Sorted().Create().Score("key", "val", 1)
+		err = cli.Sorted().Create().Index("key", "val", 1)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		err = cli.Sorted().Create().Score("ssk", "foo", 0.8)
+		err = cli.Sorted().Create().Index("ssk", "foo", 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -172,12 +172,12 @@ func Test_Client_Single_Walker_Simple_002(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = cli.Sorted().Create().Score("pre:key", "val", 1)
+		err = cli.Sorted().Create().Index("pre:key", "val", 1)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		err = cli.Sorted().Create().Score("ssk", "foo", 0.8)
+		err = cli.Sorted().Create().Index("ssk", "foo", 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -287,12 +287,12 @@ func Test_Client_Single_Walker_Simple_003(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = cli.Sorted().Create().Score("key", "val", 1)
+		err = cli.Sorted().Create().Index("key", "val", 1)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		err = cli.Sorted().Create().Score("ssk", "foo", 0.8)
+		err = cli.Sorted().Create().Index("ssk", "foo", 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}

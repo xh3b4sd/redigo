@@ -26,7 +26,7 @@ func New(config Config) (*Sorted, error) {
 		cre = &create{
 			pool: config.Pool,
 
-			createScoreScript: redis.NewScript(2, createScoreScript),
+			createIndexScript: redis.NewScript(2, createIndexScript),
 
 			prefix: config.Prefix,
 		}

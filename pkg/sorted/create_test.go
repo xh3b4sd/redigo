@@ -10,7 +10,7 @@ import (
 	"github.com/xh3b4sd/redigo/pkg/pool"
 )
 
-func Test_Create_Score_Input_Error(t *testing.T) {
+func Test_Create_Index_Input_Error(t *testing.T) {
 	testCases := []struct {
 		ind []string
 	}{
@@ -64,7 +64,7 @@ func Test_Create_Score_Input_Error(t *testing.T) {
 				cre = mustNewCreateWithConn(con)
 			}
 
-			err := cre.Score("ssk", "foo", 0.8, tc.ind...)
+			err := cre.Index("ssk", "foo", 0.8, tc.ind...)
 			if !IsExecutionFailedError(err) {
 				t.Fatal("expected", executionFailedError, "got", err)
 			}
@@ -72,7 +72,7 @@ func Test_Create_Score_Input_Error(t *testing.T) {
 	}
 }
 
-func Test_Create_Score_Input_Valid(t *testing.T) {
+func Test_Create_Index_Input_Valid(t *testing.T) {
 	testCases := []struct {
 		ind []string
 	}{
@@ -105,7 +105,7 @@ func Test_Create_Score_Input_Valid(t *testing.T) {
 				cre = mustNewCreateWithConn(con)
 			}
 
-			err := cre.Score("ssk", "foo", 0.8, tc.ind...)
+			err := cre.Index("ssk", "foo", 0.8, tc.ind...)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -124,7 +124,7 @@ func mustNewCreateWithConn(con redis.Conn) *create {
 		c = &create{
 			pool: p,
 
-			createScoreScript: redis.NewScript(2, createScoreScript),
+			createIndexScript: redis.NewScript(2, createIndexScript),
 
 			prefix: "prefix",
 		}
