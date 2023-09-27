@@ -17,14 +17,13 @@ type Create interface {
 	// Scores are enforced to be unique.
 	Index(key string, val string, sco float64, ind ...string) error
 
-	// Value creates an element within the sorted set under key transparently
+	// Score creates an element within the sorted set under key transparently
 	// using ZADD and the NX option. Scores are not enforced to be unique, values
 	// are.
 	//
 	//     https://redis.io/commands/zadd
 	//
-	// TODO rename to Score due to its score interface
-	Value(key string, val string, sco float64) error
+	Score(key string, val string, sco float64) error
 }
 
 type Delete interface {
