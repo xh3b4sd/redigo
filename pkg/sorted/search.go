@@ -138,7 +138,7 @@ func (s *search) Rando(key string, cou ...uint) ([]string, error) {
 	return res, nil
 }
 
-func (s *search) Value(key string, lef float64, rig float64) ([]string, error) {
+func (s *search) Score(key string, lef float64, rig float64) ([]string, error) {
 	con := s.pool.Get()
 	defer con.Close()
 

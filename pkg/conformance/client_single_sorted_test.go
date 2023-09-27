@@ -1583,7 +1583,7 @@ func Test_Client_Single_Sorted_Search_Value(t *testing.T) {
 	}
 
 	{
-		res, err := cli.Sorted().Search().Value("ssk", 0.8, 0.8)
+		res, err := cli.Sorted().Search().Score("ssk", 0.8, 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1600,7 +1600,7 @@ func Test_Client_Single_Sorted_Search_Value(t *testing.T) {
 	}
 
 	{
-		res, err := cli.Sorted().Search().Value("ssk", 0.8, 0.8)
+		res, err := cli.Sorted().Search().Score("ssk", 0.8, 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1620,7 +1620,7 @@ func Test_Client_Single_Sorted_Search_Value(t *testing.T) {
 	}
 
 	{
-		res, err := cli.Sorted().Search().Value("ssk", 0.7, 0.7)
+		res, err := cli.Sorted().Search().Score("ssk", 0.7, 0.7)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1633,7 +1633,7 @@ func Test_Client_Single_Sorted_Search_Value(t *testing.T) {
 	}
 
 	{
-		res, err := cli.Sorted().Search().Value("ssk", 0.8, 0.7)
+		res, err := cli.Sorted().Search().Score("ssk", 0.8, 0.7)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1677,7 +1677,7 @@ func Test_Client_Single_Sorted_Update(t *testing.T) {
 	}
 
 	{
-		res, err := cli.Sorted().Search().Value("ssk", 0.8, 0.8)
+		res, err := cli.Sorted().Search().Score("ssk", 0.8, 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1717,7 +1717,7 @@ func Test_Client_Single_Sorted_Update(t *testing.T) {
 	}
 
 	{
-		res, err := cli.Sorted().Search().Value("ssk", 0.8, 0.8)
+		res, err := cli.Sorted().Search().Score("ssk", 0.8, 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
