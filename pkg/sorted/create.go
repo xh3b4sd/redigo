@@ -111,7 +111,7 @@ func (c *create) Index(key string, val string, sco float64, ind ...string) error
 	return tracer.Mask(executionFailedError)
 }
 
-func (c *create) Value(key string, val string, sco float64) error {
+func (c *create) Score(key string, val string, sco float64) error {
 	con := c.pool.Get()
 	defer con.Close()
 

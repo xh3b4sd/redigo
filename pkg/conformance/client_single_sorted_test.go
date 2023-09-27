@@ -157,14 +157,14 @@ func Test_Client_Single_Sorted_Create_Value(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Value("ssk", "foo", 0.8)
+		err := cli.Sorted().Create().Score("ssk", "foo", 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
 
 	{
-		err := cli.Sorted().Create().Value("ssk", "bar", 0.7)
+		err := cli.Sorted().Create().Score("ssk", "bar", 0.7)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -172,7 +172,7 @@ func Test_Client_Single_Sorted_Create_Value(t *testing.T) {
 
 	// Verify we can create elements with duplicated scores.
 	{
-		err := cli.Sorted().Create().Value("ssk", "zap", 0.8)
+		err := cli.Sorted().Create().Score("ssk", "zap", 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -180,7 +180,7 @@ func Test_Client_Single_Sorted_Create_Value(t *testing.T) {
 
 	// Verify values must be unique after all.
 	{
-		err := cli.Sorted().Create().Value("ssk", "foo", 0.8)
+		err := cli.Sorted().Create().Score("ssk", "foo", 0.8)
 		if !sorted.IsAlreadyExistsError(err) {
 			t.Fatal("expected", "alreadyExistsError", "got", err)
 		}
@@ -656,19 +656,19 @@ func Test_Client_Single_Sorted_Delete_Value(t *testing.T) {
 	}
 
 	{
-		err = cli.Sorted().Create().Value("ssk", "foo", 8.0)
+		err = cli.Sorted().Create().Score("ssk", "foo", 8.0)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Value("ssk", "bar", 7.0)
+		err = cli.Sorted().Create().Score("ssk", "bar", 7.0)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Value("ssk", "baz", 6.0)
+		err = cli.Sorted().Create().Score("ssk", "baz", 6.0)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Value("ssk", "zap", 5.0)
+		err = cli.Sorted().Create().Score("ssk", "zap", 5.0)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1803,7 +1803,7 @@ func Test_Client_Single_Sorted_Update_Score(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Value("ssk", "foo", 0.8)
+		err := cli.Sorted().Create().Score("ssk", "foo", 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1823,7 +1823,7 @@ func Test_Client_Single_Sorted_Update_Score(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Value("ssk", "foo", 0.7)
+		err := cli.Sorted().Create().Score("ssk", "foo", 0.7)
 		if !sorted.IsAlreadyExistsError(err) {
 			t.Fatal("expected", "alreadyExistsError", "got", err)
 		}
