@@ -590,6 +590,109 @@ func Test_Client_Single_Sorted_Delete_Score(t *testing.T) {
 	}
 }
 
+func Test_Client_Single_Sorted_Delete_Value(t *testing.T) {
+	var err error
+
+	var cli redigo.Interface
+	{
+		c := client.Config{
+			Kind: client.KindSingle,
+		}
+
+		cli, err = client.New(c)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = cli.Purge()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err = cli.Sorted().Create().Value("ssk", "foo", 8.0)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = cli.Sorted().Create().Value("ssk", "bar", 7.0)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = cli.Sorted().Create().Value("ssk", "baz", 6.0)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = cli.Sorted().Create().Value("ssk", "zap", 5.0)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Order("ssk", 0, -1)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 4 {
+			t.Fatal("expected", 4, "got", len(res))
+		}
+		if res[0] != "foo" {
+			t.Fatal("expected", "foo", "got", res[0])
+		}
+		if res[1] != "bar" {
+			t.Fatal("expected", "bar", "got", res[1])
+		}
+		if res[2] != "baz" {
+			t.Fatal("expected", "baz", "got", res[2])
+		}
+		if res[3] != "zap" {
+			t.Fatal("expected", "zap", "got", res[3])
+		}
+	}
+
+	// Deleting multiple values, including a non existing one, should remove all
+	// of the existing values regardless.
+	{
+		err := cli.Sorted().Delete().Value("ssk", "foo", "bar", "NON", "baz")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Order("ssk", 0, -1)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 1 {
+			t.Fatal("expected", 1, "got", len(res))
+		}
+		if res[0] != "zap" {
+			t.Fatal("expected", "zap", "got", res[0])
+		}
+	}
+
+	// Deleting the last value should result in all values being removed. This
+	// call also tests that single removals work.
+	{
+		err := cli.Sorted().Delete().Value("ssk", "zap")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Order("ssk", 0, -1)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 0 {
+			t.Fatal("expected", 0, "got", len(res))
+		}
+	}
+}
+
 func Test_Client_Single_Sorted_Exists(t *testing.T) {
 	var err error
 

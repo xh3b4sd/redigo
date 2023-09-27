@@ -128,3 +128,24 @@ func (d *delete) Score(key string, sco float64) error {
 
 	return nil
 }
+
+func (d *delete) Value(key string, val ...string) error {
+	con := d.pool.Get()
+	defer con.Close()
+
+	var arg []interface{}
+	{
+		arg = append(arg, prefix.WithKeys(d.prefix, key))
+
+		for _, x := range val {
+			arg = append(arg, x)
+		}
+	}
+
+	_, err := redis.Int64(con.Do("ZREM", arg...))
+	if err != nil {
+		return tracer.Mask(err)
+	}
+
+	return nil
+}

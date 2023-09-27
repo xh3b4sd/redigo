@@ -14,11 +14,15 @@ type Create interface {
 	// Score creates an element within the sorted set under key, tracking the
 	// element using the unique score given by sco. The element's value provided
 	// by val can be ensured to have unique associations, like indices using ind.
+	// Scores are enforced to be unique.
 	//
 	// TODO should be renamed to Index because of the index feature.
 	Score(key string, val string, sco float64, ind ...string) error
 	// Value creates an element within the sorted set under key transparently
-	// using ZADD. Value does not enforce scores to be unique like Score.
+	// using ZADD. Scores are not enforced to be unique.
+	//
+	//     https://redis.io/commands/zadd
+	//
 	Value(key string, val string, sco float64) error
 }
 
@@ -44,8 +48,12 @@ type Delete interface {
 	// set. Note that indices associated with the underlying element are purged
 	// automatically as well.
 	Score(key string, sco float64) error
-
-	// TODO provide Value method that only uses native ZREM and accept multiple values
+	// Value deletes the elements identified by the given values within the
+	// specified sorted set. Non-existing elements are ignored.
+	//
+	//     https://redis.io/commands/zrem
+	//
+	Value(key string, val ...string) error
 }
 
 type Exists interface {
