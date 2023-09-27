@@ -115,7 +115,7 @@ func (c *create) Value(key string, val string, sco float64) error {
 	con := c.pool.Get()
 	defer con.Close()
 
-	res, err := redis.Int(con.Do("ZADD", prefix.WithKeys(c.prefix, key), sco, val))
+	res, err := redis.Int(con.Do("ZADD", prefix.WithKeys(c.prefix, key), "NX", sco, val))
 	if err != nil {
 		return tracer.Mask(err)
 	}
