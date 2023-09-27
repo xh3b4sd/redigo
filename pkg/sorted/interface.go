@@ -29,10 +29,10 @@ type Delete interface {
 	// Clean removes the sorted set under key including the derived indeizes.
 	Clean(key string) error
 
-	// Index deletes the element identified by value within the specified sorted
-	// set. Note that indices associated with the underlying element are purged
-	// automatically as well.
-	Index(key string, val string) error
+	// Index deletes the elements identified by the given values within the
+	// specified sorted set. Note that indices associated with the underlying
+	// elements are purged automatically as well.
+	Index(key string, val ...string) error
 
 	// Limit cuts off all older elements from the sorted set under key resulting
 	// in a sorted set that contains the latest lim amount of elements. Consider
