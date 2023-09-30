@@ -39,6 +39,7 @@ type ConfigLocker struct {
 }
 
 type Client struct {
+	add string
 	bac backup.Interface
 	loc locker.Interface
 	poo *redis.Pool
@@ -155,6 +156,7 @@ func New(con Config) (*Client, error) {
 	}
 
 	c := &Client{
+		add: con.Address,
 		bac: bac,
 		loc: loc,
 		poo: con.Pool,
@@ -226,6 +228,10 @@ func (c *Client) Redis(fun func(con redis.Conn) error) error {
 	}
 
 	return nil
+}
+
+func (c *Client) Listen() string {
+	return c.add
 }
 
 func (c *Client) Backup() backup.Interface {
