@@ -44,6 +44,10 @@ func (c *Client) Redis(fun func(con redis.Conn) error) error {
 	return nil
 }
 
+func (c *Client) Listen() string {
+	return ""
+}
+
 func (c *Client) Backup() backup.Interface {
 	if c.FakeLocker != nil {
 		return c.FakeBackup()
