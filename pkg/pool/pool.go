@@ -8,7 +8,16 @@ import (
 	"github.com/gomodule/redigo/redis"
 )
 
-func NewSinglePoolWithAddress(address string) *redis.Pool {
+func NewSinglePoolWithAddress(add string) *redis.Pool {
+	var opt []redis.DialOption
+	{
+		opt = []redis.DialOption{
+			redis.DialConnectTimeout(time.Second),
+			redis.DialReadTimeout(time.Second),
+			redis.DialWriteTimeout(time.Second),
+		}
+	}
+
 	var p *redis.Pool
 	{
 		p = &redis.Pool{
@@ -16,7 +25,7 @@ func NewSinglePoolWithAddress(address string) *redis.Pool {
 			MaxActive:   100,
 			IdleTimeout: 5 * time.Minute,
 			Dial: func() (redis.Conn, error) {
-				c, err := redis.Dial("tcp", address)
+				c, err := redis.Dial("tcp", add, opt...)
 				if err != nil {
 					return nil, err
 				}
@@ -64,20 +73,21 @@ func NewSinglePoolWithConnection(connection redis.Conn) *redis.Pool {
 	return p
 }
 
-func NewSentinelPoolWithAddress(address string) *redis.Pool {
-	timeout := 500 * time.Millisecond
+func NewSentinelPoolWithAddress(add string) *redis.Pool {
+	var opt []redis.DialOption
+	{
+		opt = []redis.DialOption{
+			redis.DialConnectTimeout(time.Second),
+			redis.DialReadTimeout(time.Second),
+			redis.DialWriteTimeout(time.Second),
+		}
+	}
 
 	sntnl := &sentinel.Sentinel{
-		Addrs:      []string{address},
+		Addrs:      []string{add},
 		MasterName: "mymaster",
-		Dial: func(addr string) (redis.Conn, error) {
-			c, err := redis.Dial(
-				"tcp",
-				addr,
-				redis.DialConnectTimeout(timeout),
-				redis.DialReadTimeout(timeout),
-				redis.DialWriteTimeout(timeout),
-			)
+		Dial: func(a string) (redis.Conn, error) {
+			c, err := redis.Dial("tcp", a, opt...)
 			if err != nil {
 				return nil, err
 			}
