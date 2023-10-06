@@ -135,7 +135,7 @@ type update struct {
 // the old element marks the end of the executed transaction, leaving a clean
 // state of an updated element behind.
 //
-//	redis> ZREVRANGE k:foo 25 25
+//	redis> ZRANGE k:foo 25 25 BYSCORE
 //	1) "old"
 //
 //	redis> ZADD k:foo 25 "new"
