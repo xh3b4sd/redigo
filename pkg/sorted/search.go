@@ -94,7 +94,6 @@ func (s *search) Order(key string, lef int, rig int, sco ...bool) ([]string, err
 		arg = append(arg, prefix.WithKeys(s.prefix, key))
 		arg = append(arg, lef)
 		arg = append(arg, rig)
-		arg = append(arg, "REV")
 		if len(sco) == 1 {
 			arg = append(arg, "WITHSCORES")
 		}
@@ -142,7 +141,7 @@ func (s *search) Score(key string, lef float64, rig float64) ([]string, error) {
 	con := s.pool.Get()
 	defer con.Close()
 
-	res, err := redis.Strings(con.Do("ZRANGE", prefix.WithKeys(s.prefix, key), lef, rig, "REV", "BYSCORE"))
+	res, err := redis.Strings(con.Do("ZRANGE", prefix.WithKeys(s.prefix, key), lef, rig, "BYSCORE"))
 	if err != nil {
 		return nil, tracer.Mask(err)
 	}

@@ -194,14 +194,14 @@ func Test_Client_Single_Sorted_Create_Value(t *testing.T) {
 		if len(res) != 3 {
 			t.Fatal("expected", 3, "got", len(res))
 		}
-		if res[0] != "zap" {
-			t.Fatal("expected", "zap", "got", res[0])
+		if res[0] != "bar" {
+			t.Fatal("expected", "bar", "got", res[0])
 		}
 		if res[1] != "foo" {
 			t.Fatal("expected", "foo", "got", res[1])
 		}
-		if res[2] != "bar" {
-			t.Fatal("expected", "bar", "got", res[2])
+		if res[2] != "zap" {
+			t.Fatal("expected", "zap", "got", res[2])
 		}
 	}
 
@@ -223,11 +223,11 @@ func Test_Client_Single_Sorted_Create_Value(t *testing.T) {
 		if len(res) != 2 {
 			t.Fatal("expected", 2, "got", len(res))
 		}
-		if res[0] != "zap" {
-			t.Fatal("expected", "zap", "got", res[0])
+		if res[0] != "bar" {
+			t.Fatal("expected", "bar", "got", res[0])
 		}
-		if res[1] != "bar" {
-			t.Fatal("expected", "bar", "got", res[1])
+		if res[1] != "zap" {
+			t.Fatal("expected", "zap", "got", res[1])
 		}
 	}
 }
@@ -656,11 +656,11 @@ func Test_Client_Single_Sorted_Delete_Value(t *testing.T) {
 	}
 
 	{
-		err = cli.Sorted().Create().Score("ssk", "foo", 8.0)
+		err = cli.Sorted().Create().Score("ssk", "zap", 5.0)
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("ssk", "bar", 7.0)
+		err = cli.Sorted().Create().Score("ssk", "foo", 8.0)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -668,7 +668,7 @@ func Test_Client_Single_Sorted_Delete_Value(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		err = cli.Sorted().Create().Score("ssk", "zap", 5.0)
+		err = cli.Sorted().Create().Score("ssk", "bar", 7.0)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -682,17 +682,17 @@ func Test_Client_Single_Sorted_Delete_Value(t *testing.T) {
 		if len(res) != 4 {
 			t.Fatal("expected", 4, "got", len(res))
 		}
-		if res[0] != "foo" {
-			t.Fatal("expected", "foo", "got", res[0])
+		if res[0] != "zap" {
+			t.Fatal("expected", "zap", "got", res[0])
 		}
-		if res[1] != "bar" {
-			t.Fatal("expected", "bar", "got", res[1])
+		if res[1] != "baz" {
+			t.Fatal("expected", "baz", "got", res[1])
 		}
-		if res[2] != "baz" {
-			t.Fatal("expected", "baz", "got", res[2])
+		if res[2] != "bar" {
+			t.Fatal("expected", "bar", "got", res[2])
 		}
-		if res[3] != "zap" {
-			t.Fatal("expected", "zap", "got", res[3])
+		if res[3] != "foo" {
+			t.Fatal("expected", "foo", "got", res[3])
 		}
 	}
 
@@ -1307,25 +1307,10 @@ func Test_Client_Single_Sorted_Search_Order(t *testing.T) {
 		}
 	}
 
-	// Ensure to get the latest value, that is, the value of the element with
-	// the highest score.
+	// Ensure to get the first value, that is, the value of the element with the
+	// lowest score.
 	{
 		res, err := cli.Sorted().Search().Order("ssk", 0, 0)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if len(res) != 1 {
-			t.Fatal("expected", 1, "got", len(res))
-		}
-		if res[0] != "bar" {
-			t.Fatal("expected", "bar", "got", res[0])
-		}
-	}
-
-	// Ensure to get the penultimate value, that is, the value of the element
-	// with the second highest score.
-	{
-		res, err := cli.Sorted().Search().Order("ssk", 1, 1)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1337,6 +1322,21 @@ func Test_Client_Single_Sorted_Search_Order(t *testing.T) {
 		}
 	}
 
+	// Ensure to get the second value, that is, the value of the element with the
+	// second highest score.
+	{
+		res, err := cli.Sorted().Search().Order("ssk", 1, 1)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 1 {
+			t.Fatal("expected", 1, "got", len(res))
+		}
+		if res[0] != "bar" {
+			t.Fatal("expected", "bar", "got", res[0])
+		}
+	}
+
 	{
 		res, err := cli.Sorted().Search().Order("ssk", 0, -1)
 		if err != nil {
@@ -1345,11 +1345,11 @@ func Test_Client_Single_Sorted_Search_Order(t *testing.T) {
 		if len(res) != 2 {
 			t.Fatal("expected", 2, "got", len(res))
 		}
-		if res[0] != "bar" {
-			t.Fatal("expected", "bar", "got", res[0])
+		if res[0] != "foo" {
+			t.Fatal("expected", "foo", "got", res[0])
 		}
-		if res[1] != "foo" {
-			t.Fatal("expected", "foo", "got", res[1])
+		if res[1] != "bar" {
+			t.Fatal("expected", "bar", "got", res[1])
 		}
 	}
 
@@ -1361,11 +1361,11 @@ func Test_Client_Single_Sorted_Search_Order(t *testing.T) {
 		if len(res) != 2 {
 			t.Fatal("expected", 2, "got", len(res))
 		}
-		if res[0] != "7" {
-			t.Fatal("expected", "7", "got", res[0])
+		if res[0] != "6" {
+			t.Fatal("expected", "6", "got", res[0])
 		}
-		if res[1] != "6" {
-			t.Fatal("expected", "6", "got", res[1])
+		if res[1] != "7" {
+			t.Fatal("expected", "7", "got", res[1])
 		}
 	}
 
@@ -1384,8 +1384,8 @@ func Test_Client_Single_Sorted_Search_Order(t *testing.T) {
 		if len(res) != 1 {
 			t.Fatal("expected", 1, "got", len(res))
 		}
-		if res[0] != "baz" {
-			t.Fatal("expected", "baz", "got", res[0])
+		if res[0] != "foo" {
+			t.Fatal("expected", "foo", "got", res[0])
 		}
 	}
 
@@ -1397,8 +1397,8 @@ func Test_Client_Single_Sorted_Search_Order(t *testing.T) {
 		if len(res) != 1 {
 			t.Fatal("expected", 1, "got", len(res))
 		}
-		if res[0] != "8" {
-			t.Fatal("expected", "8", "got", res[0])
+		if res[0] != "6" {
+			t.Fatal("expected", "6", "got", res[0])
 		}
 	}
 
@@ -1410,8 +1410,8 @@ func Test_Client_Single_Sorted_Search_Order(t *testing.T) {
 		if len(res) != 1 {
 			t.Fatal("expected", 1, "got", len(res))
 		}
-		if res[0] != "foo" {
-			t.Fatal("expected", "foo", "got", res[0])
+		if res[0] != "baz" {
+			t.Fatal("expected", "baz", "got", res[0])
 		}
 	}
 }
@@ -1678,18 +1678,18 @@ func Test_Client_Single_Sorted_Search_Value(t *testing.T) {
 	}
 
 	{
-		res, err := cli.Sorted().Search().Score("ssk", 0.8, 0.7)
+		res, err := cli.Sorted().Search().Score("ssk", 0.7, 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
 		if len(res) != 2 {
 			t.Fatal("expected", 2, "got", len(res))
 		}
-		if res[0] != "foo" {
-			t.Fatal("expected", "foo", "got", res[0])
+		if res[0] != "bar" {
+			t.Fatal("expected", "bar", "got", res[0])
 		}
-		if res[1] != "bar" {
-			t.Fatal("expected", "bar", "got", res[1])
+		if res[1] != "foo" {
+			t.Fatal("expected", "foo", "got", res[1])
 		}
 	}
 }
