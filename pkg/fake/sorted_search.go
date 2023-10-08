@@ -6,6 +6,7 @@ type SortedSearch struct {
 	FakeOrder func() ([]string, error)
 	FakeRando func() ([]string, error)
 	FakeScore func() ([]string, error)
+	FakeUnion func() ([]string, error)
 }
 
 func (s *SortedSearch) Index(key string, ind string) (string, error) {
@@ -43,6 +44,14 @@ func (s *SortedSearch) Rando(key string, cou ...uint) ([]string, error) {
 func (s *SortedSearch) Score(key string, lef float64, rig float64) ([]string, error) {
 	if s.FakeScore != nil {
 		return s.FakeScore()
+	}
+
+	return nil, nil
+}
+
+func (s *SortedSearch) Union(key ...string) ([]string, error) {
+	if s.FakeUnion != nil {
+		return s.FakeUnion()
 	}
 
 	return nil, nil

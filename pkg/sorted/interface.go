@@ -111,6 +111,10 @@ type Search interface {
 	//     k1       v3 v4 v5 v6
 	//     k2    v2    v4 v5    v7
 	//
+	// For more information about the underlying behaviour see ZINTER.
+	//
+	//     https://redis.io/commands/zinter
+	//
 	Inter(key ...string) ([]string, error)
 
 	// Order returns the values of the sorted set elements stored under key. The
@@ -137,6 +141,20 @@ type Search interface {
 	//     https://redis.io/commands/zrange
 	//
 	Score(key string, lef float64, rig float64) ([]string, error)
+
+	// Union returns the unique values that exist in any of the given keys.
+	// Therefore the returned values represent the union of the given keys. Given
+	// k1 and k2 hold the following values, Union(k1, k2) were to return v2, v3,
+	// v4, v5, v6 and v7.
+	//
+	//     k1       v3 v4 v5 v6
+	//     k2    v2    v4 v5    v7
+	//
+	// For more information about the underlying behaviour see ZUNION.
+	//
+	//     https://redis.io/commands/zunion
+	//
+	Union(key ...string) ([]string, error)
 }
 
 type Update interface {
