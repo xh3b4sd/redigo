@@ -1607,6 +1607,147 @@ func Test_Client_Single_Sorted_Search_Rando_Cou(t *testing.T) {
 	}
 }
 
+func Test_Client_Single_Sorted_Search_Union(t *testing.T) {
+	var err error
+
+	var cli redigo.Interface
+	{
+		c := client.Config{
+			Kind: client.KindSingle,
+		}
+
+		cli, err = client.New(c)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = cli.Purge()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Union("k1", "k2")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 0 {
+			t.Fatal("expected", 0, "got", len(res))
+		}
+	}
+
+	{
+		err = cli.Sorted().Create().Index("k1", "v3", 0.3)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = cli.Sorted().Create().Index("k1", "v4", 0.4)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = cli.Sorted().Create().Index("k1", "v5", 0.5)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = cli.Sorted().Create().Index("k1", "v6", 0.6)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Union("k1")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 4 {
+			t.Fatal("expected", 4, "got", len(res))
+		}
+		if res[0] != "v3" {
+			t.Fatal("expected", "v3", "got", res[0])
+		}
+		if res[1] != "v4" {
+			t.Fatal("expected", "v4", "got", res[1])
+		}
+		if res[2] != "v5" {
+			t.Fatal("expected", "v5", "got", res[2])
+		}
+		if res[3] != "v6" {
+			t.Fatal("expected", "v6", "got", res[3])
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Union("k1", "k2")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 4 {
+			t.Fatal("expected", 4, "got", len(res))
+		}
+		if res[0] != "v3" {
+			t.Fatal("expected", "v3", "got", res[0])
+		}
+		if res[1] != "v4" {
+			t.Fatal("expected", "v4", "got", res[1])
+		}
+		if res[2] != "v5" {
+			t.Fatal("expected", "v5", "got", res[2])
+		}
+		if res[3] != "v6" {
+			t.Fatal("expected", "v6", "got", res[3])
+		}
+	}
+
+	{
+		err = cli.Sorted().Create().Index("k2", "v2", 0.2)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = cli.Sorted().Create().Index("k2", "v4", 0.4)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = cli.Sorted().Create().Index("k2", "v5", 0.5)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = cli.Sorted().Create().Index("k2", "v7", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Union("k1", "k2")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 6 {
+			t.Fatal("expected", 6, "got", len(res))
+		}
+		if res[0] != "v2" {
+			t.Fatal("expected", "v2", "got", res[0])
+		}
+		if res[1] != "v3" {
+			t.Fatal("expected", "v3", "got", res[1])
+		}
+		if res[2] != "v4" {
+			t.Fatal("expected", "v4", "got", res[2])
+		}
+		if res[3] != "v5" {
+			t.Fatal("expected", "v5", "got", res[3])
+		}
+		if res[4] != "v6" {
+			t.Fatal("expected", "v6", "got", res[4])
+		}
+		if res[5] != "v7" {
+			t.Fatal("expected", "v7", "got", res[5])
+		}
+	}
+}
+
 func Test_Client_Single_Sorted_Search_Value(t *testing.T) {
 	var err error
 

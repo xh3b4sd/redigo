@@ -64,10 +64,10 @@ func (s *search) Inter(key ...string) ([]string, error) {
 	var mul []interface{}
 	{
 		mul = append(mul, len(key))
-	}
 
-	for _, x := range key {
-		mul = append(mul, prefix.WithKeys(s.prefix, x))
+		for _, x := range key {
+			mul = append(mul, prefix.WithKeys(s.prefix, x))
+		}
 	}
 
 	res, err := redis.Strings(con.Do("ZINTER", mul...))
@@ -91,9 +91,8 @@ func (s *search) Order(key string, lef int, rig int, sco ...bool) ([]string, err
 
 	var arg []interface{}
 	{
-		arg = append(arg, prefix.WithKeys(s.prefix, key))
-		arg = append(arg, lef)
-		arg = append(arg, rig)
+		arg = append(arg, prefix.WithKeys(s.prefix, key), lef, rig)
+
 		if len(sco) == 1 {
 			arg = append(arg, "WITHSCORES")
 		}
@@ -142,6 +141,29 @@ func (s *search) Score(key string, lef float64, rig float64) ([]string, error) {
 	defer con.Close()
 
 	res, err := redis.Strings(con.Do("ZRANGE", prefix.WithKeys(s.prefix, key), lef, rig, "BYSCORE"))
+	if err != nil {
+		return nil, tracer.Mask(err)
+	}
+
+	return res, nil
+}
+
+func (s *search) Union(key ...string) ([]string, error) {
+	con := s.pool.Get()
+	defer con.Close()
+
+	var mul []interface{}
+	{
+		mul = append(mul, len(key))
+
+		for _, x := range key {
+			mul = append(mul, prefix.WithKeys(s.prefix, x))
+		}
+
+		mul = append(mul, "AGGREGATE", "MIN")
+	}
+
+	res, err := redis.Strings(con.Do("ZUNION", mul...))
 	if err != nil {
 		return nil, tracer.Mask(err)
 	}
