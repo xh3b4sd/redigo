@@ -103,16 +103,7 @@ func (s *search) Order(key string, lef int, rig int, sco ...bool) ([]string, err
 		return nil, tracer.Mask(err)
 	}
 
-	if len(sco) == 0 {
-		return res, nil
-	}
-
-	var lis []string
-	for i := 1; i < len(res); i += 2 {
-		lis = append(lis, res[i])
-	}
-
-	return lis, nil
+	return res, nil
 }
 
 func (s *search) Rando(key string, cou ...uint) ([]string, error) {
