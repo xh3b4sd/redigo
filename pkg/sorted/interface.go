@@ -120,8 +120,8 @@ type Search interface {
 	// Order returns the values of the sorted set elements stored under key. The
 	// provided pointers are ranks of the elements' scores within the sorted set.
 	// All values udner key can be returned using lef=0 and rig=-1. Optionally a
-	// single bool is allowed to be passed for returning the element scores
-	// instead of their values as described by WITHSCORES.
+	// single bool is allowed to be passed for additionally returning the element
+	// scores together with their values as described by WITHSCORES.
 	//
 	//     https://redis.io/commands/zrange
 	//

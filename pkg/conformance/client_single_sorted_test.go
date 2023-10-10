@@ -1358,14 +1358,20 @@ func Test_Client_Single_Sorted_Search_Order(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if len(res) != 2 {
-			t.Fatal("expected", 2, "got", len(res))
+		if len(res) != 4 {
+			t.Fatal("expected", 4, "got", len(res))
 		}
-		if res[0] != "6" {
-			t.Fatal("expected", "6", "got", res[0])
+		if res[0] != "foo" {
+			t.Fatal("expected", "foo", "got", res[0])
 		}
-		if res[1] != "7" {
-			t.Fatal("expected", "7", "got", res[1])
+		if res[1] != "6" {
+			t.Fatal("expected", "6", "got", res[1])
+		}
+		if res[2] != "bar" {
+			t.Fatal("expected", "bar", "got", res[2])
+		}
+		if res[3] != "7" {
+			t.Fatal("expected", "7", "got", res[3])
 		}
 	}
 
@@ -1394,11 +1400,14 @@ func Test_Client_Single_Sorted_Search_Order(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if len(res) != 1 {
-			t.Fatal("expected", 1, "got", len(res))
+		if len(res) != 2 {
+			t.Fatal("expected", 2, "got", len(res))
 		}
-		if res[0] != "6" {
-			t.Fatal("expected", "6", "got", res[0])
+		if res[0] != "foo" {
+			t.Fatal("expected", "foo", "got", res[0])
+		}
+		if res[1] != "6" {
+			t.Fatal("expected", "6", "got", res[1])
 		}
 	}
 
