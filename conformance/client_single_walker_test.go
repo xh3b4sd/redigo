@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/xh3b4sd/redigo"
-	"github.com/xh3b4sd/redigo/pkg/client"
 	"github.com/xh3b4sd/tracer"
 )
 
@@ -20,12 +19,12 @@ func Test_Client_Single_Walker_Simple_001(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
+		c := redigo.Config{
 			Count: 1,
-			Kind:  client.KindSingle,
+			Kind:  redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -144,12 +143,12 @@ func Test_Client_Single_Walker_Simple_002(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
+		c := redigo.Config{
 			Count: 1,
-			Kind:  client.KindSingle,
+			Kind:  redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -265,12 +264,12 @@ func Test_Client_Single_Walker_Simple_003(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
+		c := redigo.Config{
 			Count: 1,
-			Kind:  client.KindSingle,
+			Kind:  redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}

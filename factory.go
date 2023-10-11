@@ -6,7 +6,7 @@ import (
 	"github.com/xh3b4sd/budget/v3"
 	"github.com/xh3b4sd/budget/v3/pkg/breaker"
 
-	"github.com/xh3b4sd/redigo/pkg/client"
+	"github.com/xh3b4sd/redigo/pkg/fake"
 )
 
 func Default() Interface {
@@ -29,18 +29,22 @@ func Default() Interface {
 
 	var red Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
-			Locker: client.ConfigLocker{
+		c := Config{
+			Kind: KindSingle,
+			Locker: ConfigLocker{
 				Budget: bre,
 			},
 		}
 
-		red, err = client.New(c)
+		red, err = New(c)
 		if err != nil {
 			panic(err)
 		}
 	}
 
 	return red
+}
+
+func Fake() Interface {
+	return fake.New()
 }

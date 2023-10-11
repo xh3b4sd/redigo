@@ -2,6 +2,7 @@ package fake
 
 import (
 	"github.com/xh3b4sd/redigo/pkg/simple"
+	"github.com/xh3b4sd/redigo/pkg/simple/create"
 )
 
 type Simple struct {
@@ -16,7 +17,8 @@ func (s *Simple) Create() simple.Create {
 		return s.FakeCreate()
 	}
 
-	return &SimpleCreate{}
+	// TODO refactor all fake methods like this new way
+	return &create.Fake{}
 }
 
 func (s *Simple) Delete() simple.Delete {

@@ -15,7 +15,6 @@ import (
 	"github.com/xh3b4sd/tracer"
 
 	"github.com/xh3b4sd/redigo"
-	"github.com/xh3b4sd/redigo/pkg/client"
 	"github.com/xh3b4sd/redigo/pkg/locker"
 )
 
@@ -24,11 +23,11 @@ func Test_Client_Single_Locker_Lifecycle(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -194,15 +193,15 @@ func Test_Client_Single_Locker_Acquire_Budget(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
-			Locker: client.ConfigLocker{
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
+			Locker: redigo.ConfigLocker{
 				Budget: bre,
 				Expiry: 1 * time.Second,
 			},
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -242,15 +241,15 @@ func Test_Client_Single_Locker_Acquire_Error(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
-			Locker: client.ConfigLocker{
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
+			Locker: redigo.ConfigLocker{
 				Budget: single.New(),
 				Expiry: 1 * time.Second,
 			},
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -283,14 +282,14 @@ func Test_Client_Single_Locker_Acquire_Expiry(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
-			Locker: client.ConfigLocker{
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
+			Locker: redigo.ConfigLocker{
 				Expiry: 1 * time.Second,
 			},
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/xh3b4sd/redigo"
-	"github.com/xh3b4sd/redigo/pkg/client"
 	"github.com/xh3b4sd/redigo/pkg/sorted"
 )
 
@@ -19,11 +18,11 @@ func Test_Client_Single_Sorted_Create_Order(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -92,11 +91,11 @@ func Test_Client_Single_Sorted_Create_Score(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -141,11 +140,11 @@ func Test_Client_Single_Sorted_Create_Value(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -237,11 +236,11 @@ func Test_Client_Single_Sorted_Delete_Empty(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -332,11 +331,11 @@ func Test_Client_Single_Sorted_Delete_Index(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -442,11 +441,11 @@ func Test_Client_Single_Sorted_Delete_Limit(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -575,11 +574,11 @@ func Test_Client_Single_Sorted_Delete_Score(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -640,11 +639,11 @@ func Test_Client_Single_Sorted_Delete_Value(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -743,11 +742,11 @@ func Test_Client_Single_Sorted_Exists(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -898,11 +897,11 @@ func Test_Client_Single_Sorted_Floats(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -998,11 +997,11 @@ func Test_Client_Single_Sorted_Metric(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1080,11 +1079,11 @@ func Test_Client_Single_Sorted_Search_Index(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1138,11 +1137,11 @@ func Test_Client_Single_Sorted_Search_Inter(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1255,11 +1254,11 @@ func Test_Client_Single_Sorted_Search_Order(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1430,11 +1429,11 @@ func Test_Client_Single_Sorted_Search_Rando(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1504,11 +1503,11 @@ func Test_Client_Single_Sorted_Search_Rando_Cou(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1621,11 +1620,11 @@ func Test_Client_Single_Sorted_Search_Union(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1762,11 +1761,11 @@ func Test_Client_Single_Sorted_Search_Value(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1849,11 +1848,11 @@ func Test_Client_Single_Sorted_Update_Index(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1937,11 +1936,11 @@ func Test_Client_Single_Sorted_Update_Score(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}

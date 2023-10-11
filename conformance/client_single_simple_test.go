@@ -1,4 +1,4 @@
-//go:build sentinel
+//go:build single
 
 package conformance
 
@@ -6,20 +6,19 @@ import (
 	"testing"
 
 	"github.com/xh3b4sd/redigo"
-	"github.com/xh3b4sd/redigo/pkg/client"
 	"github.com/xh3b4sd/redigo/pkg/simple"
 )
 
-func Test_Client_Sentinel_Connection(t *testing.T) {
+func Test_Client_Single_Simple_Lifecycle(t *testing.T) {
 	var err error
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSentinel,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -74,6 +73,45 @@ func Test_Client_Sentinel_Connection(t *testing.T) {
 		}
 		if res[0] != "bar" {
 			t.Fatal("expected", "bar", "got", res[0])
+		}
+	}
+
+	{
+		res, err := cli.Simple().Search().Multi("foo", "baz")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 2 {
+			t.Fatal("expected", 2, "got", len(res))
+		}
+		if res[0] != "bar" {
+			t.Fatal("expected", "bar", "got", res[0])
+		}
+		if res[1] != "" {
+			t.Fatal("expected", "empty string", "got", res[1])
+		}
+	}
+
+	{
+		err := cli.Simple().Create().Element("baz", "zap")
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		res, err := cli.Simple().Search().Multi("foo", "baz")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 2 {
+			t.Fatal("expected", 2, "got", len(res))
+		}
+		if res[0] != "bar" {
+			t.Fatal("expected", "bar", "got", res[0])
+		}
+		if res[1] != "zap" {
+			t.Fatal("expected", "zap", "got", res[1])
 		}
 	}
 

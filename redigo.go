@@ -1,4 +1,4 @@
-package client
+package redigo
 
 import (
 	"net"
@@ -38,7 +38,7 @@ type ConfigLocker struct {
 	Name   string
 }
 
-type Client struct {
+type Redigo struct {
 	add string
 	bac backup.Interface
 	loc locker.Interface
@@ -49,7 +49,7 @@ type Client struct {
 	wal walker.Interface
 }
 
-func New(con Config) (*Client, error) {
+func New(con Config) (*Redigo, error) {
 	if con.Kind != KindSingle && con.Kind != KindSentinel {
 		return nil, tracer.Maskf(invalidConfigError, "%T.Kind must be %s or %s", con, KindSingle, KindSentinel)
 	}
@@ -155,7 +155,7 @@ func New(con Config) (*Client, error) {
 		}
 	}
 
-	c := &Client{
+	r := &Redigo{
 		add: con.Address,
 		bac: bac,
 		loc: loc,
@@ -166,11 +166,11 @@ func New(con Config) (*Client, error) {
 		wal: wal,
 	}
 
-	return c, nil
+	return r, nil
 }
 
-func (c *Client) Check() error {
-	con := c.poo.Get()
+func (r *Redigo) Check() error {
+	con := r.poo.Get()
 	defer con.Close()
 
 	_, err := con.Do("PING")
@@ -181,8 +181,8 @@ func (c *Client) Check() error {
 	return nil
 }
 
-func (c *Client) Close() error {
-	err := c.poo.Close()
+func (r *Redigo) Close() error {
+	err := r.poo.Close()
 	if err != nil {
 		return tracer.Mask(err)
 	}
@@ -190,8 +190,8 @@ func (c *Client) Close() error {
 	return nil
 }
 
-func (c *Client) Empty() (bool, error) {
-	con := c.poo.Get()
+func (r *Redigo) Empty() (bool, error) {
+	con := r.poo.Get()
 	defer con.Close()
 
 	res, err := redis.Strings(con.Do("KEYS", "*"))
@@ -206,8 +206,8 @@ func (c *Client) Empty() (bool, error) {
 	return false, nil
 }
 
-func (c *Client) Purge() error {
-	con := c.poo.Get()
+func (r *Redigo) Purge() error {
+	con := r.poo.Get()
 	defer con.Close()
 
 	_, err := con.Do("FLUSHALL")
@@ -218,8 +218,8 @@ func (c *Client) Purge() error {
 	return nil
 }
 
-func (c *Client) Redis(fun func(con redis.Conn) error) error {
-	con := c.poo.Get()
+func (r *Redigo) Redis(fun func(con redis.Conn) error) error {
+	con := r.poo.Get()
 	defer con.Close()
 
 	err := fun(con)
@@ -230,32 +230,32 @@ func (c *Client) Redis(fun func(con redis.Conn) error) error {
 	return nil
 }
 
-func (c *Client) Listen() string {
-	return c.add
+func (r *Redigo) Listen() string {
+	return r.add
 }
 
-func (c *Client) Backup() backup.Interface {
-	return c.bac
+func (r *Redigo) Backup() backup.Interface {
+	return r.bac
 }
 
-func (c *Client) Locker() locker.Interface {
-	return c.loc
+func (r *Redigo) Locker() locker.Interface {
+	return r.loc
 }
 
-func (c *Client) PubSub() pubsub.Interface {
-	return c.pub
+func (r *Redigo) PubSub() pubsub.Interface {
+	return r.pub
 }
 
-func (c *Client) Simple() simple.Interface {
-	return c.sim
+func (r *Redigo) Simple() simple.Interface {
+	return r.sim
 }
 
-func (c *Client) Sorted() sorted.Interface {
-	return c.sor
+func (r *Redigo) Sorted() sorted.Interface {
+	return r.sor
 }
 
-func (c *Client) Walker() walker.Interface {
-	return c.wal
+func (r *Redigo) Walker() walker.Interface {
+	return r.wal
 }
 
 func defaultSingleAddress() string {
