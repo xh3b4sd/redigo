@@ -3,6 +3,7 @@ package fake
 import (
 	"github.com/xh3b4sd/redigo/pkg/simple"
 	"github.com/xh3b4sd/redigo/pkg/simple/create"
+	"github.com/xh3b4sd/redigo/pkg/simple/delete"
 )
 
 type Simple struct {
@@ -26,7 +27,7 @@ func (s *Simple) Delete() simple.Delete {
 		return s.FakeDelete()
 	}
 
-	return &SimpleDelete{}
+	return &delete.Fake{}
 }
 
 func (s *Simple) Exists() simple.Exists {

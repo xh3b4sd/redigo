@@ -1,4 +1,4 @@
-package create
+package delete
 
 import (
 	"github.com/gomodule/redigo/redis"
@@ -23,7 +23,7 @@ func New(c Config) *Redis {
 	}
 }
 
-func (r *Redis) Element(key string, val string) error {
+func (r *Redis) Multi(key ...string) (int64, error) {
 	var err error
 
 	var con redis.Conn
@@ -32,17 +32,18 @@ func (r *Redis) Element(key string, val string) error {
 		defer con.Close()
 	}
 
-	var res string
+	var arg []interface{}
+	for _, x := range key {
+		arg = append(arg, prefix.WithKeys(r.pre, x))
+	}
+
+	var res int64
 	{
-		res, err = redis.String(con.Do("SET", prefix.WithKeys(r.pre, key), val))
+		res, err = redis.Int64(con.Do("DEL", arg...))
 		if err != nil {
-			return tracer.Mask(err)
+			return 0, tracer.Mask(err)
 		}
 	}
 
-	if res != "OK" {
-		return tracer.Mask(executionFailedError)
-	}
-
-	return nil
+	return res, nil
 }
