@@ -2,6 +2,8 @@ package simple
 
 import (
 	"github.com/gomodule/redigo/redis"
+	"github.com/xh3b4sd/redigo/pkg/simple/create"
+	"github.com/xh3b4sd/redigo/pkg/simple/delete"
 )
 
 type Config struct {
@@ -11,29 +13,28 @@ type Config struct {
 }
 
 type Simple struct {
-	create *create
-	delete *delete
+	create *create.Redis
+	delete *delete.Redis
 	exists *exists
 	search *search
 }
 
 func New(config Config) (*Simple, error) {
-	var cre *create
+	// TODO refactor all redis methods like this new way
+	var cre *create.Redis
 	{
-		cre = &create{
-			pool: config.Pool,
-
-			prefix: config.Prefix,
-		}
+		cre = create.New(create.Config{
+			Poo: config.Pool,
+			Pre: config.Prefix,
+		})
 	}
 
-	var del *delete
+	var del *delete.Redis
 	{
-		del = &delete{
-			pool: config.Pool,
-
-			prefix: config.Prefix,
-		}
+		del = delete.New(delete.Config{
+			Poo: config.Pool,
+			Pre: config.Prefix,
+		})
 	}
 
 	var exi *exists

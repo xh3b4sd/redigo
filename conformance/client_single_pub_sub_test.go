@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/xh3b4sd/redigo"
-	"github.com/xh3b4sd/redigo/pkg/client"
 )
 
 func Test_Client_Single_PubSub_Lifecycle(t *testing.T) {
@@ -16,11 +15,11 @@ func Test_Client_Single_PubSub_Lifecycle(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := client.Config{
-			Kind: client.KindSingle,
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
 		}
 
-		cli, err = client.New(c)
+		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
