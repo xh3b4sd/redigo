@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/gomodule/redigo/redis"
+	"github.com/xh3b4sd/redigo/pkg/simple/search"
 	"github.com/xh3b4sd/tracer"
 )
 
@@ -24,5 +25,5 @@ var notFoundError = &tracer.Error{
 //
 //	ErrNil indicates that a reply value is nil.
 func IsNotFound(err error) bool {
-	return errors.Is(err, notFoundError) || errors.Is(err, redis.ErrNil)
+	return errors.Is(err, notFoundError) || search.IsNotFound(err) || errors.Is(err, redis.ErrNil)
 }

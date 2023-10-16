@@ -9,49 +9,49 @@ type SortedSearch struct {
 	FakeUnion func() ([]string, error)
 }
 
-func (s *SortedSearch) Index(key string, ind string) (string, error) {
-	if s.FakeIndex != nil {
-		return s.FakeIndex()
+func (f *SortedSearch) Index(key string, ind string) (string, error) {
+	if f.FakeIndex != nil {
+		return f.FakeIndex()
 	}
 
 	return "", nil
 }
 
-func (s *SortedSearch) Inter(key ...string) ([]string, error) {
-	if s.FakeInter != nil {
-		return s.FakeInter()
+func (f *SortedSearch) Inter(key ...string) ([]string, error) {
+	if f.FakeInter != nil {
+		return f.FakeInter()
 	}
 
 	return nil, nil
 }
 
-func (s *SortedSearch) Order(key string, lef int, rig int, sco ...bool) ([]string, error) {
-	if s.FakeOrder != nil {
-		return s.FakeOrder()
+func (f *SortedSearch) Order(key string, lef int, rig int, sco ...bool) ([]string, error) {
+	if f.FakeOrder != nil {
+		return f.FakeOrder()
 	}
 
 	return nil, nil
 }
 
-func (s *SortedSearch) Rando(key string, cou ...uint) ([]string, error) {
-	if s.FakeRando != nil {
-		return s.FakeRando()
+func (f *SortedSearch) Rando(key string, cou ...uint) ([]string, error) {
+	if f.FakeRando != nil {
+		return f.FakeRando()
 	}
 
 	return nil, nil
 }
 
-func (s *SortedSearch) Score(key string, lef float64, rig float64) ([]string, error) {
-	if s.FakeScore != nil {
-		return s.FakeScore()
+func (f *SortedSearch) Score(key string, lef float64, rig float64) ([]string, error) {
+	if f.FakeScore != nil {
+		return f.FakeScore()
 	}
 
 	return nil, nil
 }
 
-func (s *SortedSearch) Union(key ...string) ([]string, error) {
-	if s.FakeUnion != nil {
-		return s.FakeUnion()
+func (f *SortedSearch) Union(key ...string) ([]string, error) {
+	if f.FakeUnion != nil {
+		return f.FakeUnion()
 	}
 
 	return nil, nil

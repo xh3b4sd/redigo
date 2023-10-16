@@ -2,6 +2,7 @@ package fake
 
 import (
 	"github.com/xh3b4sd/redigo/pkg/sorted"
+	"github.com/xh3b4sd/redigo/pkg/sorted/create"
 )
 
 type Sorted struct {
@@ -15,11 +16,12 @@ type Sorted struct {
 }
 
 func (s *Sorted) Create() sorted.Create {
+	// TODO refactor all fake methods the new way
 	if s.FakeCreate != nil {
 		return s.FakeCreate()
 	}
 
-	return &SortedCreate{}
+	return &create.Fake{}
 }
 
 func (s *Sorted) Delete() sorted.Delete {

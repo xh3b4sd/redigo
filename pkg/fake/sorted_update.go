@@ -5,17 +5,17 @@ type SortedUpdate struct {
 	FakeScore func() (bool, error)
 }
 
-func (u *SortedUpdate) Index(key string, new string, sco float64, ind ...string) (bool, error) {
-	if u.FakeIndex != nil {
-		return u.FakeIndex()
+func (f *SortedUpdate) Index(key string, new string, sco float64, ind ...string) (bool, error) {
+	if f.FakeIndex != nil {
+		return f.FakeIndex()
 	}
 
 	return false, nil
 }
 
-func (u *SortedUpdate) Score(key string, new string, sco float64) (bool, error) {
-	if u.FakeScore != nil {
-		return u.FakeScore()
+func (f *SortedUpdate) Score(key string, new string, sco float64) (bool, error) {
+	if f.FakeScore != nil {
+		return f.FakeScore()
 	}
 
 	return false, nil
