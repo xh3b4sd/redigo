@@ -2,6 +2,7 @@ package sorted
 
 import (
 	"github.com/gomodule/redigo/redis"
+	"github.com/xh3b4sd/redigo/pkg/sorted/create"
 )
 
 type Config struct {
@@ -11,7 +12,7 @@ type Config struct {
 }
 
 type Sorted struct {
-	cre *create
+	cre *create.Redis
 	del *delete
 	exi *exists
 	flo *floats
@@ -21,15 +22,13 @@ type Sorted struct {
 }
 
 func New(config Config) (*Sorted, error) {
-	var cre *create
+	// TODO refactor all redis methods the new way
+	var cre *create.Redis
 	{
-		cre = &create{
-			pool: config.Pool,
-
-			createIndexScript: redis.NewScript(2, createIndexScript),
-
-			prefix: config.Prefix,
-		}
+		cre = create.New(create.Config{
+			Poo: config.Pool,
+			Pre: config.Prefix,
+		})
 	}
 
 	var del *delete

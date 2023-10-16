@@ -6,25 +6,25 @@ type Locker struct {
 	FakeRelease func() error
 }
 
-func (l *Locker) Acquire() error {
-	if l.FakeAcquire != nil {
-		return l.FakeAcquire()
+func (f *Locker) Acquire() error {
+	if f.FakeAcquire != nil {
+		return f.FakeAcquire()
 	}
 
 	return nil
 }
 
-func (l *Locker) Refresh() error {
-	if l.FakeRefresh != nil {
-		return l.FakeRefresh()
+func (f *Locker) Refresh() error {
+	if f.FakeRefresh != nil {
+		return f.FakeRefresh()
 	}
 
 	return nil
 }
 
-func (l *Locker) Release() error {
-	if l.FakeRelease != nil {
-		return l.FakeRelease()
+func (f *Locker) Release() error {
+	if f.FakeRelease != nil {
+		return f.FakeRelease()
 	}
 
 	return nil

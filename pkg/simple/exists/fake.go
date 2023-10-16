@@ -1,4 +1,4 @@
-package delete
+package exists
 
 type Fake struct {
 	FakeMulti func() (int64, error)

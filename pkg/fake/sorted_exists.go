@@ -6,25 +6,25 @@ type SortedExists struct {
 	FakeValue func() (bool, error)
 }
 
-func (e *SortedExists) Index(key string, ind string) (bool, error) {
-	if e.FakeIndex != nil {
-		return e.FakeIndex()
+func (f *SortedExists) Index(key string, ind string) (bool, error) {
+	if f.FakeIndex != nil {
+		return f.FakeIndex()
 	}
 
 	return false, nil
 }
 
-func (e *SortedExists) Score(key string, sco float64) (bool, error) {
-	if e.FakeScore != nil {
-		return e.FakeScore()
+func (f *SortedExists) Score(key string, sco float64) (bool, error) {
+	if f.FakeScore != nil {
+		return f.FakeScore()
 	}
 
 	return false, nil
 }
 
-func (e *SortedExists) Value(key string, val string) (bool, error) {
-	if e.FakeValue != nil {
-		return e.FakeValue()
+func (f *SortedExists) Value(key string, val string) (bool, error) {
+	if f.FakeValue != nil {
+		return f.FakeValue()
 	}
 
 	return false, nil

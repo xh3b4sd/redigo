@@ -4,6 +4,8 @@ import (
 	"github.com/xh3b4sd/redigo/pkg/simple"
 	"github.com/xh3b4sd/redigo/pkg/simple/create"
 	"github.com/xh3b4sd/redigo/pkg/simple/delete"
+	"github.com/xh3b4sd/redigo/pkg/simple/exists"
+	"github.com/xh3b4sd/redigo/pkg/simple/search"
 )
 
 type Simple struct {
@@ -18,7 +20,6 @@ func (s *Simple) Create() simple.Create {
 		return s.FakeCreate()
 	}
 
-	// TODO refactor all fake methods like this new way
 	return &create.Fake{}
 }
 
@@ -35,7 +36,7 @@ func (s *Simple) Exists() simple.Exists {
 		return s.FakeExists()
 	}
 
-	return &SimpleExists{}
+	return &exists.Fake{}
 }
 
 func (s *Simple) Search() simple.Search {
@@ -43,5 +44,5 @@ func (s *Simple) Search() simple.Search {
 		return s.FakeSearch()
 	}
 
-	return &SimpleSearch{}
+	return &search.Fake{}
 }

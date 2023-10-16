@@ -4,9 +4,9 @@ type Backup struct {
 	FakeCreate func() error
 }
 
-func (b *Backup) Create() error {
-	if b.FakeCreate != nil {
-		return b.FakeCreate()
+func (f *Backup) Create() error {
+	if f.FakeCreate != nil {
+		return f.FakeCreate()
 	}
 
 	return nil

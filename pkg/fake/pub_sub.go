@@ -5,17 +5,17 @@ type PubSub struct {
 	FakeSub func(key string) (<-chan string, error)
 }
 
-func (p *PubSub) Pub(key string, val string) error {
-	if p.FakePub != nil {
-		return p.FakePub(key, val)
+func (f *PubSub) Pub(key string, val string) error {
+	if f.FakePub != nil {
+		return f.FakePub(key, val)
 	}
 
 	return nil
 }
 
-func (p *PubSub) Sub(key string) (<-chan string, error) {
-	if p.FakeSub != nil {
-		return p.FakeSub(key)
+func (f *PubSub) Sub(key string) (<-chan string, error) {
+	if f.FakeSub != nil {
+		return f.FakeSub(key)
 	}
 
 	return nil, nil
