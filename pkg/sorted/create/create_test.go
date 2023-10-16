@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/rafaeljusto/redigomock"
-
 	"github.com/xh3b4sd/redigo/pkg/pool"
 )
 
