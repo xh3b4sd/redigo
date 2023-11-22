@@ -6,9 +6,7 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/xh3b4sd/budget/v3"
-	"github.com/xh3b4sd/tracer"
-
+	"github.com/xh3b4sd/breakr"
 	"github.com/xh3b4sd/redigo/pkg/backup"
 	"github.com/xh3b4sd/redigo/pkg/locker"
 	"github.com/xh3b4sd/redigo/pkg/pool"
@@ -16,6 +14,7 @@ import (
 	"github.com/xh3b4sd/redigo/pkg/simple"
 	"github.com/xh3b4sd/redigo/pkg/sorted"
 	"github.com/xh3b4sd/redigo/pkg/walker"
+	"github.com/xh3b4sd/tracer"
 )
 
 const (
@@ -33,7 +32,7 @@ type Config struct {
 }
 
 type ConfigLocker struct {
-	Budget budget.Interface
+	Breakr breakr.Interface
 	Expiry time.Duration
 	Name   string
 }
@@ -84,18 +83,13 @@ func New(con Config) (*Redigo, error) {
 
 	var loc locker.Interface
 	{
-		c := locker.Config{
-			Budget: con.Locker.Budget,
+		loc = locker.New(locker.Config{
+			Breakr: con.Locker.Breakr,
 			Expiry: con.Locker.Expiry,
 			Name:   con.Locker.Name,
 			Pool:   con.Pool,
 			Prefix: con.Prefix,
-		}
-
-		loc, err = locker.New(c)
-		if err != nil {
-			return nil, tracer.Mask(err)
-		}
+		})
 	}
 
 	var pub pubsub.Interface

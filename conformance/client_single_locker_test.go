@@ -9,13 +9,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/xh3b4sd/budget/v3"
-	"github.com/xh3b4sd/budget/v3/pkg/breaker"
-	"github.com/xh3b4sd/budget/v3/pkg/single"
-	"github.com/xh3b4sd/tracer"
-
+	"github.com/xh3b4sd/breakr"
 	"github.com/xh3b4sd/redigo"
 	"github.com/xh3b4sd/redigo/pkg/locker"
+	"github.com/xh3b4sd/tracer"
 )
 
 func Test_Client_Single_Locker_Lifecycle(t *testing.T) {
@@ -176,19 +173,14 @@ func Test_Client_Single_Locker_Lifecycle(t *testing.T) {
 func Test_Client_Single_Locker_Acquire_Budget(t *testing.T) {
 	var err error
 
-	var bre budget.Interface
+	var bre breakr.Interface
 	{
-		c := breaker.Config{
-			Failure: breaker.Failure{
+		bre = breakr.New(breakr.Config{
+			Failure: breakr.Failure{
 				Budget: 3,
 				Cooler: 1 * time.Second,
 			},
-		}
-
-		bre, err = breaker.New(c)
-		if err != nil {
-			panic(err)
-		}
+		})
 	}
 
 	var cli redigo.Interface
@@ -196,7 +188,7 @@ func Test_Client_Single_Locker_Acquire_Budget(t *testing.T) {
 		c := redigo.Config{
 			Kind: redigo.KindSingle,
 			Locker: redigo.ConfigLocker{
-				Budget: bre,
+				Breakr: bre,
 				Expiry: 1 * time.Second,
 			},
 		}
@@ -228,7 +220,7 @@ func Test_Client_Single_Locker_Acquire_Budget(t *testing.T) {
 	<-don
 
 	// The first Acquire call should still hold the lock on the first try, but
-	// the locker is configured with a budget implementation that retries until
+	// the locker is configured with a breakr implementation that retries until
 	// the lock expires and then can be acquired a second time here.
 	err = cli.Locker().Acquire()
 	if err != nil {
@@ -244,7 +236,7 @@ func Test_Client_Single_Locker_Acquire_Error(t *testing.T) {
 		c := redigo.Config{
 			Kind: redigo.KindSingle,
 			Locker: redigo.ConfigLocker{
-				Budget: single.New(),
+				Breakr: breakr.Fake(),
 				Expiry: 1 * time.Second,
 			},
 		}
