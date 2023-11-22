@@ -3,28 +3,21 @@ package redigo
 import (
 	"time"
 
-	"github.com/xh3b4sd/budget/v3"
-	"github.com/xh3b4sd/budget/v3/pkg/breaker"
-
+	"github.com/xh3b4sd/breakr"
 	"github.com/xh3b4sd/redigo/pkg/fake"
 )
 
 func Default() Interface {
 	var err error
 
-	var bre budget.Interface
+	var bre breakr.Interface
 	{
-		c := breaker.Config{
-			Failure: breaker.Failure{
+		bre = breakr.New(breakr.Config{
+			Failure: breakr.Failure{
 				Budget: 30,
 				Cooler: 1 * time.Second,
 			},
-		}
-
-		bre, err = breaker.New(c)
-		if err != nil {
-			panic(err)
-		}
+		})
 	}
 
 	var red Interface
@@ -32,7 +25,7 @@ func Default() Interface {
 		c := Config{
 			Kind: KindSingle,
 			Locker: ConfigLocker{
-				Budget: bre,
+				Breakr: bre,
 			},
 		}
 

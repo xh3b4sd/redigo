@@ -6,7 +6,7 @@ import (
 
 func (l *Locker) Acquire() error {
 	act := func() error {
-		err := l.mutex.Lock()
+		err := l.mut.Lock()
 		if err != nil {
 			return tracer.Mask(err)
 		}
@@ -14,7 +14,7 @@ func (l *Locker) Acquire() error {
 		return nil
 	}
 
-	err := l.bud.Execute(act)
+	err := l.brk.Execute(act)
 	if err != nil {
 		return tracer.Mask(err)
 	}
