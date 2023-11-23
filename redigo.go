@@ -3,17 +3,14 @@ package redigo
 import (
 	"net"
 	"os"
-	"time"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/xh3b4sd/breakr"
 	"github.com/xh3b4sd/redigo/pkg/backup"
-	"github.com/xh3b4sd/redigo/pkg/locker"
-	"github.com/xh3b4sd/redigo/pkg/pool"
 	"github.com/xh3b4sd/redigo/pkg/pubsub"
-	"github.com/xh3b4sd/redigo/pkg/simple"
 	"github.com/xh3b4sd/redigo/pkg/sorted"
 	"github.com/xh3b4sd/redigo/pkg/walker"
+	"github.com/xh3b4sd/redigo/pool"
+	"github.com/xh3b4sd/redigo/simple"
 	"github.com/xh3b4sd/tracer"
 )
 
@@ -26,21 +23,13 @@ type Config struct {
 	Address string
 	Count   int
 	Kind    string
-	Locker  ConfigLocker
 	Pool    *redis.Pool
 	Prefix  string
-}
-
-type ConfigLocker struct {
-	Breakr breakr.Interface
-	Expiry time.Duration
-	Name   string
 }
 
 type Redigo struct {
 	add string
 	bac backup.Interface
-	loc locker.Interface
 	poo *redis.Pool
 	pub pubsub.Interface
 	sim simple.Interface
@@ -79,17 +68,6 @@ func New(con Config) (*Redigo, error) {
 		if err != nil {
 			return nil, tracer.Mask(err)
 		}
-	}
-
-	var loc locker.Interface
-	{
-		loc = locker.New(locker.Config{
-			Breakr: con.Locker.Breakr,
-			Expiry: con.Locker.Expiry,
-			Name:   con.Locker.Name,
-			Pool:   con.Pool,
-			Prefix: con.Prefix,
-		})
 	}
 
 	var pub pubsub.Interface
@@ -152,7 +130,6 @@ func New(con Config) (*Redigo, error) {
 	r := &Redigo{
 		add: con.Address,
 		bac: bac,
-		loc: loc,
 		poo: con.Pool,
 		pub: pub,
 		sim: sim,
@@ -230,10 +207,6 @@ func (r *Redigo) Listen() string {
 
 func (r *Redigo) Backup() backup.Interface {
 	return r.bac
-}
-
-func (r *Redigo) Locker() locker.Interface {
-	return r.loc
 }
 
 func (r *Redigo) PubSub() pubsub.Interface {

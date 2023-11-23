@@ -3,11 +3,10 @@ package redigo
 import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/xh3b4sd/redigo/pkg/backup"
-	"github.com/xh3b4sd/redigo/pkg/locker"
 	"github.com/xh3b4sd/redigo/pkg/pubsub"
-	"github.com/xh3b4sd/redigo/pkg/simple"
 	"github.com/xh3b4sd/redigo/pkg/sorted"
 	"github.com/xh3b4sd/redigo/pkg/walker"
+	"github.com/xh3b4sd/redigo/simple"
 )
 
 type Interface interface {
@@ -17,10 +16,10 @@ type Interface interface {
 	Purge() error
 	Redis(fun func(con redis.Conn) error) error
 
+	// Listen returns the host:port configuration for this redigo instance.
 	Listen() string
 
 	Backup() backup.Interface
-	Locker() locker.Interface
 	PubSub() pubsub.Interface
 	Sorted() sorted.Interface
 	Simple() simple.Interface

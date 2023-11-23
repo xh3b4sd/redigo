@@ -1,8 +1,8 @@
-package search
+package exists
 
 import (
 	"github.com/gomodule/redigo/redis"
-	"github.com/xh3b4sd/redigo/pkg/prefix"
+	"github.com/xh3b4sd/redigo/prefix"
 	"github.com/xh3b4sd/tracer"
 )
 
@@ -23,7 +23,7 @@ func New(c Config) *Redis {
 	}
 }
 
-func (r *Redis) Multi(key ...string) ([]string, error) {
+func (r *Redis) Multi(key ...string) (int64, error) {
 	var err error
 
 	var con redis.Conn
@@ -37,16 +37,12 @@ func (r *Redis) Multi(key ...string) ([]string, error) {
 		arg = append(arg, prefix.WithKeys(r.pre, x))
 	}
 
-	var res []string
+	var res int64
 	{
-		res, err = redis.Strings(con.Do("MGET", arg...))
+		res, err = redis.Int64(con.Do("EXISTS", arg...))
 		if err != nil {
-			return nil, tracer.Mask(err)
+			return 0, tracer.Mask(err)
 		}
-	}
-
-	if len(res) == 1 && res[0] == "" {
-		return nil, tracer.Mask(notFoundError)
 	}
 
 	return res, nil

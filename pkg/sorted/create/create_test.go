@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/rafaeljusto/redigomock"
-	"github.com/xh3b4sd/redigo/pkg/pool"
+	"github.com/xh3b4sd/redigo/pool"
 )
 
 func Test_Sorted_Create_Index_Input_Error(t *testing.T) {

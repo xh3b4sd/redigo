@@ -2,13 +2,12 @@ package fake
 
 import (
 	"github.com/gomodule/redigo/redis"
-
+	"github.com/xh3b4sd/redigo/locker"
 	"github.com/xh3b4sd/redigo/pkg/backup"
-	"github.com/xh3b4sd/redigo/pkg/locker"
 	"github.com/xh3b4sd/redigo/pkg/pubsub"
-	"github.com/xh3b4sd/redigo/pkg/simple"
 	"github.com/xh3b4sd/redigo/pkg/sorted"
 	"github.com/xh3b4sd/redigo/pkg/walker"
+	"github.com/xh3b4sd/redigo/simple"
 )
 
 type Client struct {
@@ -61,7 +60,7 @@ func (c *Client) Locker() locker.Interface {
 		return c.FakeLocker()
 	}
 
-	return &Locker{}
+	return &locker.Fake{}
 }
 
 func (c *Client) PubSub() pubsub.Interface {

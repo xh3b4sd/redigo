@@ -2,10 +2,10 @@ package simple
 
 import (
 	"github.com/gomodule/redigo/redis"
-	"github.com/xh3b4sd/redigo/pkg/simple/create"
-	"github.com/xh3b4sd/redigo/pkg/simple/delete"
-	"github.com/xh3b4sd/redigo/pkg/simple/exists"
-	"github.com/xh3b4sd/redigo/pkg/simple/search"
+	"github.com/xh3b4sd/redigo/simple/create"
+	"github.com/xh3b4sd/redigo/simple/delete"
+	"github.com/xh3b4sd/redigo/simple/exists"
+	"github.com/xh3b4sd/redigo/simple/search"
 )
 
 type Config struct {
