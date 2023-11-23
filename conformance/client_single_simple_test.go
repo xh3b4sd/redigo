@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/xh3b4sd/redigo"
-	"github.com/xh3b4sd/redigo/pkg/simple"
+	"github.com/xh3b4sd/redigo/simple"
 )
 
 func Test_Client_Single_Simple_Lifecycle(t *testing.T) {

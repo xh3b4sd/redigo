@@ -5,9 +5,9 @@ import (
 	"github.com/xh3b4sd/tracer"
 )
 
-func (l *Locker) Release() error {
+func (l *Redis) Refresh() error {
 	act := func() error {
-		sta, err := l.mut.Unlock()
+		sta, err := l.mut.Extend()
 		if err != nil {
 			return tracer.Mask(err)
 		}
@@ -19,11 +19,13 @@ func (l *Locker) Release() error {
 		return nil
 	}
 
-	err := l.brk.Execute(act)
-	if breakr.IsCancel(err) {
-		return tracer.Mask(statusError)
-	} else if err != nil {
-		return tracer.Mask(err)
+	{
+		err := l.brk.Execute(act)
+		if breakr.IsCancel(err) {
+			return tracer.Mask(statusError)
+		} else if err != nil {
+			return tracer.Mask(err)
+		}
 	}
 
 	return nil

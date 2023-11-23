@@ -11,7 +11,8 @@ import (
 
 	"github.com/xh3b4sd/breakr"
 	"github.com/xh3b4sd/redigo"
-	"github.com/xh3b4sd/redigo/pkg/locker"
+	"github.com/xh3b4sd/redigo/locker"
+	"github.com/xh3b4sd/redigo/pool"
 	"github.com/xh3b4sd/tracer"
 )
 
@@ -28,11 +29,20 @@ func Test_Client_Single_Locker_Lifecycle(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+	}
 
+	{
 		err = cli.Purge()
 		if err != nil {
 			t.Fatal(err)
 		}
+	}
+
+	var loc locker.Interface
+	{
+		loc = locker.New(locker.Config{
+			Poo: pool.NewSinglePoolWithAddress(cli.Listen()),
+		})
 	}
 
 	erc := make(chan error, 1)
@@ -57,7 +67,7 @@ func Test_Client_Single_Locker_Lifecycle(t *testing.T) {
 		go func() {
 			defer w.Done()
 
-			err = cli.Locker().Acquire()
+			err = loc.Acquire()
 			if err != nil {
 				erc <- tracer.Mask(err)
 				return
@@ -81,7 +91,7 @@ func Test_Client_Single_Locker_Lifecycle(t *testing.T) {
 				}
 			}
 
-			err = cli.Locker().Release()
+			err = loc.Release()
 			if err != nil {
 				erc <- tracer.Mask(err)
 				return
@@ -94,7 +104,7 @@ func Test_Client_Single_Locker_Lifecycle(t *testing.T) {
 			defer w.Done()
 
 			for {
-				err = cli.Locker().Acquire()
+				err = loc.Acquire()
 				if locker.IsAcquire(err) {
 					time.Sleep(50 * time.Millisecond)
 					continue
@@ -122,7 +132,7 @@ func Test_Client_Single_Locker_Lifecycle(t *testing.T) {
 				}
 			}
 
-			err = cli.Locker().Release()
+			err = loc.Release()
 			if err != nil {
 				erc <- tracer.Mask(err)
 				return
@@ -173,9 +183,28 @@ func Test_Client_Single_Locker_Lifecycle(t *testing.T) {
 func Test_Client_Single_Locker_Acquire_Budget(t *testing.T) {
 	var err error
 
-	var bre breakr.Interface
+	var cli redigo.Interface
 	{
-		bre = breakr.New(breakr.Config{
+		c := redigo.Config{
+			Kind: redigo.KindSingle,
+		}
+
+		cli, err = redigo.New(c)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err = cli.Purge()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	var brk breakr.Interface
+	{
+		brk = breakr.New(breakr.Config{
 			Failure: breakr.Failure{
 				Budget: 3,
 				Cooler: 1 * time.Second,
@@ -183,31 +212,19 @@ func Test_Client_Single_Locker_Acquire_Budget(t *testing.T) {
 		})
 	}
 
-	var cli redigo.Interface
+	var loc locker.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-			Locker: redigo.ConfigLocker{
-				Breakr: bre,
-				Expiry: 1 * time.Second,
-			},
-		}
-
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
-		if err != nil {
-			t.Fatal(err)
-		}
+		loc = locker.New(locker.Config{
+			Brk: brk,
+			Exp: 1 * time.Second,
+			Poo: pool.NewSinglePoolWithAddress(cli.Listen()),
+		})
 	}
 
 	don := make(chan struct{}, 1)
 
 	go func() {
-		err = cli.Locker().Acquire()
+		err = loc.Acquire()
 		if err != nil {
 			panic(err)
 		}
@@ -222,7 +239,7 @@ func Test_Client_Single_Locker_Acquire_Budget(t *testing.T) {
 	// The first Acquire call should still hold the lock on the first try, but
 	// the locker is configured with a breakr implementation that retries until
 	// the lock expires and then can be acquired a second time here.
-	err = cli.Locker().Acquire()
+	err = loc.Acquire()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -235,26 +252,33 @@ func Test_Client_Single_Locker_Acquire_Error(t *testing.T) {
 	{
 		c := redigo.Config{
 			Kind: redigo.KindSingle,
-			Locker: redigo.ConfigLocker{
-				Breakr: breakr.Fake(),
-				Expiry: 1 * time.Second,
-			},
 		}
 
 		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
+	}
 
+	{
 		err = cli.Purge()
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
 
+	var loc locker.Interface
+	{
+		loc = locker.New(locker.Config{
+			Brk: breakr.Fake(),
+			Exp: 1 * time.Second,
+			Poo: pool.NewSinglePoolWithAddress(cli.Listen()),
+		})
+	}
+
 	// Aquiring the lock the first time.
 	{
-		err = cli.Locker().Acquire()
+		err = loc.Acquire()
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -262,7 +286,7 @@ func Test_Client_Single_Locker_Acquire_Error(t *testing.T) {
 
 	// The first Acquire call should still hold the lock.
 	{
-		err = cli.Locker().Acquire()
+		err = loc.Acquire()
 		if !locker.IsAcquire(err) {
 			t.Fatal("expected acquireError")
 		}
@@ -276,26 +300,33 @@ func Test_Client_Single_Locker_Acquire_Expiry(t *testing.T) {
 	{
 		c := redigo.Config{
 			Kind: redigo.KindSingle,
-			Locker: redigo.ConfigLocker{
-				Expiry: 1 * time.Second,
-			},
 		}
 
 		cli, err = redigo.New(c)
 		if err != nil {
 			t.Fatal(err)
 		}
+	}
 
+	{
 		err = cli.Purge()
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
 
+	var loc locker.Interface
+	{
+		loc = locker.New(locker.Config{
+			Exp: 1 * time.Second,
+			Poo: pool.NewSinglePoolWithAddress(cli.Listen()),
+		})
+	}
+
 	don := make(chan struct{}, 1)
 
 	go func() {
-		err = cli.Locker().Acquire()
+		err = loc.Acquire()
 		if err != nil {
 			panic(err)
 		}
@@ -308,7 +339,7 @@ func Test_Client_Single_Locker_Acquire_Expiry(t *testing.T) {
 	<-don
 
 	// The first Acquire call should not hold the lock anymore due to expiry.
-	err = cli.Locker().Acquire()
+	err = loc.Acquire()
 	if err != nil {
 		t.Fatal(err)
 	}

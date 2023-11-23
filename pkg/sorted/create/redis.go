@@ -4,8 +4,8 @@ import (
 	"strings"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/xh3b4sd/redigo/pkg/index"
-	"github.com/xh3b4sd/redigo/pkg/prefix"
+	"github.com/xh3b4sd/redigo/index"
+	"github.com/xh3b4sd/redigo/prefix"
 	"github.com/xh3b4sd/tracer"
 )
 
