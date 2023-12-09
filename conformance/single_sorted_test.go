@@ -18,19 +18,7 @@ func Test_Client_Single_Sorted_Create_Order(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
-
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cli = prgAll(redigo.Default())
 	}
 
 	{
@@ -91,46 +79,173 @@ func Test_Client_Single_Sorted_Create_Score(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
+		cli = prgAll(redigo.Default())
+	}
 
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
+	{
+		err = cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
 
 	{
-		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "a", "b")
+		err = cli.Sorted().Create().Index("ssk", "bar", 0.7, "c", "d")
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
 
 	{
-		err := cli.Sorted().Create().Index("ssk", "bar", 0.7, "c", "d")
-		if err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	{
-		err := cli.Sorted().Create().Index("ssk", "zap", 0.8, "e", "f")
+		err = cli.Sorted().Create().Index("ssk", "zap", 0.8, "e", "f")
 		if !sorted.IsAlreadyExistsError(err) {
 			t.Fatal("expected", "alreadyExistsError", "got", err)
 		}
 	}
 
 	{
-		err := cli.Sorted().Create().Index("ssk", "foo", 0.8, "g", "h")
+		err = cli.Sorted().Create().Index("ssk", "foo", 0.8, "g", "h")
 		if !sorted.IsAlreadyExistsError(err) {
 			t.Fatal("expected", "alreadyExistsError", "got", err)
+		}
+	}
+}
+
+func Test_Client_Single_Sorted_Create_Union(t *testing.T) {
+	var err error
+
+	var cli redigo.Interface
+	{
+		cli = prgAll(redigo.Default())
+	}
+
+	{
+		res, err := cli.Sorted().Search().Union("k1", "k2")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 0 {
+			t.Fatal("expected", 0, "got", len(res))
+		}
+	}
+
+	{
+		err = cli.Sorted().Create().Index("k1", "v3", 0.3)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = cli.Sorted().Create().Index("k1", "v4", 0.4)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = cli.Sorted().Create().Index("k1", "v5", 0.5)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = cli.Sorted().Create().Index("k1", "v6", 0.6)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Union("k1")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 4 {
+			t.Fatal("expected", 4, "got", len(res))
+		}
+		if res[0] != "v3" {
+			t.Fatal("expected", "v3", "got", res[0])
+		}
+		if res[1] != "v4" {
+			t.Fatal("expected", "v4", "got", res[1])
+		}
+		if res[2] != "v5" {
+			t.Fatal("expected", "v5", "got", res[2])
+		}
+		if res[3] != "v6" {
+			t.Fatal("expected", "v6", "got", res[3])
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Union("k1", "k2")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 4 {
+			t.Fatal("expected", 4, "got", len(res))
+		}
+		if res[0] != "v3" {
+			t.Fatal("expected", "v3", "got", res[0])
+		}
+		if res[1] != "v4" {
+			t.Fatal("expected", "v4", "got", res[1])
+		}
+		if res[2] != "v5" {
+			t.Fatal("expected", "v5", "got", res[2])
+		}
+		if res[3] != "v6" {
+			t.Fatal("expected", "v6", "got", res[3])
+		}
+	}
+
+	{
+		err = cli.Sorted().Create().Index("k2", "v2", 0.2)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = cli.Sorted().Create().Index("k2", "v4", 0.4)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = cli.Sorted().Create().Index("k2", "v5", 0.5)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = cli.Sorted().Create().Index("k2", "v7", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		cou, err := cli.Sorted().Create().Union("k3", "k1", "k2")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if cou != 6 {
+			t.Fatal("expected", 6, "got", cou)
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Order("k3", 0, -1)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 6 {
+			t.Fatal("expected", 6, "got", len(res))
+		}
+		if res[0] != "v2" {
+			t.Fatal("expected", "v2", "got", res[0])
+		}
+		if res[1] != "v3" {
+			t.Fatal("expected", "v3", "got", res[1])
+		}
+		if res[2] != "v4" {
+			t.Fatal("expected", "v4", "got", res[2])
+		}
+		if res[3] != "v5" {
+			t.Fatal("expected", "v5", "got", res[3])
+		}
+		if res[4] != "v6" {
+			t.Fatal("expected", "v6", "got", res[4])
+		}
+		if res[5] != "v7" {
+			t.Fatal("expected", "v7", "got", res[5])
 		}
 	}
 }
@@ -140,30 +255,18 @@ func Test_Client_Single_Sorted_Create_Value(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
+		cli = prgAll(redigo.Default())
+	}
 
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
+	{
+		err = cli.Sorted().Create().Score("ssk", "foo", 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
 
 	{
-		err := cli.Sorted().Create().Score("ssk", "foo", 0.8)
-		if err != nil {
-			t.Fatal(err)
-		}
-	}
-
-	{
-		err := cli.Sorted().Create().Score("ssk", "bar", 0.7)
+		err = cli.Sorted().Create().Score("ssk", "bar", 0.7)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -171,7 +274,7 @@ func Test_Client_Single_Sorted_Create_Value(t *testing.T) {
 
 	// Verify we can create elements with duplicated scores.
 	{
-		err := cli.Sorted().Create().Score("ssk", "zap", 0.8)
+		err = cli.Sorted().Create().Score("ssk", "zap", 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -179,7 +282,7 @@ func Test_Client_Single_Sorted_Create_Value(t *testing.T) {
 
 	// Verify values must be unique after all.
 	{
-		err := cli.Sorted().Create().Score("ssk", "foo", 0.8)
+		err = cli.Sorted().Create().Score("ssk", "foo", 0.8)
 		if !sorted.IsAlreadyExistsError(err) {
 			t.Fatal("expected", "alreadyExistsError", "got", err)
 		}
@@ -208,7 +311,7 @@ func Test_Client_Single_Sorted_Create_Value(t *testing.T) {
 	// score. When foo is deleted, which has score 0.8 then zap must still exist
 	// with the same score as we verify in the next step.
 	{
-		err := cli.Sorted().Delete().Index("ssk", "foo")
+		err = cli.Sorted().Delete().Index("ssk", "foo")
 		if err != nil {
 			t.Fatal(err)
 		}
