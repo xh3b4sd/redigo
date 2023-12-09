@@ -39,8 +39,8 @@ func (r *Redis) Index(key string, val string, sco float64, ind ...string) error 
 
 	if len(ind) != 0 {
 		m := map[string]int{}
-		for _, s := range ind {
-			m[s] = m[s] + 1
+		for _, x := range ind {
+			m[x] = m[x] + 1
 		}
 
 		for _, v := range m {
@@ -49,11 +49,11 @@ func (r *Redis) Index(key string, val string, sco float64, ind ...string) error 
 			}
 		}
 
-		for _, s := range ind {
-			if s == "" {
+		for _, x := range ind {
+			if x == "" {
 				return tracer.Maskf(executionFailedError, "index must not be empty")
 			}
-			if strings.Count(s, " ") != 0 {
+			if strings.Count(x, " ") != 0 {
 				return tracer.Maskf(executionFailedError, "index must not contain whitespace")
 			}
 		}
@@ -66,8 +66,8 @@ func (r *Redis) Index(key string, val string, sco float64, ind ...string) error 
 		arg = append(arg, val)                                    // ARGV[1]
 		arg = append(arg, sco)                                    // ARGV[2]
 
-		for _, s := range ind {
-			arg = append(arg, s)
+		for _, x := range ind {
+			arg = append(arg, x)
 		}
 	}
 
@@ -116,4 +116,35 @@ func (r *Redis) Score(key string, val string, sco float64) error {
 	}
 
 	return nil
+}
+
+func (r *Redis) Union(dst string, key ...string) (int64, error) {
+	var err error
+
+	var con redis.Conn
+	{
+		con = r.poo.Get()
+		defer con.Close()
+	}
+
+	var arg []interface{}
+	{
+		arg = append(arg, dst, len(key))
+
+		for _, x := range key {
+			arg = append(arg, prefix.WithKeys(r.pre, x))
+		}
+
+		arg = append(arg, "AGGREGATE", "MIN")
+	}
+
+	var res int64
+	{
+		res, err = redis.Int64(con.Do("ZUNIONSTORE", arg...))
+		if err != nil {
+			return 0, tracer.Mask(err)
+		}
+	}
+
+	return res, nil
 }
