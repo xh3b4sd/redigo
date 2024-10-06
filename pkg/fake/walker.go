@@ -1,13 +1,18 @@
 package fake
 
+import (
+	"github.com/xh3b4sd/redigo/walker"
+	"github.com/xh3b4sd/redigo/walker/search"
+)
+
 type Walker struct {
-	FakeSimple func(pat string, don <-chan struct{}, key chan<- string) error
+	FakeSearch func() walker.Search
 }
 
-func (f *Walker) Simple(pat string, don <-chan struct{}, key chan<- string) error {
-	if f.FakeSimple != nil {
-		return f.FakeSimple(pat, don, key)
+func (s *Walker) Search() walker.Search {
+	if s.FakeSearch != nil {
+		return s.FakeSearch()
 	}
 
-	return nil
+	return &search.Fake{}
 }

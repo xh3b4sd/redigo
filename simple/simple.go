@@ -21,7 +21,7 @@ type Simple struct {
 	search *search.Redis
 }
 
-func New(config Config) (*Simple, error) {
+func New(config Config) *Simple {
 	var cre *create.Redis
 	{
 		cre = create.New(create.Config{
@@ -54,14 +54,12 @@ func New(config Config) (*Simple, error) {
 		})
 	}
 
-	s := &Simple{
+	return &Simple{
 		create: cre,
 		delete: del,
 		exists: exi,
 		search: sea,
 	}
-
-	return s, nil
 }
 
 func (s *Simple) Create() Create {
