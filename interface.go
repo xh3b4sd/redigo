@@ -5,8 +5,8 @@ import (
 	"github.com/xh3b4sd/redigo/pkg/backup"
 	"github.com/xh3b4sd/redigo/pkg/pubsub"
 	"github.com/xh3b4sd/redigo/pkg/sorted"
-	"github.com/xh3b4sd/redigo/pkg/walker"
 	"github.com/xh3b4sd/redigo/simple"
+	"github.com/xh3b4sd/redigo/walker"
 )
 
 type Interface interface {

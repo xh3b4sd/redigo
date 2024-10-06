@@ -98,7 +98,7 @@ func Test_Client_Single_Walker_Simple_001(t *testing.T) {
 				}
 			}()
 
-			err = cli.Walker().Simple("*", don, res)
+			err = cli.Walker().Search().Keys("*", don, res)
 			if err != nil {
 				erc <- tracer.Mask(err)
 				return
@@ -222,7 +222,7 @@ func Test_Client_Single_Walker_Simple_002(t *testing.T) {
 				}
 			}()
 
-			err = cli.Walker().Simple("pre:*", don, res)
+			err = cli.Walker().Search().Keys("pre:*", don, res)
 			if err != nil {
 				erc <- tracer.Mask(err)
 				return
@@ -340,7 +340,7 @@ func Test_Client_Single_Walker_Simple_003(t *testing.T) {
 		go func() {
 			defer wai.Done()
 
-			err := cli.Walker().Simple("*", don, res)
+			err := cli.Walker().Search().Keys("*", don, res)
 			if err != nil {
 				panic(err)
 			}

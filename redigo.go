@@ -8,9 +8,9 @@ import (
 	"github.com/xh3b4sd/redigo/pkg/backup"
 	"github.com/xh3b4sd/redigo/pkg/pubsub"
 	"github.com/xh3b4sd/redigo/pkg/sorted"
-	"github.com/xh3b4sd/redigo/pkg/walker"
 	"github.com/xh3b4sd/redigo/pool"
 	"github.com/xh3b4sd/redigo/simple"
+	"github.com/xh3b4sd/redigo/walker"
 	"github.com/xh3b4sd/tracer"
 )
 
@@ -23,8 +23,10 @@ type Config struct {
 	Address string
 	Count   int
 	Kind    string
+	Pass    string
 	Pool    *redis.Pool
 	Prefix  string
+	User    string
 }
 
 type Redigo struct {
@@ -50,7 +52,7 @@ func New(con Config) (*Redigo, error) {
 	}
 
 	if con.Pool == nil && con.Kind == KindSingle {
-		con.Pool = pool.NewSinglePoolWithAddress(con.Address)
+		con.Pool = pool.NewSinglePoolWithAddress(con.Address, con.User, con.Pass)
 	}
 	if con.Pool == nil && con.Kind == KindSentinel {
 		con.Pool = pool.NewSentinelPoolWithAddress(con.Address)
@@ -86,16 +88,11 @@ func New(con Config) (*Redigo, error) {
 
 	var sim simple.Interface
 	{
-		c := simple.Config{
+		sim = simple.New(simple.Config{
 			Pool: con.Pool,
 
 			Prefix: con.Prefix,
-		}
-
-		sim, err = simple.New(c)
-		if err != nil {
-			return nil, tracer.Mask(err)
-		}
+		})
 	}
 
 	var sor sorted.Interface
@@ -114,17 +111,12 @@ func New(con Config) (*Redigo, error) {
 
 	var wal walker.Interface
 	{
-		c := walker.Config{
+		wal = walker.New(walker.Config{
 			Pool: con.Pool,
 
 			Count:  con.Count,
 			Prefix: con.Prefix,
-		}
-
-		wal, err = walker.New(c)
-		if err != nil {
-			return nil, tracer.Mask(err)
-		}
+		})
 	}
 
 	r := &Redigo{
