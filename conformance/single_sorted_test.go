@@ -335,23 +335,9 @@ func Test_Client_Single_Sorted_Create_Value(t *testing.T) {
 }
 
 func Test_Client_Single_Sorted_Delete_Empty(t *testing.T) {
-	var err error
-
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
-
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cli = prgAll(redigo.Default())
 	}
 
 	{
@@ -430,23 +416,9 @@ func Test_Client_Single_Sorted_Delete_Empty(t *testing.T) {
 }
 
 func Test_Client_Single_Sorted_Delete_Index(t *testing.T) {
-	var err error
-
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
-
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cli = prgAll(redigo.Default())
 	}
 
 	{
@@ -544,19 +516,7 @@ func Test_Client_Single_Sorted_Delete_Limit(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
-
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cli = prgAll(redigo.Default())
 	}
 
 	var hea []float64
@@ -673,23 +633,9 @@ func Test_Client_Single_Sorted_Delete_Limit(t *testing.T) {
 }
 
 func Test_Client_Single_Sorted_Delete_Score(t *testing.T) {
-	var err error
-
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
-
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cli = prgAll(redigo.Default())
 	}
 
 	{
@@ -742,19 +688,7 @@ func Test_Client_Single_Sorted_Delete_Value(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
-
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cli = prgAll(redigo.Default())
 	}
 
 	{
@@ -841,23 +775,9 @@ func Test_Client_Single_Sorted_Delete_Value(t *testing.T) {
 }
 
 func Test_Client_Single_Sorted_Exists(t *testing.T) {
-	var err error
-
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
-
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cli = prgAll(redigo.Default())
 	}
 
 	{
@@ -1000,19 +920,7 @@ func Test_Client_Single_Sorted_Floats(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
-
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cli = prgAll(redigo.Default())
 	}
 
 	{
@@ -1096,23 +1004,9 @@ func Test_Client_Single_Sorted_Floats(t *testing.T) {
 }
 
 func Test_Client_Single_Sorted_Metric(t *testing.T) {
-	var err error
-
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
-
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cli = prgAll(redigo.Default())
 	}
 
 	{
@@ -1178,23 +1072,9 @@ func Test_Client_Single_Sorted_Metric(t *testing.T) {
 }
 
 func Test_Client_Single_Sorted_Search_Index(t *testing.T) {
-	var err error
-
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
-
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cli = prgAll(redigo.Default())
 	}
 
 	{
@@ -1240,19 +1120,7 @@ func Test_Client_Single_Sorted_Search_Inter(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
-
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cli = prgAll(redigo.Default())
 	}
 
 	{
@@ -1353,23 +1221,9 @@ func Test_Client_Single_Sorted_Search_Inter(t *testing.T) {
 }
 
 func Test_Client_Single_Sorted_Search_Order(t *testing.T) {
-	var err error
-
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
-
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cli = prgAll(redigo.Default())
 	}
 
 	{
@@ -1532,19 +1386,7 @@ func Test_Client_Single_Sorted_Search_Rando(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
-
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cli = prgAll(redigo.Default())
 	}
 
 	{
@@ -1606,19 +1448,7 @@ func Test_Client_Single_Sorted_Search_Rando_Cou(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
-
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cli = prgAll(redigo.Default())
 	}
 
 	{
@@ -1723,19 +1553,7 @@ func Test_Client_Single_Sorted_Search_Union(t *testing.T) {
 
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
-
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cli = prgAll(redigo.Default())
 	}
 
 	{
@@ -1860,23 +1678,9 @@ func Test_Client_Single_Sorted_Search_Union(t *testing.T) {
 }
 
 func Test_Client_Single_Sorted_Search_Value(t *testing.T) {
-	var err error
-
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
-
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cli = prgAll(redigo.Default())
 	}
 
 	{
@@ -1947,23 +1751,9 @@ func Test_Client_Single_Sorted_Search_Value(t *testing.T) {
 }
 
 func Test_Client_Single_Sorted_Update_Index(t *testing.T) {
-	var err error
-
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
-
-		cli, err = redigo.New(c)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = cli.Purge()
-		if err != nil {
-			t.Fatal(err)
-		}
+		cli = prgAll(redigo.Default())
 	}
 
 	{
@@ -2035,23 +1825,83 @@ func Test_Client_Single_Sorted_Update_Index(t *testing.T) {
 }
 
 func Test_Client_Single_Sorted_Update_Score(t *testing.T) {
-	var err error
-
 	var cli redigo.Interface
 	{
-		c := redigo.Config{
-			Kind: redigo.KindSingle,
-		}
+		cli = prgAll(redigo.Default())
+	}
 
-		cli, err = redigo.New(c)
+	{
+		res, err := cli.Sorted().Search().Score("ssk", 0.8, 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
+		if len(res) != 0 {
+			t.Fatal("expected", 0, "got", len(res))
+		}
+	}
 
-		err = cli.Purge()
+	{
+		err := cli.Sorted().Update().Score("ssk", "foo", 0.7)
+		if !sorted.IsNotFound(err) {
+			t.Fatal("expected", "notFoundError", "got", err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Score("ssk", "foo", 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Score("ssk", 0.8, 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 1 {
+			t.Fatal("expected", 1, "got", len(res))
+		}
+		if res[0] != "foo" {
+			t.Fatal("expected", "foo", "got", res[0])
+		}
+	}
+
+	{
+		err := cli.Sorted().Update().Score("ssk", "foo", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Score("ssk", 0.8, 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 0 {
+			t.Fatal("expected", 0, "got", len(res))
+		}
+	}
+
+	{
+		res, err := cli.Sorted().Search().Score("ssk", 0.7, 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(res) != 1 {
+			t.Fatal("expected", 1, "got", len(res))
+		}
+		if res[0] != "foo" {
+			t.Fatal("expected", "foo", "got", res[0])
+		}
+	}
+}
+
+func Test_Client_Single_Sorted_Update_Value(t *testing.T) {
+	var cli redigo.Interface
+	{
+		cli = prgAll(redigo.Default())
 	}
 
 	{
@@ -2082,14 +1932,14 @@ func Test_Client_Single_Sorted_Update_Score(t *testing.T) {
 	}
 
 	{
-		_, err := cli.Sorted().Update().Score("ssk", "bar", 0.7)
+		_, err := cli.Sorted().Update().Value("ssk", "bar", 0.7)
 		if !sorted.IsNotFound(err) {
 			t.Fatal("expected", "notFoundError", "got", err)
 		}
 	}
 
 	{
-		upd, err := cli.Sorted().Update().Score("ssk", "bar", 0.8)
+		upd, err := cli.Sorted().Update().Value("ssk", "bar", 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2099,7 +1949,7 @@ func Test_Client_Single_Sorted_Update_Score(t *testing.T) {
 	}
 
 	{
-		upd, err := cli.Sorted().Update().Score("ssk", "bar", 0.8)
+		upd, err := cli.Sorted().Update().Value("ssk", "bar", 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}

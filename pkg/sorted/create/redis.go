@@ -100,6 +100,7 @@ func (r *Redis) Score(key string, val string, sco float64) error {
 		defer con.Close()
 	}
 
+	// Use NX to only add new elements. Don't update already existing elements.
 	var res int64
 	{
 		res, err = redis.Int64(con.Do("ZADD", prefix.WithKeys(r.pre, key), "NX", sco, val))
@@ -110,9 +111,9 @@ func (r *Redis) Score(key string, val string, sco float64) error {
 
 	// ZADD returns the number of elements created. Scores can be duplicated, but
 	// values must be unique after all. If the value to be added existed already,
-	// ZADD returns 0. In that case we return the appropriate error.
+	// then ZADD returns 0. In that case we return the appropriate error.
 	if res == 0 {
-		return tracer.Maskf(alreadyExistsError, "value must be unique")
+		return tracer.Maskf(alreadyExistsError, "key %s does already hold a value for score %f", key, sco)
 	}
 
 	return nil

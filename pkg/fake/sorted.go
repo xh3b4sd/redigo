@@ -3,6 +3,7 @@ package fake
 import (
 	"github.com/xh3b4sd/redigo/pkg/sorted"
 	"github.com/xh3b4sd/redigo/pkg/sorted/create"
+	"github.com/xh3b4sd/redigo/pkg/sorted/update"
 )
 
 type Sorted struct {
@@ -69,5 +70,5 @@ func (s *Sorted) Update() sorted.Update {
 		return s.FakeUpdate()
 	}
 
-	return &SortedUpdate{}
+	return &update.Fake{}
 }
