@@ -134,7 +134,8 @@ type Search interface {
 
 	// Order returns the values of the sorted set elements stored under key. The
 	// provided pointers are ranks of the elements' scores within the sorted set.
-	// All values under key can be returned using lef=0 and rig=-1. Optionally a
+	// All values under key can be returned using lef=0 and rig=-1. The latest
+	// value under key can be returned using lef=-1 and rig=-1. Optionally a
 	// single bool is allowed to be passed for additionally returning the element
 	// scores together with their values as described by WITHSCORES.
 	//
@@ -181,10 +182,14 @@ type Update interface {
 	// whether the underlying value was updated. An error is returned if the
 	// underlying element does not exist.
 	Index(key string, new string, sco float64, ind ...string) (bool, error)
-	// Score modifies the element identified by sco and sets its value to new. For
+	// Score updates the score of the given value if that value does already
+	// exist. If an element is tried to be updated that does not exist, then an
+	// error is returned.
+	Score(key string, val string, sco float64) error
+	// Value modifies the element identified by sco and sets its value to new. For
 	// the sorted set implementation here, scores are static and must never change
 	// since they get treated like unique IDs. The returned bool indicates whether
 	// the underlying value was updated. An error is returned if the underlying
 	// element does not exist.
-	Score(key string, new string, sco float64) (bool, error)
+	Value(key string, new string, sco float64) (bool, error)
 }

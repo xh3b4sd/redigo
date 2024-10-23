@@ -3,6 +3,7 @@ package sorted
 import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/xh3b4sd/redigo/pkg/sorted/create"
+	"github.com/xh3b4sd/redigo/pkg/sorted/update"
 )
 
 type Config struct {
@@ -18,7 +19,7 @@ type Sorted struct {
 	flo *floats
 	met *metric
 	sea *search
-	upd *update
+	upd *update.Redis
 }
 
 func New(config Config) (*Sorted, error) {
@@ -81,16 +82,12 @@ func New(config Config) (*Sorted, error) {
 		}
 	}
 
-	var upd *update
+	var upd *update.Redis
 	{
-		upd = &update{
-			pool: config.Pool,
-
-			updateIndexScript: redis.NewScript(2, updateIndexScript),
-			updateScoreScript: redis.NewScript(1, updateScoreScript),
-
-			prefix: config.Prefix,
-		}
+		upd = update.New(update.Config{
+			Poo: config.Pool,
+			Pre: config.Prefix,
+		})
 	}
 
 	s := &Sorted{
