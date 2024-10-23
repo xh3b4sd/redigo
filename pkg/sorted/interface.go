@@ -183,8 +183,8 @@ type Update interface {
 	// underlying element does not exist.
 	Index(key string, new string, sco float64, ind ...string) (bool, error)
 	// Score updates the score of the given value if that value does already
-	// exist. If an element is tried to be updated that does not exist, then an
-	// error is returned.
+	// exist, or creates it with the given value. In other words, Score is
+	// idempotent.
 	Score(key string, val string, new float64) error
 	// Value modifies the element identified by sco and sets its value to new. For
 	// the sorted set implementation here, scores are static and must never change

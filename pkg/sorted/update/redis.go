@@ -106,20 +106,11 @@ func (r *Redis) Score(key string, val string, sco float64) error {
 		defer con.Close()
 	}
 
-	// Use XX to only update elements that already exist. Don't add new elements.
-	var res int64
 	{
-		res, err = redis.Int64(con.Do("ZADD", prefix.WithKeys(r.pre, key), "XX", "CH", sco, val))
+		_, err = con.Do("ZADD", prefix.WithKeys(r.pre, key), sco, val)
 		if err != nil {
 			return tracer.Mask(err)
 		}
-	}
-
-	// ZADD returns the number of elements updated. Scores can be duplicated, but
-	// values must be unique after all. If the value to be updated does not exist,
-	// then ZADD returns 0. In that case we return the appropriate error.
-	if res == 0 {
-		return tracer.Maskf(notFoundError, "key %s does not hold a score for value %s", key, val)
 	}
 
 	return nil
