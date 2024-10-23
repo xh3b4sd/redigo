@@ -1841,14 +1841,7 @@ func Test_Client_Single_Sorted_Update_Score(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Update().Score("ssk", "foo", 0.7)
-		if !sorted.IsNotFound(err) {
-			t.Fatal("expected", "notFoundError", "got", err)
-		}
-	}
-
-	{
-		err := cli.Sorted().Create().Score("ssk", "foo", 0.8)
+		err := cli.Sorted().Update().Score("ssk", "foo", 0.8)
 		if err != nil {
 			t.Fatal(err)
 		}
