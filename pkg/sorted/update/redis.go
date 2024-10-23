@@ -24,7 +24,7 @@ func New(c Config) *Redis {
 		poo: c.Poo,
 		pre: c.Pre,
 		ind: redis.NewScript(2, updateIndexScript),
-		val: redis.NewScript(1, updateScoreScript),
+		val: redis.NewScript(1, updateValueScript),
 	}
 }
 

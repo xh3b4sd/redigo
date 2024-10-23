@@ -185,7 +185,7 @@ type Update interface {
 	// Score updates the score of the given value if that value does already
 	// exist. If an element is tried to be updated that does not exist, then an
 	// error is returned.
-	Score(key string, val string, sco float64) error
+	Score(key string, val string, new float64) error
 	// Value modifies the element identified by sco and sets its value to new. For
 	// the sorted set implementation here, scores are static and must never change
 	// since they get treated like unique IDs. The returned bool indicates whether

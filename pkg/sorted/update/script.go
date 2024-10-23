@@ -74,18 +74,18 @@ const updateIndexScript = `
 	return upd(KEYS[1], ARGV[1], ARGV[2])
 `
 
-const updateScoreScript = `
-	-- Verify if the score does already exist. If there is no element we
-	-- cannot update it.
-	local res = redis.call("ZRANGE", KEYS[1], ARGV[2], ARGV[2], "BYSCORE")
+const updateValueScript = `
+	-- Verify if the value does already exist. If there is no element we cannot
+	-- update it.
+	local val = redis.call("ZRANGE", KEYS[1], ARGV[2], ARGV[2], "BYSCORE")
 
-	local old = res[1]
+	local old = val[1]
 	if (old == nil) then
 		return 0
 	end
 
-	-- Verify if the existing value is already what we want to update to. If
-	-- the desired state is already reconciled we do not need to proceed
+	-- Verify if the existing value is already what we want it to be. If the
+	-- desired state is already reconciled, then we do not need to proceed
 	-- further.
 	if (old == ARGV[1]) then
 		return 1
