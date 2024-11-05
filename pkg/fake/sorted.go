@@ -3,6 +3,7 @@ package fake
 import (
 	"github.com/xh3b4sd/redigo/pkg/sorted"
 	"github.com/xh3b4sd/redigo/pkg/sorted/create"
+	"github.com/xh3b4sd/redigo/pkg/sorted/delete"
 	"github.com/xh3b4sd/redigo/pkg/sorted/update"
 )
 
@@ -17,7 +18,6 @@ type Sorted struct {
 }
 
 func (s *Sorted) Create() sorted.Create {
-	// TODO refactor all fake methods the new way
 	if s.FakeCreate != nil {
 		return s.FakeCreate()
 	}
@@ -30,7 +30,7 @@ func (s *Sorted) Delete() sorted.Delete {
 		return s.FakeDelete()
 	}
 
-	return &SortedDelete{}
+	return &delete.Fake{}
 }
 
 func (s *Sorted) Exists() sorted.Exists {
@@ -38,6 +38,7 @@ func (s *Sorted) Exists() sorted.Exists {
 		return s.FakeExists()
 	}
 
+	// TODO refactor all fake methods the new way
 	return &SortedExists{}
 }
 
