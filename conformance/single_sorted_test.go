@@ -632,10 +632,44 @@ func Test_Client_Single_Sorted_Delete_Limit(t *testing.T) {
 	}
 }
 
-func Test_Client_Single_Sorted_Delete_Score(t *testing.T) {
+func Test_Client_Single_Sorted_Delete_Score_Range_All(t *testing.T) {
 	var cli redigo.Interface
 	{
 		cli = prgAll(redigo.Default())
+	}
+
+	//
+	// EXISTS
+	//
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.5)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.6)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
 	}
 
 	{
@@ -649,9 +683,85 @@ func Test_Client_Single_Sorted_Delete_Score(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Create().Index("ssk", "foo", 0.8)
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.9)
 		if err != nil {
 			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	//
+	// CREATE
+	//
+
+	{
+		err := cli.Sorted().Create().Index("ssk", "sta", 0.5)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.6)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Index("ssk", "bar", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Index("ssk", "baz", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Index("ssk", "end", 0.9)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	//
+	// EXISTS
+	//
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.5)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.6)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
 		}
 	}
 
@@ -666,9 +776,57 @@ func Test_Client_Single_Sorted_Delete_Score(t *testing.T) {
 	}
 
 	{
-		err := cli.Sorted().Delete().Score("ssk", 0.8)
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.9)
 		if err != nil {
 			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	//
+	// DELETE
+	//
+
+	{
+		err := cli.Sorted().Delete().Score("ssk", 0.6, 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	//
+	// EXISTS
+	//
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.5)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.6)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
 		}
 	}
 
@@ -679,6 +837,451 @@ func Test_Client_Single_Sorted_Delete_Score(t *testing.T) {
 		}
 		if exi {
 			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.9)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+}
+
+func Test_Client_Single_Sorted_Delete_Score_Range_End(t *testing.T) {
+	var cli redigo.Interface
+	{
+		cli = prgAll(redigo.Default())
+	}
+
+	//
+	// EXISTS
+	//
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.6)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	//
+	// CREATE
+	//
+
+	{
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.6)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Index("ssk", "bar", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Index("ssk", "baz", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	//
+	// EXISTS
+	//
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.6)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	//
+	// DELETE
+	//
+
+	{
+		err := cli.Sorted().Delete().Score("ssk", 0.7, 1.1)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	//
+	// EXISTS
+	//
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.6)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+}
+
+func Test_Client_Single_Sorted_Delete_Score_Range_Start(t *testing.T) {
+	var cli redigo.Interface
+	{
+		cli = prgAll(redigo.Default())
+	}
+
+	//
+	// EXISTS
+	//
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.6)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	//
+	// CREATE
+	//
+
+	{
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.6)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Index("ssk", "bar", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Index("ssk", "baz", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	//
+	// EXISTS
+	//
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.6)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	//
+	// DELETE
+	//
+
+	{
+		err := cli.Sorted().Delete().Score("ssk", 0.2, 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	//
+	// EXISTS
+	//
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.6)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+}
+
+func Test_Client_Single_Sorted_Delete_Score_Single(t *testing.T) {
+	var cli redigo.Interface
+	{
+		cli = prgAll(redigo.Default())
+	}
+
+	//
+	// EXISTS
+	//
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.6)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	//
+	// CREATE
+	//
+
+	{
+		err := cli.Sorted().Create().Index("ssk", "foo", 0.6)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Index("ssk", "bar", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	{
+		err := cli.Sorted().Create().Index("ssk", "baz", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	//
+	// EXISTS
+	//
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.6)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	//
+	// DELETE
+	//
+
+	{
+		err := cli.Sorted().Delete().Score("ssk", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	//
+	// EXISTS
+	//
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.6)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.7)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if exi {
+			t.Fatal("element must not exist")
+		}
+	}
+
+	{
+		exi, err := cli.Sorted().Exists().Score("ssk", 0.8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exi {
+			t.Fatal("element must exist")
 		}
 	}
 }

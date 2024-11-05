@@ -63,11 +63,13 @@ type Delete interface {
 	Limit(key string, lim int) error
 
 	// Score deletes the element identified by the given score within the
-	// specified sorted set. Non-existing elements are ignored.
+	// specified sorted set. Non-existing elements are ignored. An optional second
+	// score can be provided which allows to define ranges of scores that ought to
+	// be deleted.
 	//
 	//     https://redis.io/commands/zremrangebyscore
 	//
-	Score(key string, sco float64) error
+	Score(key string, sco float64, end ...float64) error
 
 	// Value deletes the elements identified by the given values within the
 	// specified sorted set. Non-existing elements are ignored.

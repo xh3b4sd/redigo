@@ -1,6 +1,6 @@
-package fake
+package delete
 
-type SortedDelete struct {
+type Fake struct {
 	FakeClean func() error
 	FakeIndex func() error
 	FakeLimit func() error
@@ -8,7 +8,7 @@ type SortedDelete struct {
 	FakeValue func() error
 }
 
-func (f *SortedDelete) Clean(key string) error {
+func (f *Fake) Clean(key string) error {
 	if f.FakeClean != nil {
 		return f.FakeClean()
 	}
@@ -16,7 +16,7 @@ func (f *SortedDelete) Clean(key string) error {
 	return nil
 }
 
-func (f *SortedDelete) Index(key string, val ...string) error {
+func (f *Fake) Index(key string, val ...string) error {
 	if f.FakeIndex != nil {
 		return f.FakeIndex()
 	}
@@ -24,7 +24,7 @@ func (f *SortedDelete) Index(key string, val ...string) error {
 	return nil
 }
 
-func (f *SortedDelete) Limit(key string, lim int) error {
+func (f *Fake) Limit(key string, lim int) error {
 	if f.FakeLimit != nil {
 		return f.FakeLimit()
 	}
@@ -32,7 +32,7 @@ func (f *SortedDelete) Limit(key string, lim int) error {
 	return nil
 }
 
-func (f *SortedDelete) Score(key string, sco float64) error {
+func (f *Fake) Score(key string, sco float64, end ...float64) error {
 	if f.FakeScore != nil {
 		return f.FakeScore()
 	}
@@ -40,7 +40,7 @@ func (f *SortedDelete) Score(key string, sco float64) error {
 	return nil
 }
 
-func (f *SortedDelete) Value(key string, val ...string) error {
+func (f *Fake) Value(key string, val ...string) error {
 	if f.FakeValue != nil {
 		return f.FakeValue()
 	}

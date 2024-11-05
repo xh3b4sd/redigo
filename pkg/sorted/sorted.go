@@ -3,6 +3,7 @@ package sorted
 import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/xh3b4sd/redigo/pkg/sorted/create"
+	"github.com/xh3b4sd/redigo/pkg/sorted/delete"
 	"github.com/xh3b4sd/redigo/pkg/sorted/update"
 )
 
@@ -14,7 +15,7 @@ type Config struct {
 
 type Sorted struct {
 	cre *create.Redis
-	del *delete
+	del *delete.Redis
 	exi *exists
 	flo *floats
 	met *metric
@@ -23,7 +24,6 @@ type Sorted struct {
 }
 
 func New(config Config) (*Sorted, error) {
-	// TODO refactor all redis methods the new way
 	var cre *create.Redis
 	{
 		cre = create.New(create.Config{
@@ -32,18 +32,15 @@ func New(config Config) (*Sorted, error) {
 		})
 	}
 
-	var del *delete
+	var del *delete.Redis
 	{
-		del = &delete{
-			pool: config.Pool,
-
-			deleteCleanScript: redis.NewScript(2, deleteCleanScript),
-			deleteIndexScript: redis.NewScript(2, deleteIndexScript),
-
-			prefix: config.Prefix,
-		}
+		del = delete.New(delete.Config{
+			Poo: config.Pool,
+			Pre: config.Prefix,
+		})
 	}
 
+	// TODO refactor all redis methods the new way
 	var exi *exists
 	{
 		exi = &exists{
